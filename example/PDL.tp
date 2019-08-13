@@ -1,0 +1,48 @@
+Domain
+{
+  inputDir   = "PDL"
+  nodeFile      = "node.dat"
+  elementFile   = "element.dat"
+  meshTypeFile   = "elementMeshType.dat"
+  dirichletFile = "dirichlet.dat"
+  dirichletValueFile = "dirichletValue.dat"
+  interface="interface.dat"
+
+  internalSurface = "PDL/internalSurface.dat"
+  externalSurface = "PDL/externalSurface.dat"
+  planeElement=1584
+  //initialStretch=10e-1
+  //prescribedDisplacement=2e-3
+
+  //fiber group (Koga model)
+  thetaMax = 40 // degree
+  horizontalFiberPosition = 8e-1 // in [0,1]
+}
+
+RigidBody
+{
+  shape="PDL/toothM1_3.ply"
+  Force=(4e1,0e0,0e0)
+  ForcePoint=(0e0,0e0,0.022)
+  //Moment=(0e0,0e0,0e0)
+}
+
+Output
+{
+  outputFormat = "vtk"
+  outputDir    = "Results_40_compress"
+  fileName     = "test"
+}
+
+solver
+{
+  dataNumber=0
+  maxIteration = 40
+  NR_iteration = 50
+  NR_tolerance = 3 //1e-4
+  Restart =0 //0:no, 1:yes
+  OMPnumThreads = 2
+  relaxation=2e-1
+}
+
+
