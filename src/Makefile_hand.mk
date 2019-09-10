@@ -17,6 +17,7 @@ all:
 	(cd FEM; make -f Makefile_hand.mk)
 	(cd RBD; make -f Makefile_hand.mk)
 	(cd linearSolver; make -f Makefile_hand.mk)
+	(cd interaction; make -f Makefile_hand.mk)
 	(make -f Makefile_PDL.mk)
 
 clean:
@@ -24,6 +25,7 @@ clean:
 	(cd FEM; make -f Makefile_hand.mk clean)
 	(cd RBD; make -f Makefile_hand.mk clean)
 	(cd linearSolver; make -f Makefile_hand.mk clean)
+	(cd interaction; make -f Makefile_hand.mk clean)
 	(make -f Makefile_PDL.mk clean)
 
 depend:
@@ -31,4 +33,5 @@ depend:
 	(cd FEM; make -f Makefile_hand.mk depend)
 	(cd RBD; make -f Makefile_hand.mk depend)
 	(cd linearSolver; make -f Makefile_hand.mk depend)
+	(cd interaction; make -f Makefile_hand.mk depend)
 	(make -f Makefile_PDL.mk depend)

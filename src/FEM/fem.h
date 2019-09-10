@@ -40,20 +40,6 @@
 #include "pardiso_solver.h"
 #include "rigidBody.h"
 
-// class SurfaceSet{
-//  public:
-//   int numOfBoundaryNode,numOfNode,numOfElm;
-//   INTARRAY2 elm;
-//   INTARRAY1 boundaryNode;
-//   DOUBLEARRAY2 x;
-
-//   void setBoundaryNode(const int numberOfTotalNode);
-//   void readDAT(const std::string &file,const int elementNumber);
-//   void readVTU(const std::string &file,const int nodeNumber,const int elementNumber);
-//   void translation(const double (&center)[3]);
-//   void rotation(const double (&q)[4]);
-//   void exportVTU(const std::string &file);
-// };
 
 class Fem : public Domain{
 
@@ -76,7 +62,6 @@ class Fem : public Domain{
     }
   }
 
-  // SurfaceSet internalSurface,externalSurface;
   double I2[3][3],I4[3][3][3][3];
   TextParser tp;
   std::string outputDir,fileName;
@@ -95,21 +80,20 @@ class Fem : public Domain{
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
   DOUBLEARRAY1D bundle;
   INTARRAY1D bundleElement;
-  double AMBinitialStretch,PLBinitialStretch;
   double tibiaRotation,femurRotation;
 
   void rotationalDirichlet(const int loop);
-  int NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy);
+  // int NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy);
   void calcStressTensor();
   void set_rhs_statics();
   void calc_MassMatrix();
   void corrector_statistics(const double *u,const double relaxation);
-  void femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody &RBdy);
+  // void femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody &RBdy);
   void calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   void calc_B_matrix(DOUBLEARRAY3D &B,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],DOUBLEARRAY2D &u,const int &numOfNodeInElm);
   void stress_tensor_initialize();
-  void calcTemporalFw(RigidBody &RBdy);
+  // void calcTemporalFw(RigidBody &RBdy);
 
 
  private:
@@ -120,7 +104,7 @@ class Fem : public Domain{
   DOUBLEARRAY3D Mass;
   INTARRAY1D boundaryNode_femur,boundaryNode_tibia;
   void exportRestartData(const int loop);
-  void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
+  // void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
 
   //line search
   double line_search(const double *u);
@@ -133,15 +117,12 @@ class Fem : public Domain{
   void allocate();
  private:
   void inputDomainInfo();
-  // void planeDirichletCondition(SurfaceSet &plane,const INTARRAY1 &boundaryNode);
-  // void planeDirichletCondition(SurfaceSet &plane,const int num);
   void inputDirichletBoundaryInfo();
   void inputNeumannBoundaryInfo();
   void inputFiberInfo();
   void inputSolverInfo();
   void inputOutputInfo();
   void restart_setting();
-  // void read_boundaryNode(const std::string &file,INTARRAY1 &boundaryNode);
   void calc_normal_quad(double (&normal)[3],double (&X)[4][3]);
   void setFiberDirection();
   void setFiberDirection_KogaModel();
@@ -149,22 +130,19 @@ class Fem : public Domain{
   double arcLength(const double xMin,const double xMax);
 
   //fem_postprocessing.cpp
+  public:
   DOUBLEARRAY2D AEigen_Ave,sigmaEigen_Ave;
   DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
-
   void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
   const int &numOfNodeInElm,const int &numOfGaussPoint);
   void postProcess_ACL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
   const int &numOfNodeInElm,const int &numOfGaussPoint);
   void postProcess_ACL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
     const int &numOfNodeInElm,const int &numOfGaussPoint);
+    private:
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
   void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
-  //fem_SantVenant_spatialForm.cpp
-  // void calcStressTensor_SantVenant_element_spatialForm(const int ic,const DOUBLEARRAY2 &U_tmp,const bool option);
-  // double SantVenant_inGaussIntegral(const DOUBLEARRAY2 &dNdr,const DOUBLEARRAY2 &x_current,const DOUBLEARRAY2 &x_ref,
-  //       DOUBLEARRAY2 &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option);
   void tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J);
 
   //fem_neoHookean_spatialForm.cpp
@@ -172,14 +150,10 @@ class Fem : public Domain{
   void calcStressTensor_NeoHookean_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   //fem_ACL_spatialForm.cpp
+  public:
   double bulkModulusRatio;
   DOUBLEARRAY3D fiberDirection;
   DOUBLEARRAY2D lambda_ave;
-  // void calcStressTensor_ACL_element_spatialForm_hexa_SRI(const int &ic,const DOUBLEARRAY2 &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // void calcStressTensor_ACL_element_spatialForm_hexa_Fbar(const int &ic,const DOUBLEARRAY2 &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // void calcStressTensor_ACL_element_spatialForm(const int ic,const DOUBLEARRAY2 &U_tmp,const bool option);
-  // void ACL_inGaussIntegral(const DOUBLEARRAY2 &dNdr,const DOUBLEARRAY2 &x_current,const DOUBLEARRAY2 &x_ref,DOUBLEARRAY2 &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option);
-  // void calc_F_initial(double (&F_initial)[3][3],const double (&a0)[3],const double lambda);
 
   //fem_PDL_spatialForm.cpp
 public:
@@ -224,27 +198,27 @@ private:
   void calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm);
 
   //rigidBodyInteraction
- public:
-  int numOfCP;
-  double FU[3],Fw[3],FU_input[3],FUpoint[3],initialMomentArm[3];
-  double Kqq[3][3],QU[3],Qw[3];
-  INTARRAY1D CP,iCP;
-  DOUBLEARRAY2D b,b0,Qlambda;
-  DOUBLEARRAY2D LAMBDA;
-  DOUBLEARRAY3D Rb;
-  void preprocess_rigidBodyInteraction(const RigidBody &RBdy);
+//  public:
+//   int numOfCP;
+//   double FU[3],Fw[3],FU_input[3],FUpoint[3],initialMomentArm[3];
+//   double Kqq[3][3],QU[3],Qw[3];
+//   INTARRAY1D CP,iCP;
+//   DOUBLEARRAY2D b,b0,Qlambda;
+//   DOUBLEARRAY2D LAMBDA;
+//   DOUBLEARRAY3D Rb;
+//   void preprocess_rigidBodyInteraction(const RigidBody &RBdy);
 
-private:
-  void inputRigidBodyInterface();
-  void rigidBodyInteraction(const RigidBody &RBdy);
-  void corrector_statics(const double *u,const double relaxation,RigidBody &RBdy);
+// private:
+//   void inputRigidBodyInterface();
+//   void rigidBodyInteraction(const RigidBody &RBdy);
+//   void corrector_statics(const double *u,const double relaxation,RigidBody &RBdy);
 
-  void updateb(const RigidBody &RBdy);
-  void tildeRB(const RigidBody &RBdy);
-  void calcKqq(const RigidBody &RBdy);
-  void updateRotationMatrix_spatialForm(double (&R)[3][3],const double (&w)[3]);
-  void calc_Qlambda(const RigidBody &RBdy);
-  void calc_Q_rigid(const RigidBody &RBdy);
+//   void updateb(const RigidBody &RBdy);
+//   void tildeRB(const RigidBody &RBdy);
+//   void calcKqq(const RigidBody &RBdy);
+//   void updateRotationMatrix_spatialForm(double (&R)[3][3],const double (&w)[3]);
+//   void calc_Qlambda(const RigidBody &RBdy);
+//   void calc_Q_rigid(const RigidBody &RBdy);
 
 };
 

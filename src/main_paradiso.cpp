@@ -16,7 +16,7 @@
  * @detail Fem solid analysis with displacement control.
  */
 
-#include "fem.h"
+#include "rigidElasticInteraction.h"
 #include "glog/logging.h"
 
 using namespace std;
@@ -26,7 +26,7 @@ int main(int argc,char *argv[])
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
-  Fem FEM;
+  RigidElasticInteraction FEM;
   RigidBody RBdy;
   PARDISO_solver PARDISO;
   string output;
@@ -46,6 +46,7 @@ int main(int argc,char *argv[])
 
   FEM.initialize();
   RBdy.initialize(FEM.tp);
+  FEM.inputRigidBodyInterface();
   FEM.preprocess_rigidBodyInteraction(RBdy);
 
   omp_set_num_threads(FEM.OMPnumThreads);

@@ -71,7 +71,7 @@ ifeq ($(ARCH),test)
   #CXX         = mpicxx
   #CFLAGS      = -O3
   #CXXFLAGS    = -O3 -qopt-report=5 $(OMP_FLAGS)
-  CXXFLAGS    = -Wall -Wextra -O3 $(OMP_FLAGS) -std=c++11 -g -MMD -MP -mkl
+  CXXFLAGS    = -Wall -Wextra -O3 $(OMP_FLAGS) -std=c++11 -MMD -MP -mkl
   #FC          = ifort
   #FCFLAGS     = -O3
   #F90         = mpif90
@@ -186,12 +186,14 @@ endif
 
 
 UDEF_INC_PATH=-I. \
+                                -I./interaction \
                                 -I./FEM \
                                 -I./linearSolver \
                                 -I./RBD \
                                 -I./base \
 
 UDEF_LIB_PATH= \
+                                  -L./interaction -lInteraction \
                                   -L./FEM -lFEM \
                                   -L./RBD -lRBD \
                                   -L./linearSolver -lLIS \

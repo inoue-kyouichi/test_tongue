@@ -15,7 +15,7 @@ using namespace std;
 void Fem::initialize()
 {
   inputDomainInfo();
-  inputRigidBodyInterface();
+  //inputRigidBodyInterface();
 
   inputSolverInfo();
 
@@ -162,63 +162,6 @@ void Fem::inputSolverInfo()
   }
 }
 
-// #################################################################
-/**
- * @brief domain information from tp file
- */
-void Fem::inputRigidBodyInterface()
-{
-  string str,base_label,label,inputDir;
-
-  base_label = "/Domain";
-
-  label = base_label + "/inputDir";
-  if ( !tp.getInspectedValue(label,inputDir)){
-    cout << "data format is not set" << endl;
-    exit(0);
-  }
-  string file;
-  label = base_label + "/interface";
-  if ( !tp.getInspectedValue(label, file)){
-    cout << label << " is not found" << endl;
-    exit(0);
-  }
-
-  file=inputDir + "/" + file;
-
-  numOfCP = fileIO::CountNumbersOfTextLines(file);
-  CP.allocate(numOfCP);
-  iCP.allocate(numOfNode);
-
-  FILE *fp;
-  if ((fp = fopen(file.c_str(), "r")) == NULL) {
-    cout << "file open error" << endl;
-    exit(1);
-  }
-  for(int i=0;i<numOfCP;i++) fscanf(fp,"%d\n",&CP(i));
-  fclose(fp);
-
-  for(int i=0;i<numOfNode;i++) iCP(i)=-1;
-  for(int i=0;i<numOfCP;i++) iCP(CP(i))=i;
-
-  base_label = "/RigidBody";
-  label = base_label + "/Force";
-  if ( !tp.getInspectedVector(label,FU_input,3)){
-    cout << label << " is not found" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/ForcePoint";
-  if ( !tp.getInspectedVector(label,FUpoint,3)){
-    cout << label << " is not found" << endl;
-    exit(0);
-  }
-  // label = base_label + "/Moment";
-  // if ( !tp.getInspectedVector(label,Fw,3)){
-  //   cout << label << " is not found" << endl;
-  //   exit(0);
-  // }
-}
 
 
 // #################################################################
@@ -530,11 +473,11 @@ void Fem::allocate()
 
   fiberDirection_elm.allocate(numOfElm,3); //gauss point
 
-  LAMBDA.allocate(numOfCP,3);
-  Rb.allocate(numOfCP,3,3);
-  b0.allocate(numOfCP,3);
-  b.allocate(numOfCP,3);
-  Qlambda.allocate(numOfCP,3);
+  // LAMBDA.allocate(numOfCP,3);
+  // Rb.allocate(numOfCP,3,3);
+  // b0.allocate(numOfCP,3);
+  // b.allocate(numOfCP,3);
+  // Qlambda.allocate(numOfCP,3);
 
   for(int ic=0;ic<numOfElm;ic++) volumeChangeRatio(ic)=1e0;
 
@@ -542,9 +485,9 @@ void Fem::allocate()
     for(int j=0;j<3;j++) U(i,j) = 0e0;
   }
 
-  for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA(i,j)=0e0;
-  }
+  // for(int i=0;i<numOfCP;i++){
+  //   for(int j=0;j<3;j++) LAMBDA(i,j)=0e0;
+  // }
 
   //dirichlet boundary conditions
   ibd.allocate(numOfNode,3);
