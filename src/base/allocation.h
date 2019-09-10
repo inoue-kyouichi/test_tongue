@@ -5,12 +5,7 @@
 //
 // allocation.h
 //
-// Copyright (c) 2016 Biomechanics Lab.,
-//                    Graduate School of Engineering Science and Bioengineering,
-//                    Osaka University.
-// All rights reserved.
-//
-// Copyright (c) 2016 Mechanical and Bioengineering Systems Lab.,
+// Copyright (c) 2019 Mechanical and Bioengineering Systems Lab.,
 //                    Graduate School of Engineering Science and Bioengineering,
 //                    Osaka University.
 // All rights reserved.
@@ -39,60 +34,298 @@ typedef std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> 
 typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>> DOUBLEVECTOR6;
 typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>>> DOUBLEVECTOR7;
 
-typedef int*        INTARRAY1;
-typedef int**       INTARRAY2;
-typedef int***      INTARRAY3;
-typedef int****     INTARRAY4;
-typedef int*****    INTARRAY5;
-typedef double*     DOUBLEARRAY1;
-typedef double**    DOUBLEARRAY2;
-typedef double***   DOUBLEARRAY3;
-typedef double****  DOUBLEARRAY4;
-typedef double***** DOUBLEARRAY5;
-
-
-class Allocation {
-
- public:
-
-    static INTARRAY1 allocate1dINT(const int &size,const int &guideCell=0);
-    static INTARRAY2 allocate2dINT(const int &size1,const int &size2,const int &guideCell=0);
-    static INTARRAY3 allocate3dINT(const int &size1,const int &size2,const int &size3,const int &guideCell=0);
-    static INTARRAY4 allocate4dINT(const int &size1,const int &size2,const int &size3,const int &size4,const int &guideCell=0);
-    static INTARRAY5 allocate5dINT(const int &size1,const int &size2,const int &size3,const int &size4,const int &size5,const int &guideCell=0);
-    static DOUBLEARRAY1 allocate1dDOUBLE(const int &size,const int &guideCell=0);
-    static DOUBLEARRAY2 allocate2dDOUBLE(const int &size1,const int &size2,const int &guideCell=0);
-    static DOUBLEARRAY3 allocate3dDOUBLE(const int &size1,const int &size2,const int &size3,const int &guideCell=0);
-    static DOUBLEARRAY4 allocate4dDOUBLE(const int &size1,const int &size2,const int &size3,const int &size4,const int &guideCell=0);
-    static DOUBLEARRAY5 allocate5dDOUBLE(const int &size1,const int &size2,const int &size3,const int &size4,const int &size5,const int &guideCell=0);
-
-    template <typename T>
-    static void free2d(T var){
-        free(var[0]);
-        free(var);
+class INTARRAY1D
+{
+public:
+    INTARRAY1D()
+    {
+        data=new int[1];
     }
-    template <typename T>
-    static void free3d(T var){
-        free(var[0][0]);
-        free(var[0]);
-        free(var);
+    INTARRAY1D(const int X)
+    {
+        nx = X;
+        data = new int[nx];
     }
-    template <typename T>
-    static void free4d(T var){
-        free(var[0][0][0]);
-        free(var[0][0]);
-        free(var[0]);
-        free(var);
+    ~INTARRAY1D()
+    {
+        delete[] data;
     }
-    template <typename T>
-    static void free5d(T var){
-        free(var[0][0][0][0]);
-        free(var[0][0][0]);
-        free(var[0][0]);
-        free(var[0]);
-        free(var);
+    int &operator()(const int i)
+    {
+        return data[i];
+    }
+    void allocate(const int X)
+    {
+        delete[] data;
+        nx = X;
+        data = new int[nx];
+    }
+private:
+    int *data;
+    int nx;
+};
+
+class INTARRAY2D
+{
+public:
+    INTARRAY2D()
+    {
+        data=new int[1];
+    }
+    INTARRAY2D(const int X, const int Y)
+    {
+        nx = X;
+        ny = Y;
+        data = new int[nx*ny];
+    }
+    ~INTARRAY2D()
+    {
+        delete[] data;
+    }
+    int &operator()(const int i, const int j)
+    {
+        return data[i*ny+j];
+    }
+    void allocate(const int X, const int Y)
+    {
+        delete[] data;
+        nx = X;
+        ny = Y;
+        data = new int[nx*ny];
+    }
+    void importData(const std::string &file);
+    void exportData(const std::string &file);
+
+private:
+    int *data;
+    int nx;
+    int ny;
+};
+
+class INTARRAY3D
+{
+public:
+    INTARRAY3D()
+    {
+        data = new int[1];
+    }
+    INTARRAY3D(const int X, const int Y, const int Z)
+    {
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new int[nx*ny*nz];
+    }
+    ~INTARRAY3D()
+    {
+        delete[] data;
+    }
+    int &operator()(const int i, const int j, const int k)
+    {
+        return data[i*ny*nz+j*nz+k];
+    }
+    void allocate(const int X, const int Y, const int Z)
+    {
+        delete[] data;
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new int[nx*ny*nz];
+    }
+private:
+    int *data;
+    int nx;
+    int ny;
+    int nz;
+};
+
+class DOUBLEARRAY1D
+{
+public:
+    DOUBLEARRAY1D()
+    {
+        data = new double[1];
+    }
+    DOUBLEARRAY1D(const int X)
+    {
+        nx = X;
+        data = new double[nx];
+    }
+    ~DOUBLEARRAY1D()
+    {
+        delete[] data;
+    }
+    double &operator()(const int i)
+    {
+        return data[i];
+    }
+    void allocate(const int X)
+    {
+        delete[] data;
+        nx = X;
+        data = new double[nx];
     }
 
+private:
+    double *data;
+    int nx;
+};
+
+class DOUBLEARRAY2D
+{
+public:
+    DOUBLEARRAY2D()
+    {
+        data = new double[1];
+    }
+    DOUBLEARRAY2D(const int X, const int Y)
+    {
+        nx = X;
+        ny = Y;
+        data = new double[nx*ny];
+    }
+    ~DOUBLEARRAY2D()
+    {
+        delete[] data;
+    }
+    double &operator()(const int i, const int j)
+    {
+        return data[i*ny+j];
+    }
+    void allocate(const int X, const int Y)
+    {
+        delete[] data;
+        nx = X;
+        ny = Y;
+        data = new double[nx*ny];
+    }
+private:
+    double *data;
+    int nx;
+    int ny;
+};
+
+class DOUBLEARRAY3D
+{
+public:
+    DOUBLEARRAY3D()
+    {
+        data = new double[1];
+    }
+    DOUBLEARRAY3D(const int X, const int Y, const int Z)
+    {
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new double[nx*ny*nz];
+    }
+    ~DOUBLEARRAY3D()
+    {
+        delete[] data;
+    }
+    double &operator()(const int i, const int j, const int k)
+    {
+        return data[i*ny*nz+j*nz+k];
+    }
+    void allocate(const int X, const int Y, const int Z)
+    {
+        delete[] data;
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new double[nx*ny*nz];
+    }
+
+private:
+    double *data;
+    int nx;
+    int ny;
+    int nz;
+};
+
+class DOUBLEARRAY4D
+{
+public:
+    DOUBLEARRAY4D()
+    {
+        data = new double[1];
+    }
+    DOUBLEARRAY4D(const int H, const int X, const int Y, const int Z)
+    {
+        nh = H;
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new double[nx*ny*nz*nh];
+    }
+    ~DOUBLEARRAY4D()
+    {
+        delete[] data;
+    }
+    double &operator()(const int h,const int i, const int j, const int k)
+    {
+        return data[h*nx*ny*nz+i*ny*nz+j*nz+k];
+    }
+    void allocate(const int H, const int X, const int Y, const int Z)
+    {
+        delete[] data;
+        nh = H;
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new double[nh*nx*ny*nz];
+    }
+
+private:
+    double *data;
+    int nx;
+    int ny;
+    int nz;
+    int nh;
+};
+
+class DOUBLEARRAY5D
+{
+public:
+    DOUBLEARRAY5D()
+    {
+        data = new double[1];
+    }
+    DOUBLEARRAY5D(const int L,const int H, const int X, const int Y, const int Z)
+    {
+        nl = L;
+        nh = H;
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new double[nl*nx*ny*nz*nh];
+    }
+    ~DOUBLEARRAY5D()
+    {
+        delete[] data;
+    }
+    double &operator()(const int l,const int h,const int i, const int j, const int k)
+    {
+        return data[l*nh*nx*ny*nz+h*nx*ny*nz+i*ny*nz+j*nz+k];
+    }
+    void allocate(const int L,const int H, const int X, const int Y, const int Z)
+    {
+        delete[] data;
+        nl = L;
+        nh = H;
+        nz = Z;
+        nx = X;
+        ny = Y;
+        data = new double[nl*nh*nx*ny*nz];
+    }
+
+private:
+    double *data;
+    int nx;
+    int ny;
+    int nz;
+    int nh;
+    int nl;
 };
 
 

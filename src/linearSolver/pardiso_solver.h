@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "fem_define.h"
+#include "allocation.h"
 
 #include "mkl_pardiso.h"
 #include "mkl_types.h"
@@ -52,9 +53,9 @@ class PARDISO_solver{
 
   double vector_norm(const int &nump,const double *x);
 
-  void set_CSR_value(const DOUBLEARRAY5 &K,const elementType &element,const int &numOfNode,
+  void set_CSR_value(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
                                const int &numOfElm,const INTVECTOR2 &inb);
-  void set_CSR_dirichlet_boundary_condition(const int &numOfNode,const INTARRAY2 &ibd);
+  void set_CSR_dirichlet_boundary_condition(const int &numOfNode,INTARRAY2D &ibd);
 
 private:
   void CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim);
@@ -63,12 +64,12 @@ private:
  public:
   //rigid body interaction
   void initialize(const int &DOF,const int &DOF2);
-  void CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,const INTARRAY1 &iCP,const INTARRAY1 &CP,const int &numOfCP,const int &dim);
-  void set_CSR_value_rigidBodyInteraction(const int &numOfNode,const INTARRAY1 &iCP,const DOUBLEARRAY3 &Rb,const double (&Kqq)[3][3],const int numOfCP);
+  void CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
+  void set_CSR_value_rigidBodyInteraction(const int &numOfNode,INTARRAY1D &iCP,DOUBLEARRAY3D &Rb,const double (&Kqq)[3][3],const int numOfCP);
  private:
   //rigid body interaction
-  void CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,const INTARRAY1 &iCP,const int &numOfCP,const int &dim);
-  void CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,const INTARRAY1 &iCP,const INTARRAY1 &CP,const int &numOfCP,const int &dim);
+  void CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim);
+  void CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
 
 };
 

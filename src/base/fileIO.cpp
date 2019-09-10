@@ -44,20 +44,20 @@ int fileIO::CountNumbersOfTextLines(const string &filePath )
 /**
  * @brief import triangle node
  */
-void fileIO::read_geometry_node(DOUBLEARRAY2 &x,int &numOfNode,const string &file)
+void fileIO::read_geometry_node(DOUBLEARRAY2D &x,int &numOfNode,const string &file)
 {
   FILE *fp;
   string str,tmp;
   numOfNode = CountNumbersOfTextLines(file);
 
-  x=Allocation::allocate2dDOUBLE(numOfNode,3);
+  x.allocate(numOfNode,3);
 
   if ((fp = fopen(file.c_str(), "r")) == NULL) {
     cout << "file open error" << endl;
     exit(1); 
   }
   for(int i=0;i<numOfNode;i++){
-    fscanf(fp,"%lf %lf %lf\n",&x[i][0],&x[i][1],&x[i][2]);
+    fscanf(fp,"%lf %lf %lf\n",&x(i,0),&x(i,1),&x(i,2));
   }
   fclose(fp);
 
@@ -148,11 +148,11 @@ void fileIO::read_geometry_element(elementType &element,const int &numOfElm,cons
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
+void fileIO::export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const DOUBLEARRAY2 &lambda_ave,
-            const DOUBLEARRAY2 &sigmaEigen_ave,const DOUBLEARRAY2 &AEigen_ave,
-            const DOUBLEARRAY3 &sigmaEigenVector_ave,const DOUBLEARRAY3 &AEigenVector_ave,const DOUBLEARRAY2 &innerForce,const string &file)
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
+            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
+            DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -166,7 +166,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<Points>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",x[i][0],x[i][1],x[i][2]);
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Points>\n");
@@ -192,13 +192,13 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<PointData Vectors=\"displacement[m/s]\">\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",U[i][0],U[i][1],U[i][2]);
+    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }
   fprintf(fp,"</DataArray>\n");
 
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"innerForce[N]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",innerForce[i][0],innerForce[i][1],innerForce[i][2]);
+    fprintf(fp,"%e %e %e\n",innerForce(i,0),innerForce(i,1),innerForce(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
@@ -206,32 +206,32 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<CellData>");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"volumeChangeRatio\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e\n",volumeChangeRatio[i]);
+    fprintf(fp,"%e\n",volumeChangeRatio(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"averageLambda\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",lambda_ave[i][0],lambda_ave[i][1],lambda_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",lambda_ave(i,0),lambda_ave(i,1),lambda_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"PrincipalStress\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",sigmaEigen_ave[i][0],sigmaEigen_ave[i][1],sigmaEigen_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",sigmaEigen_ave(i,0),sigmaEigen_ave(i,1),sigmaEigen_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"firstPrincipalStress\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",sigmaEigenVector_ave[i][0][0],sigmaEigenVector_ave[i][0][1],sigmaEigenVector_ave[i][0][2]);
+    fprintf(fp,"%e %e %e\n",sigmaEigenVector_ave(i,0,0),sigmaEigenVector_ave(i,0,1),sigmaEigenVector_ave(i,0,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"PrincipalStrain\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",AEigen_ave[i][0],AEigen_ave[i][1],AEigen_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",AEigen_ave(i,0),AEigen_ave(i,1),AEigen_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"firstPrincipalStrain\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",AEigenVector_ave[i][0][0],AEigenVector_ave[i][0][1],AEigenVector_ave[i][0][2]);
+    fprintf(fp,"%e %e %e\n",AEigenVector_ave(i,0,0),AEigenVector_ave(i,0,1),AEigenVector_ave(i,0,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
@@ -246,12 +246,12 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
+void fileIO::export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const DOUBLEARRAY2 &lambda_ave,
-            const DOUBLEARRAY1 &bundle,const INTARRAY1 &bundleElement,
-            const DOUBLEARRAY2 &sigmaEigen_ave,const DOUBLEARRAY2 &AEigen_ave,
-            const DOUBLEARRAY3 &sigmaEigenVector_ave,const DOUBLEARRAY3 &AEigenVector_ave,const DOUBLEARRAY2 &innerForce,const string &file)
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
+            DOUBLEARRAY1D &bundle,INTARRAY1D &bundleElement,
+            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
+            DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -265,7 +265,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<Points>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",x[i][0],x[i][1],x[i][2]);
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Points>\n");
@@ -291,7 +291,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<PointData Vectors=\"displacement[m/s]\">\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",U[i][0],U[i][1],U[i][2]);
+    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   // fprintf(fp,"<DataArray type=\"Float64\" Name=\"bundle\" NumberOfComponents=\"1\" format=\"ascii\">\n");
@@ -302,7 +302,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
 
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"innerForce[N]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",-innerForce[i][0],-innerForce[i][1],-innerForce[i][2]);
+    fprintf(fp,"%e %e %e\n",-innerForce(i,0),-innerForce(i,1),-innerForce(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
@@ -310,37 +310,37 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<CellData>");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"volumeChangeRatio\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e\n",volumeChangeRatio[i]);
+    fprintf(fp,"%e\n",volumeChangeRatio(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"averageLambda\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",lambda_ave[i][0],lambda_ave[i][1],lambda_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",lambda_ave(i,0),lambda_ave(i,1),lambda_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"PrincipalStress\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",sigmaEigen_ave[i][0],sigmaEigen_ave[i][1],sigmaEigen_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",sigmaEigen_ave(i,0),sigmaEigen_ave(i,1),sigmaEigen_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"firstPrincipalStress\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",sigmaEigenVector_ave[i][0][0],sigmaEigenVector_ave[i][0][1],sigmaEigenVector_ave[i][0][2]);
+    fprintf(fp,"%e %e %e\n",sigmaEigenVector_ave(i,0,0),sigmaEigenVector_ave(i,0,1),sigmaEigenVector_ave(i,0,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"PrincipalStrain\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",AEigen_ave[i][0],AEigen_ave[i][1],AEigen_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",AEigen_ave(i,0),AEigen_ave(i,1),AEigen_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"firstPrincipalStrain\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",AEigenVector_ave[i][0][0],AEigenVector_ave[i][0][1],AEigenVector_ave[i][0][2]);
+    fprintf(fp,"%e %e %e\n",AEigenVector_ave(i,0,0),AEigenVector_ave(i,0,1),AEigenVector_ave(i,0,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Int64\" Name=\"bundle\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%d\n",bundleElement[i]);
+    fprintf(fp,"%d\n",bundleElement(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
@@ -356,9 +356,9 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
+void fileIO::export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const DOUBLEARRAY2 &lambda_ave,const string &file)
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -372,7 +372,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<Points>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",x[i][0],x[i][1],x[i][2]);
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Points>\n");
@@ -398,7 +398,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<PointData Vectors=\"displacement[m/s]\">\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",U[i][0],U[i][1],U[i][2]);
+    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
@@ -406,12 +406,12 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<CellData>");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"volumeChangeRatio\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e\n",volumeChangeRatio[i]);
+    fprintf(fp,"%e\n",volumeChangeRatio(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"averageLambda\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",lambda_ave[i][0],lambda_ave[i][1],lambda_ave[i][2]);
+    fprintf(fp,"%e %e %e\n",lambda_ave(i,0),lambda_ave(i,1),lambda_ave(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
@@ -426,9 +426,9 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
+void fileIO::export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const string &file)
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -442,7 +442,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<Points>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",x[i][0],x[i][1],x[i][2]);
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Points>\n");
@@ -468,7 +468,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<PointData Vectors=\"displacement[m/s]\">\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",U[i][0],U[i][1],U[i][2]);
+    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
@@ -476,7 +476,7 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
   fprintf(fp,"<CellData Scalars=\"volumeChangeRatio\">\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"volumeChangeRatio\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e\n",volumeChangeRatio[i]);
+    fprintf(fp,"%e\n",volumeChangeRatio(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
@@ -491,9 +491,9 @@ void fileIO::export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu_boundary(const DOUBLEARRAY2 &x,const elementType &element,
+void fileIO::export_vtu_boundary(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const INTARRAY2 &ibd,const DOUBLEARRAY2 &bd,const DOUBLEARRAY2 &fiberDirection_elm,const string &file)
+            INTARRAY2D &ibd,DOUBLEARRAY2D &bd,DOUBLEARRAY2D &fiberDirection_elm,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -507,7 +507,7 @@ void fileIO::export_vtu_boundary(const DOUBLEARRAY2 &x,const elementType &elemen
   fprintf(fp,"<Points>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",x[i][0],x[i][1],x[i][2]);
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Points>\n");
@@ -533,19 +533,19 @@ void fileIO::export_vtu_boundary(const DOUBLEARRAY2 &x,const elementType &elemen
   fprintf(fp,"<PointData>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"bd\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",bd[i][0],bd[i][1],bd[i][2]);
+    fprintf(fp,"%e %e %e\n",bd(i,0),bd(i,1),bd(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"<DataArray type=\"Int64\" Name=\"ibd\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%d %d %d\n",ibd[i][0],ibd[i][1],ibd[i][2]);
+    fprintf(fp,"%d %d %d\n",ibd(i,0),ibd(i,1),ibd(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
   fprintf(fp,"<CellData>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"fiberDirection\" NumberOfComponents=\"3\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%e %e %e\n",fiberDirection_elm[i][0],fiberDirection_elm[i][1],fiberDirection_elm[i][2]);
+    fprintf(fp,"%e %e %e\n",fiberDirection_elm(i,0),fiberDirection_elm(i,1),fiberDirection_elm(i,2));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");

@@ -20,16 +20,17 @@
 
 #include <string>
 #include "fem_define.h"
+#include "allocation.h"
 
 class Domain{
 public:
   int numOfNode, numOfElm, numOfDirichlet,numOfNeumann;
   int meshType;
-  DOUBLEARRAY2 x,x0;
+  DOUBLEARRAY2D x,x0;
   elementType element,belement;
-  INTARRAY2 ibd;
-  DOUBLEARRAY2 bd;
-  DOUBLEARRAY2 bn;
+  INTARRAY2D ibd;
+  DOUBLEARRAY2D bd;
+  DOUBLEARRAY2D bn;
   INTVECTOR2 inb;
   INTVECTOR2 ieb;
 

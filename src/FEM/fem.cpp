@@ -44,11 +44,11 @@ void Fem::femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody &RBdy)
     }
 
     for(int i=0;i<numOfNode;i++){
-      for(int j=0;j<3;j++) x[i][j] = x0[i][j] + U[i][j];
+      for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
     }
     for(int i=0;i<numOfElm;i++){
       calcVolume_hexa(i,volume,8,2,1);
-      volumeChangeRatio[i]=volume[i]/volume0[i];
+      volumeChangeRatio(i)=volume(i)/volume0(i);
     }
 
     // exportRestartData(loop);
@@ -132,7 +132,7 @@ void Fem::exportRestartData(const int loop)
     exit(1);
   }
   for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",U[i][0],U[i][1],U[i][2]);
+    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }
   fclose(fp);
 }
@@ -154,7 +154,7 @@ int Fem::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
 
       //elastic body-rigid body interaction
       for(int i=0;i<numOfCP;i++){
-        for(int j=0;j<3;j++) innerForce[CP[i]][j]+=LAMBDA[i][j];
+        for(int j=0;j<3;j++) innerForce(CP(i),j)+=LAMBDA(i,j);
       }
 
       set_rhs_statics();
@@ -168,12 +168,12 @@ int Fem::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
 
       for(int i=0;i<numOfNode;i++){
         for(int j=0;j<3;j++){
-          PARDISO.b[i+j*numOfNode]=RHS[i][j];
+          PARDISO.b[i+j*numOfNode]=RHS(i,j);
         }
       }
       for(int i=0;i<numOfCP;i++){
         for(int j=0;j<3;j++){
-          PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda[i][j];
+          PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda(i,j);
         }
       }
       for(int j=0;j<3;j++){
@@ -194,7 +194,7 @@ int Fem::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
       corrector_statics(PARDISO.x,relaxation,RBdy);
 
       for(int i=0;i<numOfNode;i++){
-        for(int j=0;j<3;j++) x[i][j] = x0[i][j] + U[i][j];
+        for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
       }
 
       // output = outputDir + "/test_NR_" + to_string(ic) + ".vtu";
@@ -205,7 +205,7 @@ int Fem::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
       // RBdy.exportPLY(output);
 
       cout << "NewtonRaphson_iteration = " << ic << endl;
-      cout << " Normalized residual = " <<scientific<< residual/residual0 << " normalized norm = " << scientific<< norm/norm0  <<  endl;
+      // cout << " Normalized residual = " <<scientific<< residual/residual0 << " normalized norm = " << scientific<< norm/norm0  <<  endl;
       printf("Tooth displacement=(%e %e %e)\n",RBdy.U[0],RBdy.U[1],RBdy.U[2]);
 
       if(norm/norm0<NRtolerance) break;
@@ -261,7 +261,7 @@ void Fem::calcStressTensor()
   for(int ic=0;ic<numOfElm;ic++){
     for(int p=0;p<element[ic].node.size();p++){
       for(int i=0;i<3;i++){
-        innerForce[element[ic].node[p]][i] += Qu[ic][p][i];
+        innerForce(element[ic].node[p],i) += Qu(ic,p,i);
       }
     }
   }
@@ -277,7 +277,7 @@ void Fem::set_rhs_statics()
   for(int ic=0;ic<numOfNode;ic++){
     for(int j=0;j<3;j++){
       // RHS[ic][j] = (double)ibd[ic][j]*(BF[ic][j] - GF[ic][j]);
-      RHS[ic][j] = (double)ibd[ic][j]*( - innerForce[ic][j]);
+      RHS(ic,j) = (double)ibd(ic,j)*( - innerForce(ic,j));
     }
   }
 }
@@ -294,16 +294,16 @@ void Fem::stress_tensor_initialize()
     for(int p=0;p<element[ic].node.size();p++){
       for(int q=0;q<element[ic].node.size();q++){
         for(int i=0;i<3;i++){
-          for(int j=0;j<3;j++) K[ic][p][q][i][j] = 0e0;
+          for(int j=0;j<3;j++) K(ic,p,q,i,j) = 0e0;
         }
       }
-      for(int i=0;i<3;i++) Qu[ic][p][i] = 0e0;
+      for(int i=0;i<3;i++) Qu(ic,p,i) = 0e0;
     }
   }
 
   #pragma omp parallel for
   for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) innerForce[i][j] = 0e0;
+    for(int j=0;j<3;j++) innerForce(i,j) = 0e0;
   }
 }
 
@@ -317,7 +317,7 @@ void Fem::corrector_statistics(const double *u,const double relaxation)
 {
   #pragma omp parallel for
   for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) U[i][j] += u[i+j*numOfNode]*relaxation;
+    for(int j=0;j<3;j++) U(i,j) += u[i+j*numOfNode]*relaxation;
   }
 }
 
@@ -331,8 +331,8 @@ void Fem::calc_MassMatrix()
   int numOfNodeInElm;
   double detJ,dXdr[3][3];
 
-  DOUBLEARRAY1 N;
-  DOUBLEARRAY2 dNdr,X;
+  DOUBLEARRAY1D N;
+  DOUBLEARRAY2D dNdr,X;
 
   //------two point---------
   Gauss gauss(numOfGaussPoint);
@@ -340,16 +340,16 @@ void Fem::calc_MassMatrix()
 
   for(int ic=0;ic<numOfElm;ic++){
     numOfNodeInElm=element[ic].node.size();
-    N=Allocation::allocate1dDOUBLE(numOfNodeInElm);
-    dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-    X=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+    N.allocate(numOfNodeInElm);
+    dNdr.allocate(numOfNodeInElm,3);
+    X.allocate(numOfNodeInElm,3);
 
     for(int p=0;p<numOfNodeInElm;p++){
-      for(int i=0;i<3;i++) X[p][i] = x0[element[ic].node[p]][i];
+      for(int i=0;i<3;i++) X(p,i) = x0(element[ic].node[p],i);
     }
 
     for(int p=0;p<numOfNodeInElm;p++){
-      for(int q=0;q<numOfNodeInElm;q++) Mass[ic][p][q] = 0e0;
+      for(int q=0;q<numOfNodeInElm;q++) Mass(ic,p,q) = 0e0;
      }
 
     for(int i1=0;i1<numOfGaussPoint;i1++){
@@ -358,12 +358,12 @@ void Fem::calc_MassMatrix()
 
           switch(element[ic].meshType){
             case VTK_HEXAHEDRON:
-              ShapeFunction::C3D8_N(N,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
-              ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+              ShapeFunction3D::C3D8_N(N,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+              ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
               break;
             case VTK_TRIQUADRATIC_HEXAHEDRON:
-              ShapeFunction::C3D27_N(N,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
-              ShapeFunction::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+              ShapeFunction3D::C3D27_N(N,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+              ShapeFunction3D::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
               break;
             default:
               cout << "error in calcMassMatrix" << endl;
@@ -375,16 +375,13 @@ void Fem::calc_MassMatrix()
           //calc_internal force vector
           for(int p=0;p<numOfNodeInElm;p++){
             for(int q=0;q<numOfNodeInElm;q++){
-              Mass[ic][p][q] += rho * N[p] * N[q] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+              Mass(ic,p,q) += rho * N(p) * N(q) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
             }
           }
 
         }
       }
     }
-    free(N);
-    Allocation::free2d(dNdr);
-    Allocation::free2d(X);
   }
 
 }
@@ -398,23 +395,23 @@ void Fem::calc_MassMatrix()
  * @param [in]  numOfGaussPoint number of gauss point set in each element
  * @param [in]  option true:current configuration, false:reference configuration
  */
-void Fem::calcVolume_hexa(const int &ic,DOUBLEARRAY1 &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
+void Fem::calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   //------two point---------
   Gauss gauss(numOfGaussPoint);
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -424,10 +421,10 @@ void Fem::calcVolume_hexa(const int &ic,DOUBLEARRAY1 &elementVolume,const int &n
 
         switch(element[ic].meshType){
           case VTK_HEXAHEDRON:
-            ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           case VTK_TRIQUADRATIC_HEXAHEDRON:
-            ShapeFunction::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           default:
             cout << "error in calcVolume_hexa" << endl;
@@ -446,10 +443,6 @@ void Fem::calcVolume_hexa(const int &ic,DOUBLEARRAY1 &elementVolume,const int &n
       }
     }
   }
-  elementVolume[ic]=volume;
+  elementVolume(ic)=volume;
   // printf("volume=%e\n",volume);
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
 }

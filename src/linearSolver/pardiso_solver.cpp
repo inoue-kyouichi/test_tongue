@@ -111,25 +111,25 @@ void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOf
  * @param [in] numOfNode   number of nodes
  * @param [in] ibd         dirichlet boundary mask function
  */
-void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,const INTARRAY2 &ibd)
+void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,INTARRAY2D &ibd)
 {
 
   #pragma omp parallel for
   for(int ic=0;ic<numOfNode;ic++){
 
-    if(ibd[ic][0]!=1){
+    if(ibd(ic,0)!=1){
       for(int i=ptr[ic];i<ptr[ic+1];i++){
         value[i] = 0e0;
         if(index[i]==ic) value[i] = 1e0;
       }
     }
-    if(ibd[ic][1]!=1){
+    if(ibd(ic,1)!=1){
       for(int i=ptr[ic+numOfNode];i<ptr[ic+numOfNode+1];i++){
         value[i] = 0e0;
         if(index[i]==ic+numOfNode) value[i] = 1e0;
       }
     }
-    if(ibd[ic][2]!=1){
+    if(ibd(ic,2)!=1){
       for(int i=ptr[ic+numOfNode*2];i<ptr[ic+numOfNode*2+1];i++){
         value[i] = 0e0;
         if(index[i]==ic+numOfNode*2) value[i] = 1e0;
@@ -148,7 +148,7 @@ void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,c
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value(const DOUBLEARRAY5 &K,const elementType &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
                                const int &numOfElm,const INTVECTOR2 &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -168,25 +168,25 @@ void PARDISO_solver::set_CSR_value(const DOUBLEARRAY5 &K,const elementType &elem
 
         for(int i=ptr[tmp1];i<ptr[tmp1+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K[ielm][p][q][0][0];
-            value[i+tmp3]  += K[ielm][p][q][0][1];
-            value[i+tmp3*2] += K[ielm][p][q][0][2];
+            value[i]     += K(ielm,p,q,0,0);
+            value[i+tmp3]  += K(ielm,p,q,0,1);
+            value[i+tmp3*2] += K(ielm,p,q,0,2);
             break;
           }
         }
         for(int i=ptr[tmp1+numOfNode];i<ptr[tmp1+numOfNode+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K[ielm][p][q][1][0];
-            value[i+tmp3]  += K[ielm][p][q][1][1];
-            value[i+tmp3*2] += K[ielm][p][q][1][2];
+            value[i]     += K(ielm,p,q,1,0);
+            value[i+tmp3]  += K(ielm,p,q,1,1);
+            value[i+tmp3*2] += K(ielm,p,q,1,2);
             break;
           }
         }
         for(int i=ptr[tmp1+2*numOfNode];i<ptr[tmp1+2*numOfNode+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K[ielm][p][q][2][0];
-            value[i+tmp3]  += K[ielm][p][q][2][1];
-            value[i+tmp3*2] += K[ielm][p][q][2][2];
+            value[i]     += K(ielm,p,q,2,0);
+            value[i+tmp3]  += K(ielm,p,q,2,1);
+            value[i+tmp3*2] += K(ielm,p,q,2,2);
             break;
           }
         }

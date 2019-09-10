@@ -23,7 +23,7 @@ using namespace std;
  * @detail
    PDL model and parameters: Bergomi et al., J. Biomech., 2011
  */
-void Fem::calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,const DOUBLEARRAY2 &U_tmp,
+void Fem::calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
@@ -31,10 +31,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   double sigma[3][3],S[3][3],C[3][3],invC[3][3],F[3][3];
   double elasticityTensor_ref[3][3][3][3],elasticityTensor_current[3][3][3][3],tangentCoefficient[3][3][3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   //nearly-incompressible material
   double pressure,dpressure,Siso[3][3],Sp[3];
@@ -53,8 +53,8 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U_tmp[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U_tmp(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -64,10 +64,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
         switch(element[ic].meshType){
           case VTK_HEXAHEDRON:
-            ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           case VTK_TRIQUADRATIC_HEXAHEDRON:
-            ShapeFunction::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           default:
             cout << "error " << endl;
@@ -141,7 +141,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         //calc_internal force vector
         for(int p=0;p<numOfNodeInElm;p++){
           for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+            for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
           }
         }
 
@@ -214,7 +214,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
               for(int j=0;j<3;j++){
                 for(int k=0;k<3;k++){
                   for(int l=0;l<3;l++){
-                    K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+                    K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
                   }
                 }
               }
@@ -227,10 +227,6 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   }
   // if(averageLambda/8e0>1.1e0) cout << "test" << endl;
   // printf("volume=%e\n",volume);
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
 }
 
 void Fem::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
@@ -257,5 +253,33 @@ void Fem::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const
     stretchDirection[0][j]=max_eigen_vector(j);
     stretchDirection[1][j]=med_eigen_vector(j);
     stretchDirection[2][j]=min_eigen_vector(j);
+  }
+}
+
+// #################################################################
+/**
+ * @brief push forward routine for 4th order tensor
+ * @param [out] c4    elasticity tensor in current coordinates
+ * @param [in]  C4    elasticity tensor in reference coordinates
+ * @param [in]  F     deformation gradient tensor
+ * @param [in]  J     Jacobian (volume change ratio)
+ */
+void Fem::tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J)
+{
+  for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++){
+        for(int k=0;k<3;k++){
+          for(int l=0;l<3;l++){
+            c4[i][j][k][l]=0e0;
+            for(int p=0;p<3;p++){
+              for(int q=0;q<3;q++){
+                for(int r=0;r<3;r++){
+                  for(int s=0;s<3;s++) c4[i][j][k][l]+=F[i][p]*F[j][q]*F[k][r]*F[l][s]*C4[p][q][r][s]/J;
+                }
+            }
+          }
+        }
+      }
+    }
   }
 }

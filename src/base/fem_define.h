@@ -21,11 +21,6 @@
 #include <vector>
 #include "TextParser.h"
 #include "vtkCellType.h"
-#include "allocation.h"
-
-#define FEM_VERS "1.0"
-#define GRAVITY     9.80665 // (m/s2)
-static const double PI = 3.1415926535897932384626;
 
 typedef std::vector<int> INTVECTOR1;
 typedef std::vector<std::vector<int>> INTVECTOR2;
@@ -40,6 +35,11 @@ typedef std::vector<std::vector<std::vector<std::vector<double>>>> DOUBLEVECTOR4
 typedef std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> DOUBLEVECTOR5;
 typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>> DOUBLEVECTOR6;
 typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>>> DOUBLEVECTOR7;
+
+
+#define FEM_VERS "1.0"
+#define GRAVITY     9.80665 // (m/s2)
+static const double PI = 3.1415926535897932384626;
 
 // general
 #define ON          1

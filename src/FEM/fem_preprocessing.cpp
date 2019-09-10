@@ -50,7 +50,7 @@ void Fem::restart_setting()
       exit(1);
     }
     for(int i=0;i<numOfNode;i++){
-      fprintf(fp,"%e %e %e\n",x0[i][0],x0[i][1],x0[i][2]);
+      fprintf(fp,"%e %e %e\n",x0(i,0),x0(i,1),x0(i,2));
     }
     fclose(fp);
   }else{
@@ -64,8 +64,8 @@ void Fem::restart_setting()
       exit(1);
     }
     for(int i=0;i<numOfNode;i++){
-      fscanf(fp,"%lf %lf %lf\n",&x0[i][0],&x0[i][1],&x0[i][2]);
-      for(int j=0;j<3;j++) x[i][j]=x0[i][j];
+      fscanf(fp,"%lf %lf %lf\n",&x0(i,0),&x0(i,1),&x0(i,2));
+      for(int j=0;j<3;j++) x(i,j)=x0(i,j);
     }
     fclose(fp);
 
@@ -79,7 +79,7 @@ void Fem::restart_setting()
       exit(1);
     }
     for(int i=0;i<numOfNode;i++){
-      fscanf(fp,"%lf %lf %lf\n",&U[i][0],&U[i][1],&U[i][2]);
+      fscanf(fp,"%lf %lf %lf\n",&U(i,0),&U(i,1),&U(i,2));
     }
     fclose(fp);
   }
@@ -187,19 +187,19 @@ void Fem::inputRigidBodyInterface()
   file=inputDir + "/" + file;
 
   numOfCP = fileIO::CountNumbersOfTextLines(file);
-  CP=Allocation::allocate1dINT(numOfCP);
-  iCP=Allocation::allocate1dINT(numOfNode);
+  CP.allocate(numOfCP);
+  iCP.allocate(numOfNode);
 
   FILE *fp;
   if ((fp = fopen(file.c_str(), "r")) == NULL) {
     cout << "file open error" << endl;
     exit(1);
   }
-  for(int i=0;i<numOfCP;i++) fscanf(fp,"%d\n",&CP[i]);
+  for(int i=0;i<numOfCP;i++) fscanf(fp,"%d\n",&CP(i));
   fclose(fp);
 
-  for(int i=0;i<numOfNode;i++) iCP[i]=-1;
-  for(int i=0;i<numOfCP;i++) iCP[CP[i]]=i;
+  for(int i=0;i<numOfNode;i++) iCP(i)=-1;
+  for(int i=0;i<numOfCP;i++) iCP(CP(i))=i;
 
   base_label = "/RigidBody";
   label = base_label + "/Force";
@@ -328,11 +328,11 @@ void Fem::setFiberDirection()
   double X_elm[4][3],normal[3];
   for(int ic=0;ic<numOfElm;ic++){
     for(int p=0;p<4;p++){
-      for(int j=0;j<3;j++) X_elm[p][j]=x[element[ic].node[p]][j];
+      for(int j=0;j<3;j++) X_elm[p][j]=x(element[ic].node[p],j);
     }
     calc_normal_quad(normal,X_elm);
 
-    for(int j=0;j<3;j++) fiberDirection_elm[ic][j]=normal[j];
+    for(int j=0;j<3;j++) fiberDirection_elm(ic,j)=normal[j];
   }
 }
 
@@ -340,9 +340,8 @@ void Fem::calc_normal_quad(double (&normal)[3],double (&X)[4][3])
 {
   double dXdr1[3],dXdr2[3],dXdr3[3],Jacobian,normalVector[3];
   double tmp;
-  DOUBLEARRAY2 dNdr = Allocation::allocate2dDOUBLE(4,2);
-  DOUBLEARRAY2 dNdX = Allocation::allocate2dDOUBLE(4,3);
-  DOUBLEARRAY2 normal_elem = Allocation::allocate2dDOUBLE(numOfElm,3);
+  DOUBLEARRAY2D dNdr(4,2);
+  DOUBLEARRAY2D dNdX(4,3);
 
   Gauss g1(2);
 
@@ -351,13 +350,13 @@ void Fem::calc_normal_quad(double (&normal)[3],double (&X)[4][3])
   for(int iy=0;iy<2;iy++){
     for(int ix=0;ix<2;ix++){
 
-      ShapeFunction::C2D4_dNdr(dNdr,g1.point[ix],g1.point[iy]);
+      ShapeFunction2D::C2D4_dNdr(dNdr,g1.point[ix],g1.point[iy]);
       for(int i=0;i<3;i++){
         dXdr1[i] = 0e0;
         dXdr2[i] = 0e0;
         for(int p=0;p<4;p++){
-          dXdr1[i] += dNdr[p][0] * X[p][i];
-          dXdr2[i] += dNdr[p][1] * X[p][i];
+          dXdr1[i] += dNdr(p,0) * X[p][i];
+          dXdr2[i] += dNdr(p,1) * X[p][i];
         }
       }
 
@@ -408,7 +407,7 @@ void Fem::setFiberDirection_KogaModel()
   for(int ic=0;ic<numOfElm;ic++){
 
     for(int p=0;p<4;p++){
-      for(int j=0;j<3;j++) X_elm[p][j]=x[element[ic].node[p]][j];
+      for(int j=0;j<3;j++) X_elm[p][j]=x(element[ic].node[p],j);
     }
 
     calc_normal_quad(normal,X_elm);
@@ -431,7 +430,7 @@ void Fem::setFiberDirection_KogaModel()
       for(int j=0;j<3;j++) direction[i] += R[i][j] * normal[j];
     }
 
-    for(int j=0;j<3;j++) fiberDirection_elm[ic][j]=direction[j];
+    for(int j=0;j<3;j++) fiberDirection_elm(ic,j)=direction[j];
   }
 }
 
@@ -487,7 +486,7 @@ void Fem::inputFiberInfo()
   }
 
   string file1;
-  fiberDirection=Allocation::allocate3dDOUBLE(numOfElm,8,3); //gauss point
+  fiberDirection.allocate(numOfElm,8,3); //gauss point
   label = base_label + "/fiberDirectionFile";
   if ( !tp.getInspectedValue(label,file1)){
     cout << label << " is not found" << endl;
@@ -500,7 +499,7 @@ void Fem::inputFiberInfo()
     exit(1);
   }
   for(int i=0;i<numOfElm;i++){
-    for(int j=0;j<8;j++) fscanf(fp,"%lf %lf %lf\n",&fiberDirection[i][j][0],&fiberDirection[i][j][1],&fiberDirection[i][j][2]);
+    for(int j=0;j<8;j++) fscanf(fp,"%lf %lf %lf\n",&fiberDirection(i,j,0),&fiberDirection(i,j,1),&fiberDirection(i,j,2));
   }
   fclose(fp);
 }
@@ -511,49 +510,49 @@ void Fem::inputFiberInfo()
  */
 void Fem::allocate()
 {
-  Mass=Allocation::allocate3dDOUBLE(numOfElm,8,8);
-  U=Allocation::allocate2dDOUBLE(numOfNode,3);
-  RHS=Allocation::allocate2dDOUBLE(numOfNode,3);
-  innerForce=Allocation::allocate2dDOUBLE(numOfNode,3);
-  externalForce=Allocation::allocate2dDOUBLE(numOfNode,3);
-  K=Allocation::allocate5dDOUBLE(numOfElm,8,8,3,3);
-  Qu=Allocation::allocate3dDOUBLE(numOfElm,8,3);
-  BFe=Allocation::allocate3dDOUBLE(numOfElm,4,3);
-  volume=Allocation::allocate1dDOUBLE(numOfElm);
-  volume0=Allocation::allocate1dDOUBLE(numOfElm);
-  volumeChangeRatio=Allocation::allocate1dDOUBLE(numOfElm);
+  Mass.allocate(numOfElm,8,8);
+  U.allocate(numOfNode,3);
+  RHS.allocate(numOfNode,3);
+  innerForce.allocate(numOfNode,3);
+  externalForce.allocate(numOfNode,3);
+  K.allocate(numOfElm,8,8,3,3);
+  Qu.allocate(numOfElm,8,3);
+  BFe.allocate(numOfElm,4,3);
+  volume.allocate(numOfElm);
+  volume0.allocate(numOfElm);
+  volumeChangeRatio.allocate(numOfElm);
 
-  lambda_ave=Allocation::allocate2dDOUBLE(numOfElm,3);
-  AEigen_Ave=Allocation::allocate2dDOUBLE(numOfElm,3);
-  sigmaEigen_Ave=Allocation::allocate2dDOUBLE(numOfElm,3);
-  AEigenVector_Ave=Allocation::allocate3dDOUBLE(numOfElm,3,3);
-  sigmaEigenVector_Ave=Allocation::allocate3dDOUBLE(numOfElm,3,3);
+  lambda_ave.allocate(numOfElm,3);
+  AEigen_Ave.allocate(numOfElm,3);
+  sigmaEigen_Ave.allocate(numOfElm,3);
+  AEigenVector_Ave.allocate(numOfElm,3,3);
+  sigmaEigenVector_Ave.allocate(numOfElm,3,3);
 
-  fiberDirection_elm=Allocation::allocate2dDOUBLE(numOfElm,3); //gauss point
+  fiberDirection_elm.allocate(numOfElm,3); //gauss point
 
-  LAMBDA=Allocation::allocate2dDOUBLE(numOfCP,3);
-  Rb=Allocation::allocate3dDOUBLE(numOfCP,3,3);
-  b0=Allocation::allocate2dDOUBLE(numOfCP,3);
-  b=Allocation::allocate2dDOUBLE(numOfCP,3);
-  Qlambda=Allocation::allocate2dDOUBLE(numOfCP,3);
+  LAMBDA.allocate(numOfCP,3);
+  Rb.allocate(numOfCP,3,3);
+  b0.allocate(numOfCP,3);
+  b.allocate(numOfCP,3);
+  Qlambda.allocate(numOfCP,3);
 
-  for(int ic=0;ic<numOfElm;ic++) volumeChangeRatio[ic]=1e0;
+  for(int ic=0;ic<numOfElm;ic++) volumeChangeRatio(ic)=1e0;
 
   for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) U[i][j] = 0e0;
+    for(int j=0;j<3;j++) U(i,j) = 0e0;
   }
 
   for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA[i][j]=0e0;
+    for(int j=0;j<3;j++) LAMBDA(i,j)=0e0;
   }
 
   //dirichlet boundary conditions
-  ibd=Allocation::allocate2dINT(numOfNode,3);
-  bd=Allocation::allocate2dDOUBLE(numOfNode,3);
+  ibd.allocate(numOfNode,3);
+  bd.allocate(numOfNode,3);
   for(int i=0;i<numOfNode;i++){
     for(int j=0;j<3;j++){
-      ibd[i][j]=1;
-      bd[i][j]=0e0;
+      ibd(i,j)=1;
+      bd(i,j)=0e0;
     }
   }
 

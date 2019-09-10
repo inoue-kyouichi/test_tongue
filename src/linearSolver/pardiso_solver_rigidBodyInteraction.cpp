@@ -36,7 +36,7 @@ void PARDISO_solver::initialize(const int &DOF,const int &DOF2)
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,const INTARRAY1 &iCP,const INTARRAY1 &CP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
 {
   ptr = (MKL_INT *)malloc((numOfNode*dim+numOfCP*dim+6+1)*sizeof(MKL_INT));
 
@@ -63,7 +63,7 @@ void PARDISO_solver::CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,c
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,const INTARRAY1 &iCP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim)
 {
   nnz = 0;
 
@@ -72,7 +72,7 @@ void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNo
     for(int ic=0;ic<numOfNode;ic++){
       ptr[ic+i*numOfNode] = nnz;
       nnz += inb[ic].size()*dim;
-      if(iCP[ic]!=-1) nnz += 1;
+      if(iCP(ic)!=-1) nnz += 1;
     }
   }
   //delta lambda
@@ -103,7 +103,7 @@ void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNo
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,const INTARRAY1 &iCP,const INTARRAY1 &CP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
 {
   int tmp = 0;
 
@@ -117,8 +117,8 @@ void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOf
           tmp++;
         }
       }
-      if(iCP[ic]!=-1){
-        index[tmp] = dim*numOfNode+iCP[ic]+dim2*numOfCP;
+      if(iCP(ic)!=-1){
+        index[tmp] = dim*numOfNode+iCP(ic)+dim2*numOfCP;
         tmp++;
       }
 
@@ -128,7 +128,7 @@ void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOf
   //delta lambda
   for(int dim2=0;dim2<dim;dim2++){
     for(int ic=0;ic<numOfCP;ic++){
-      index[tmp] = CP[ic]+dim2*numOfNode;
+      index[tmp] = CP(ic)+dim2*numOfNode;
       tmp++;
       index[tmp] = dim*numOfNode+dim*numOfCP+dim2;
       tmp++;
@@ -142,7 +142,7 @@ void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOf
   //delta U
   for(int k=0;k<dim;k++){
     for(int ic=0;ic<numOfCP;ic++){
-      index[tmp] = dim*numOfNode+iCP[CP[ic]]+k*numOfCP;
+      index[tmp] = dim*numOfNode+iCP(CP(ic))+k*numOfCP;
       tmp++;
     }
   }
@@ -151,7 +151,7 @@ void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOf
   for(int dim2=0;dim2<dim;dim2++){
     for(int k=0;k<dim;k++){
       for(int ic=0;ic<numOfCP;ic++){
-        index[tmp] = dim*numOfNode+iCP[CP[ic]]+k*numOfCP;
+        index[tmp] = dim*numOfNode+iCP(CP(ic))+k*numOfCP;
         tmp++;
       }
     }
@@ -172,13 +172,13 @@ void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOf
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value_rigidBodyInteraction(const int &numOfNode,const INTARRAY1 &iCP,const DOUBLEARRAY3 &Rb,const double (&Kqq)[3][3],const int numOfCP)
+void PARDISO_solver::set_CSR_value_rigidBodyInteraction(const int &numOfNode,INTARRAY1D &iCP,DOUBLEARRAY3D &Rb,const double (&Kqq)[3][3],const int numOfCP)
 {
   int tmp1,tmp2,tmp3;
 
   for(int k=0;k<3;k++){
     for(int ic=0;ic<numOfNode;ic++){
-      if(iCP[ic]==-1) continue;
+      if(iCP(ic)==-1) continue;
       for(int i=ptr[ic+k*numOfNode];i<ptr[ic+k*numOfNode+1];i++){
         if(index[i]>=numOfNode*3) value[i]=1e0;
       }
@@ -193,11 +193,11 @@ void PARDISO_solver::set_CSR_value_rigidBodyInteraction(const int &numOfNode,con
         }else if(index[i]<numOfNode*3+numOfCP*3+3){
           value[i]=-1e0;
         }else if(index[i]==numOfNode*3+numOfCP*3+3){
-          value[i]=Rb[ic][k][0];
+          value[i]=Rb(ic,k,0);
         }else if(index[i]==numOfNode*3+numOfCP*3+3+1){
-          value[i]=Rb[ic][k][1];
+          value[i]=Rb(ic,k,1);
         }else if(index[i]==numOfNode*3+numOfCP*3+3+2){
-          value[i]=Rb[ic][k][2];
+          value[i]=Rb(ic,k,2);
         }
       }
     }
@@ -212,9 +212,9 @@ void PARDISO_solver::set_CSR_value_rigidBodyInteraction(const int &numOfNode,con
   for(int k=0;k<3;k++){
     tmp1=ptr[3*numOfNode+3*numOfCP+3+k];
     for(int ic=0;ic<numOfCP;ic++){
-      value[tmp1+ic]          =-Rb[ic][k][0];
-      value[tmp1+numOfCP+ic]  =-Rb[ic][k][1];
-      value[tmp1+numOfCP*2+ic]=-Rb[ic][k][2];
+      value[tmp1+ic]          =-Rb(ic,k,0);
+      value[tmp1+numOfCP+ic]  =-Rb(ic,k,1);
+      value[tmp1+numOfCP*2+ic]=-Rb(ic,k,2);
     }
   }
 

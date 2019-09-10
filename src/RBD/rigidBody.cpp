@@ -17,7 +17,7 @@ void RigidBody::initialize(TextParser &tp)
   }
   obj.readPLY(fileName);
   rho=1e0;
-  calcMassProperties(obj);
+  calcMassProperties();
 
   for(int j=0;j<3;j++) U[j]=0e0;
 
@@ -34,7 +34,7 @@ void RigidBody::initialize(TextParser &tp)
 /**
  * @brief calc mass Properties by the method of Mirtich, Journal of Graphic Tools, 1, 31-50 (1996).
  */
-void RigidBody::calcMassProperties(const TriangleSet &obj)
+void RigidBody::calcMassProperties()
 {
   Mass=0e0;
   for(int i=0;i<3;i++){
@@ -46,9 +46,9 @@ void RigidBody::calcMassProperties(const TriangleSet &obj)
 
   for(int ic=0;ic<obj.numOfElm;ic++){
       for(int i=0;i<3;i++){
-        center[i]=(obj.x[obj.elm[ic][0]][i]+obj.x[obj.elm[ic][1]][i]+obj.x[obj.elm[ic][2]][i])/3e0;
-        a[i]=obj.x[obj.elm[ic][1]][i]-obj.x[obj.elm[ic][0]][i];
-        b[i]=obj.x[obj.elm[ic][2]][i]-obj.x[obj.elm[ic][0]][i];
+        center[i]=(obj.x(obj.elm(ic,0),i)+obj.x(obj.elm(ic,1),i)+obj.x(obj.elm(ic,2),i))/3e0;
+        a[i]=obj.x(obj.elm(ic,1),i)-obj.x(obj.elm(ic,0),i);
+        b[i]=obj.x(obj.elm(ic,2),i)-obj.x(obj.elm(ic,0),i);
       }
       mathTool::crossProduct(a,b,n,Area);
       for(int i=0;i<3;i++) n[i]/=Area;
@@ -114,10 +114,10 @@ void RigidBody::exportPLY(const std::string &file)
   fprintf(fp,"end_header\n");
 
   for(int i=0;i<obj.numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",obj.x[i][0],obj.x[i][1],obj.x[i][2]);
+    fprintf(fp,"%e %e %e\n",obj.x(i,0),obj.x(i,1),obj.x(i,2));
   }
   for(int i=0;i<obj.numOfElm;i++){
-    fprintf(fp,"3 %d %d %d\n",obj.elm[i][0],obj.elm[i][1],obj.elm[i][2]);
+    fprintf(fp,"3 %d %d %d\n",obj.elm(i,0),obj.elm(i,1),obj.elm(i,2));
   }
   fclose(fp);
 }
@@ -171,11 +171,11 @@ void RigidBody::updateShape()
 {
   double tmp[3],tmp2[3];
   for(int ic=0;ic<obj.numOfNode;ic++){
-    for(int j=0;j<3;j++) tmp[j] = obj.x0[ic][j]-xg[j];
+    for(int j=0;j<3;j++) tmp[j] = obj.x0(ic,j)-xg[j];
     for(int i=0;i<3;i++){
       tmp2[i]=0e0;
       for(int j=0;j<3;j++) tmp2[i]+=R[i][j]*tmp[j];
     }
-   for(int j=0;j<3;j++) obj.x[ic][j]=xg[j]+tmp2[j]+U[j];
+   for(int j=0;j<3;j++) obj.x(ic,j)=xg[j]+tmp2[j]+U[j];
   }
 }

@@ -30,15 +30,15 @@ void Domain::set_dirichlet(const string &D_file)
     exit(1);
   }
 
-  ibd=Allocation::allocate2dINT(numOfNode,3);
-  bd=Allocation::allocate2dDOUBLE(numOfNode,3);
+  ibd.allocate(numOfNode,3);
+  bd.allocate(numOfNode,3);
 
   for(int i=0;i<numOfNode;i++){
     getline(file,str);
     istringstream stream(str);
     for(int j=0;j<3;j++){
       getline(stream,tmp,' ');
-      ibd[i][j] = stoi(tmp);
+      ibd(i,j) = stoi(tmp);
     }
   }
 }
@@ -59,15 +59,15 @@ void Domain::set_dirichlet(const string &D_file,const string &Dvalue_file)
     exit(1);
   }
 
-  ibd=Allocation::allocate2dINT(numOfNode,3);
-  bd=Allocation::allocate2dDOUBLE(numOfNode,3);
+  ibd.allocate(numOfNode,3);
+  bd.allocate(numOfNode,3);
 
   for(int i=0;i<numOfNode;i++){
     getline(file,str);
     istringstream stream(str);
     for(int j=0;j<3;j++){
       getline(stream,tmp,' ');
-      ibd[i][j] = stoi(tmp);
+      ibd(i,j) = stoi(tmp);
     }
   }
 
@@ -82,7 +82,7 @@ void Domain::set_dirichlet(const string &D_file,const string &Dvalue_file)
     istringstream stream(str);
     for(int j=0;j<3;j++){
       getline(stream,tmp,' ');
-      bd[i][j] = stof(tmp);
+      bd(i,j) = stof(tmp);
     }
   }
 
@@ -118,13 +118,13 @@ void Domain::set_neumann(const string &N_file,const string &meshTypeFile,const s
     cout << "Error:Input "<< NvalueFile << " not found" << endl;
     exit(1);
   }
-  bn=Allocation::allocate2dDOUBLE(numOfNeumann,3);
+  bn.allocate(numOfNeumann,3);
   for(int i=0;i<numOfNeumann;i++){
     getline(file3,str);
     istringstream stream(str);
     for(int j=0;j<3;j++){
       getline(stream,tmp,' ');
-      bn[i][j] = stof(tmp);
+      bn(i,j) = stof(tmp);
     }
   }
 
@@ -144,10 +144,10 @@ void Domain::set_geometry(const string &file1,const string &file2,const string &
   ieb.resize(numOfNode,vector<int>(0));
   inb.resize(numOfNode,vector<int>(0));
 
-  x0=Allocation::allocate2dDOUBLE(numOfNode,3);
+  x0.allocate(numOfNode,3);
 
   for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) x0[i][j] = x[i][j];
+    for(int j=0;j<3;j++) x0(i,j) = x(i,j);
   }
 
   calc_adjacent_elements();
@@ -216,7 +216,7 @@ void Domain::export_vtk(const string &file)
         ofs << "POINTS "<< numOfNode << " double" << endl;
 
         for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) ofs << scientific << x[i][j] << " ";
+    for(int j=0;j<3;j++) ofs << scientific << x(i,j) << " ";
     ofs << endl;
   }
 

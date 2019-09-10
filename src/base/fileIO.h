@@ -19,32 +19,33 @@
  */
 
 #include "fem_define.h"
+#include "allocation.h"
 #include <string>
 
 class fileIO{
  public:
   static int CountNumbersOfTextLines(const std::string &filePath);
-  static void read_geometry_node(DOUBLEARRAY2 &x, int &numOfNode,const std::string &file);
+  static void read_geometry_node(DOUBLEARRAY2D &x, int &numOfNode,const std::string &file);
   static void read_geometry_meshType(elementType &element,int &numOfElm,const std::string &file);
   static void read_geometry_element(elementType &element,const int &numOfElm,const std::string &file);
-  static void export_vtu(const DOUBLEARRAY2 &x,const elementType &element,const int &numOfNode,const int &numOfElm,
-              const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const std::string &file);
-  static void export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
+  static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,const int &numOfNode,const int &numOfElm,
+              DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,const std::string &file);
+  static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const DOUBLEARRAY2 &lambda_ave,
-            const DOUBLEARRAY2 &sigmaEigen_ave,const DOUBLEARRAY2 &AEigen_ave,
-            const DOUBLEARRAY3 &sigmaEigenVector_ave,const DOUBLEARRAY3 &AEigenVector_ave,const DOUBLEARRAY2 &innerForce, const std::string &file);
-  static void export_vtu(const DOUBLEARRAY2 &x,const elementType &element,
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
+            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
+            DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce, const std::string &file);
+  static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const DOUBLEARRAY2 &lambda_ave,
-            const DOUBLEARRAY1 &bundle,const INTARRAY1 &bundleElement,
-            const DOUBLEARRAY2 &sigmaEigen_ave,const DOUBLEARRAY2 &AEigen_ave,
-            const DOUBLEARRAY3 &sigmaEigenVector_ave,const DOUBLEARRAY3 &AEigenVector_ave,const DOUBLEARRAY2 &innerForce, const std::string &file);
-  static void export_vtu(const DOUBLEARRAY2 &x,const elementType &element,const int &numOfNode,const int &numOfElm,
-              const DOUBLEARRAY2 &U,const DOUBLEARRAY1 &volumeChangeRatio,const DOUBLEARRAY2 &lambda_ave,const std::string &file);
-  static void export_vtu_boundary(const DOUBLEARRAY2 &x,const elementType &element,
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
+            DOUBLEARRAY1D &bundle,INTARRAY1D &bundleElement,
+            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
+            DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce, const std::string &file);
+  static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,const int &numOfNode,const int &numOfElm,
+              DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,const std::string &file);
+  static void export_vtu_boundary(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
-            const INTARRAY2 &ibd,const DOUBLEARRAY2 &bd,const DOUBLEARRAY2 &fiberDirection_elm,const std::string &file);
+            INTARRAY2D &ibd,DOUBLEARRAY2D &bd,DOUBLEARRAY2D &fiberDirection_elm,const std::string &file);
 
 };
 

@@ -8,13 +8,13 @@ using namespace std;
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D4_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &g2)
+void ShapeFunction::C2D4_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2)
 {
-  dNdr[0][0] = -2.5e-1 * (1e+0-g2);
-  dNdr[0][1] = -2.5e-1 * (1e+0-g1);
+  dNdr(0,0) = -2.5e-1 * (1e+0-g2);
+  dNdr(0,1) = -2.5e-1 * (1e+0-g1);
 
-  dNdr[1][0] =  2.5e-1 * (1e+0-g2);
-  dNdr[1][1] = -2.5e-1 * (1e+0+g1);
+  dNdr(1,0) =  2.5e-1 * (1e+0-g2);
+  dNdr(1,1) = -2.5e-1 * (1e+0+g1);
 
   dNdr[2][0] =  2.5e-1 * (1e+0+g2);
   dNdr[2][1] =  2.5e-1 * (1e+0+g1);
@@ -28,7 +28,7 @@ void ShapeFunction::C2D4_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D4_N(DOUBLEARRAY1 &N,const double &g1,const double &g2)
+void ShapeFunction::C2D4_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
 {
   N[0] = 2.5e-1 * (1e+0-g1) * (1e+0-g2);
   N[1] = 2.5e-1 * (1e+0+g1) * (1e+0-g2);
@@ -41,7 +41,7 @@ void ShapeFunction::C2D4_N(DOUBLEARRAY1 &N,const double &g1,const double &g2)
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D8_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &g2)
+void ShapeFunction::C2D8_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2)
 {
   dNdr[0][0] = 2.5e-1 * (1e+0-g2) * (2e+0*g1 +      g2);
   dNdr[0][1] = 2.5e-1 * (1e+0-g1) * (     g1 + 2e+0*g2);
@@ -74,7 +74,7 @@ void ShapeFunction::C2D8_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &
  * @param [in] stress
  */
 
-void ShapeFunction::C2D8_N(DOUBLEARRAY1 &N,const double &g1,const double &g2)
+void ShapeFunction::C2D8_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
 {
   N[0] = 2.5e-1 * (1e+0-g1) * (1e+0-g2) * (-1e+0-g1-g2);
   N[1] = 2.5e-1 * (1e+0+g1) * (1e+0-g2) * (-1e+0+g1-g2);
@@ -86,7 +86,7 @@ void ShapeFunction::C2D8_N(DOUBLEARRAY1 &N,const double &g1,const double &g2)
   N[7] = 5e-1   * (1e+0-g1)    * (1e+0-g2*g2);
 }
 
-void ShapeFunction::C2D9_d2Ndr2(DOUBLEARRAY2 &d2Ndr2,const double &g1,const double &g2)
+void ShapeFunction::C2D9_d2Ndr2(DOUBLEARRAY2D &d2Ndr2,const double &g1,const double &g2)
 {
   d2Ndr2[0][0] = -5e-1   * (1e0-g2) * g2;
   d2Ndr2[0][1] = -5e-1   * (1e0-g1) * g1;
@@ -125,7 +125,7 @@ void ShapeFunction::C2D9_d2Ndr2(DOUBLEARRAY2 &d2Ndr2,const double &g1,const doub
   d2Ndr2[8][2] = 4e0 * g1 * g2;
 }
 
-void ShapeFunction::C2D9_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &g2)
+void ShapeFunction::C2D9_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2)
 {
   dNdr[0][0] = 2.5e-1  * (1e+0-g2) * g2 * (1e+0 - 2e+0*g1);
   dNdr[0][1] = 2.5e-1  * (1e+0-g1) * g1 * (1e+0 - 2e+0*g2);
@@ -155,7 +155,7 @@ void ShapeFunction::C2D9_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &
   dNdr[8][1] = -2e+0 * g2 * (1e+0-g1*g1);
 }
 
-void ShapeFunction::C2D9_N(DOUBLEARRAY1 &N,const double &g1,const double &g2)
+void ShapeFunction::C2D9_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
 {
   N[0] =  2.5e-1 * (1e+0-g1) * (1e+0-g2) * g1 * g2;
   N[1] = -2.5e-1 * (1e+0+g1) * (1e+0-g2) * g1 * g2;
@@ -173,7 +173,7 @@ void ShapeFunction::C2D9_N(DOUBLEARRAY1 &N,const double &g1,const double &g2)
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D8_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &g2,const double &g3)
+void ShapeFunction::C3D8_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2,const double &g3)
 {
   dNdr[0][0] = -1.25e-1 * (1e0-g2) * (1e0-g3);
   dNdr[0][1] = -1.25e-1 * (1e0-g1) * (1e0-g3);
@@ -213,7 +213,7 @@ void ShapeFunction::C3D8_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D8_N(DOUBLEARRAY1 &N,const double &g1,const double &g2,const double &g3)
+void ShapeFunction::C3D8_N(DOUBLEARRAY1D &N,const double &g1,const double &g2,const double &g3)
 {
   N[0] = 1.25e-1 * (1e0-g1) * (1e0-g2) * (1e0-g3);
   N[1] = 1.25e-1 * (1e0+g1) * (1e0-g2) * (1e0-g3);
@@ -230,7 +230,7 @@ void ShapeFunction::C3D8_N(DOUBLEARRAY1 &N,const double &g1,const double &g2,con
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D20_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &g2,const double &g3)
+void ShapeFunction::C3D20_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2,const double &g3)
 {
   dNdr[0][0] =  1.25e-1 * (1e+0-g2) * (1e+0-g3) * (1e+0 + 2e+0*g1 + g2      + g3);
   dNdr[0][1] =  1.25e-1 * (1e+0-g1) * (1e+0-g3) * (1e+0 + g1      + 2e+0*g2 + g3);
@@ -313,7 +313,7 @@ void ShapeFunction::C3D20_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double 
   dNdr[19][2] =   -5e-1 * g3 * (1e+0-g1) * (1e+0+g2);
 }
 
-void ShapeFunction::C3D27_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double &g2,const double &g3)
+void ShapeFunction::C3D27_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2,const double &g3)
 {
   dNdr[0][0] = dH1(g1) * H1(g2)  * H1(g3);
   dNdr[0][1] = H1(g1)  * dH1(g2) * H1(g3);
@@ -429,7 +429,7 @@ void ShapeFunction::C3D27_dNdr(DOUBLEARRAY2 &dNdr,const double &g1,const double 
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D20_N(DOUBLEARRAY1 &N,const double &g1,const double &g2,const double &g3)
+void ShapeFunction::C3D20_N(DOUBLEARRAY1D &N,const double &g1,const double &g2,const double &g3)
 {
   N[0]  = -1.25e-1 * (1e+0-g1) * (1e+0-g2) * (1e+0-g3) * (2e+0+g1+g2+g3);
   N[1]  = -1.25e-1 * (1e+0+g1) * (1e+0-g2) * (1e+0-g3) * (2e+0-g1+g2+g3);
@@ -458,7 +458,7 @@ void ShapeFunction::C3D20_N(DOUBLEARRAY1 &N,const double &g1,const double &g2,co
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D27_N(DOUBLEARRAY1 &N,const double &g1,const double &g2,const double &g3)
+void ShapeFunction::C3D27_N(DOUBLEARRAY1D &N,const double &g1,const double &g2,const double &g3)
 {
   N[0]   = H1(g1) * H1(g2) * H1(g3);
   N[1]   = H2(g1) * H1(g2) * H1(g3);
@@ -503,7 +503,7 @@ double ShapeFunction::H3(const double r) { return (1e+0-r*r); }
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D4_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,const double &L3,const double &L4)
+void ShapeFunction::C3D4_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3,const double &L4)
 {
   N[0]=L1;
   N[1]=L2;
@@ -516,7 +516,7 @@ void ShapeFunction::C3D4_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,con
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D4_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
+void ShapeFunction::C3D4_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
 {
   dNdr[0][0]=-1e0; dNdr[0][1]=-1e0; dNdr[0][2]=-1e0;
   dNdr[1][0]= 1e0; dNdr[1][1]= 0e0; dNdr[1][2]= 0e0;
@@ -529,7 +529,7 @@ void ShapeFunction::C3D4_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D10_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,const double &L3,const double &L4)
+void ShapeFunction::C3D10_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3,const double &L4)
 {
   N[0] = L1*(2e0*L1-1e0);
   N[1] = L2*(2e0*L2-1e0);
@@ -547,7 +547,7 @@ void ShapeFunction::C3D10_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,co
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D10_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
+void ShapeFunction::C3D10_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
 {
   dNdr[0][0] = 4e0*L1-1e0;
   dNdr[0][1] = 0e0;
@@ -594,7 +594,7 @@ void ShapeFunction::C3D10_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double 
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D6_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &L2,const double &L3)
+void ShapeFunction::C2D6_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3)
 {
   dNdr[0][0] = -4e0*L1+1e0;
   dNdr[0][1] = -4e0*L1+1e0;
@@ -620,7 +620,7 @@ void ShapeFunction::C2D6_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D6_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,const double &L3)
+void ShapeFunction::C2D6_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3)
 {
   N[0] = L1 * (2e0*L1-1e0);
   N[1] = L2 * (2e0*L2-1e0);
@@ -635,7 +635,7 @@ void ShapeFunction::C2D6_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,con
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D3_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &L2,const double &L3)
+void ShapeFunction::C2D3_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3)
 {
   dNdr[0][0] = -1e0;
   dNdr[0][1] = -1e0;
@@ -652,7 +652,7 @@ void ShapeFunction::C2D3_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C2D3_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,const double &L3)
+void ShapeFunction::C2D3_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3)
 {
   N[0] = L1;
   N[1] = L2;
@@ -664,7 +664,7 @@ void ShapeFunction::C2D3_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,con
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D6_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,const double &L3,const double &g1)
+void ShapeFunction::C3D6_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3,const double &g1)
 {
   N[0] = 5e-1*L1*(1e0-g1);
   N[1] = 5e-1*L2*(1e0-g1);
@@ -678,7 +678,7 @@ void ShapeFunction::C3D6_N(DOUBLEARRAY1 &N,const double &L1,const double &L2,con
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void ShapeFunction::C3D6_dNdr(DOUBLEARRAY2 &dNdr,const double &L1,const double &L2,const double &L3,const double &g1)
+void ShapeFunction::C3D6_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3,const double &g1)
 {
   dNdr[0][0] = -5e-1*(1e0-g1);
   dNdr[0][1] = -5e-1*(1e0-g1);

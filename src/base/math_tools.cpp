@@ -29,13 +29,13 @@ double mathTool::rnd()
 /**
  * @brief calc norm of vector
  */
-double mathTool::vectorNorm(const int &nump,const DOUBLEARRAY1 &x)
+double mathTool::vectorNorm(const int &nump,DOUBLEARRAY1D &x)
 {
   double norm=0e0;
 
   #pragma omp parallel for reduction(+:norm)
   for(int i=0;i<nump;i++){
-    norm += fabs(x[i]);
+    norm += fabs(x(i));
   }
   return norm;
 }
@@ -44,13 +44,13 @@ double mathTool::vectorNorm(const int &nump,const DOUBLEARRAY1 &x)
 /**
  * @brief calc inner product
  */
-double mathTool::innerProduct(const int &nump,const DOUBLEARRAY1 &x,const DOUBLEARRAY1 &y)
+double mathTool::innerProduct(const int &nump,DOUBLEARRAY1D &x,DOUBLEARRAY1D &y)
 {
   double dot_p=0e0;
 
   #pragma omp parallel for reduction(+:dot_p)
   for(int i=0;i<nump;i++){
-    dot_p += x[i] * y[i];
+    dot_p += x(i) * y(i);
   }
   return dot_p;
 }
@@ -75,45 +75,11 @@ void mathTool::crossProduct(const double (&a)[3],const double (&b)[3],double (&c
 /**
  * @brief calc determinant
  */
-double mathTool::calcDeterminant_3x3(const DOUBLEARRAY2 &a)
-{
-  double det  = a[0][0] * a[1][1] * a[2][2] + a[1][0] * a[2][1] * a[0][2] + a[2][0] * a[0][1] * a[1][2]
-              - a[2][0] * a[1][1] * a[0][2] - a[1][0] * a[0][1] * a[2][2] - a[0][0] * a[2][1] * a[1][2];
-  return det;
-}
-// #################################################################
-/**
- * @brief calc determinant
- */
 double mathTool::calcDeterminant_3x3(const double (&a)[3][3])
 {
   double det  = a[0][0] * a[1][1] * a[2][2] + a[1][0] * a[2][1] * a[0][2] + a[2][0] * a[0][1] * a[1][2]
               - a[2][0] * a[1][1] * a[0][2] - a[1][0] * a[0][1] * a[2][2] - a[0][0] * a[2][1] * a[1][2];
   return det;
-}
-// #################################################################
-/**
- * @brief calc inverse matrix
- */
-void mathTool::calcInverseMatrix_3x3(DOUBLEARRAY2 &inv_a,const DOUBLEARRAY2 &a)
-{
-  double det = calcDeterminant_3x3(a);
-
-  inv_a[0][0] = a[1][1]*a[2][2] - a[1][2]*a[2][1];
-  inv_a[0][1] = a[0][2]*a[2][1] - a[0][1]*a[2][2];
-  inv_a[0][2] = a[0][1]*a[1][2] - a[0][2]*a[1][1];
-
-  inv_a[1][0] = a[1][2]*a[2][0] - a[1][0]*a[2][2];
-  inv_a[1][1] = a[0][0]*a[2][2] - a[0][2]*a[2][0];
-  inv_a[1][2] = a[0][2]*a[1][0] - a[0][0]*a[1][2];
-
-  inv_a[2][0] = a[1][0]*a[2][1] - a[1][1]*a[2][0];
-  inv_a[2][1] = a[0][1]*a[2][0] - a[0][0]*a[2][1];
-  inv_a[2][2] = a[0][0]*a[1][1] - a[0][1]*a[1][0];
-
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) inv_a[i][j] = inv_a[i][j] / det;
-  }
 }
 // #################################################################
 /**

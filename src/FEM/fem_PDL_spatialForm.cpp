@@ -20,16 +20,16 @@ using namespace std;
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARRAY2 &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
   double C[3][3],F[3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   //PDL
   double Ic4bar,lambda,tmp;
@@ -41,8 +41,8 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARR
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U_tmp[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U_tmp(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -51,7 +51,7 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARR
     for(int i2=0;i2<numOfGaussPoint-1;i2++){
       for(int i3=0;i3<numOfGaussPoint-1;i3++){
 
-        ShapeFunction::C3D8_dNdr(dNdr,gauss0.point[i1],gauss0.point[i2],gauss0.point[i3]);
+        ShapeFunction3D::C3D8_dNdr(dNdr,gauss0.point[i1],gauss0.point[i2],gauss0.point[i3]);
         // ShapeFunction::C3D8_dNdr(dNdr,0e0,0e0,0e0);
         calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
         detJ = mathTool::calcDeterminant_3x3(dxdr);
@@ -69,7 +69,7 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARR
         if(J<0e0){
           cout << "centroid Jacobian is nagtive. Exit..." << endl;
           for(int p=0;p<numOfNodeInElm;p++){
-            printf("%e %e %e\n",x_current[p][0],x_current[p][1],x_current[p][2]);
+            printf("%e %e %e\n",x_current(p,0),x_current(p,1),x_current(p,2));
           }
           exit(1);
         }
@@ -82,7 +82,7 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARR
         }
 
         //sigma an-isotropic term
-        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm[ic][i];
+        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
         Ic4bar=0e0;
         for(int i=0;i<3;i++){
@@ -93,14 +93,10 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARR
           for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
         }
         tmp=sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
-        for(int j=0;j<3;j++) lambda_ave[ic][j]=sqrt(Ic4bar)*a[j]/tmp;
+        for(int j=0;j<3;j++) lambda_ave(ic,j)=sqrt(Ic4bar)*a[j]/tmp;
       }
     }
   }
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
 
   if(Ic4bar-1e0<-1e-12){
     return 0;
@@ -120,7 +116,7 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,const DOUBLEARR
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,const DOUBLEARRAY2 &U_tmp,
+void Fem::calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
@@ -128,10 +124,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   double sigma[3][3],S[3][3],C[3][3],invC[3][3],F[3][3],B[3][3];
   double elasticityTensor_ref[3][3][3][3],elasticityTensor_current[3][3][3][3],tangentCoefficient[3][3][3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   double c1=1e-2*1e6;
   double bulkModulus=1e6/9.078e0;
@@ -156,8 +152,8 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U_tmp[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U_tmp(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -167,10 +163,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
         switch(element[ic].meshType){
           case VTK_HEXAHEDRON:
-            ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           case VTK_TRIQUADRATIC_HEXAHEDRON:
-            ShapeFunction::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           default:
             cout << "error " << endl;
@@ -228,7 +224,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         }
 
         //sigma an-isotropic term
-        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm[ic][i];
+        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
         Ic4bar=0e0;
         for(int i=0;i<3;i++){
@@ -291,7 +287,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         //calc_internal force vector
         for(int p=0;p<numOfNodeInElm;p++){
           for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+            for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
           }
         }
 
@@ -379,7 +375,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
               for(int j=0;j<3;j++){
                 for(int k=0;k<3;k++){
                   for(int l=0;l<3;l++){
-                    K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+                    K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
                   }
                 }
               }
@@ -395,10 +391,6 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   // for(int j=0;j<3;j++) lambda_ave[ic][j]*=averageLambda/8e0;
   // if(averageLambda/8e0>1.1e0) cout << "test" << endl;
   // printf("volume=%e\n",volume);
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
 }
 
 
@@ -413,7 +405,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,const DOUBLEARRAY2 &U_tmp,
+void Fem::calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
@@ -421,10 +413,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   double sigma[3][3],S[3][3],C[3][3],invC[3][3],F[3][3],B[3][3];
   double elasticityTensor_ref[3][3][3][3],elasticityTensor_current[3][3][3][3],tangentCoefficient[3][3][3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   double c1=1e-2*1e6;
   double bulkModulus=1e6/9.078e0;
@@ -449,8 +441,8 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U_tmp[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U_tmp(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -459,7 +451,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
     for(int i2=0;i2<numOfGaussPoint-1;i2++){
       for(int i3=0;i3<numOfGaussPoint-1;i3++){
 
-  ShapeFunction::C3D8_dNdr(dNdr,gauss0.point[i1],gauss0.point[i2],gauss0.point[i3]);
+  ShapeFunction3D::C3D8_dNdr(dNdr,gauss0.point[i1],gauss0.point[i2],gauss0.point[i3]);
   // ShapeFunction::C3D8_dNdr(dNdr,0e0,0e0,0e0);
   calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
@@ -476,7 +468,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   if(J<0e0){
     cout << "centroid Jacobian is nagtive. Exit..." << endl;
     for(int p=0;p<numOfNodeInElm;p++){
-      printf("%e %e %e\n",x_current[p][0],x_current[p][1],x_current[p][2]);
+      printf("%e %e %e\n",x_current(p,0),x_current(p,1),x_current(p,2));
     }
     exit(1);
   }
@@ -501,7 +493,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
+      for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
     }
   }
 
@@ -540,7 +532,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
           for(int k=0;k<3;k++){
             for(int l=0;l<3;l++){
               // K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * 2e0 * 2e0 * 2e0;
-              K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
+              K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
             }
           }
         }
@@ -556,10 +548,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
         switch(element[ic].meshType){
           case VTK_HEXAHEDRON:
-            ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           case VTK_TRIQUADRATIC_HEXAHEDRON:
-            ShapeFunction::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           default:
             cout << "error " << endl;
@@ -617,7 +609,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         }
 
         //sigma an-isotropic term
-        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm[ic][i];
+        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
         Ic4bar=0e0;
         for(int i=0;i<3;i++){
@@ -672,7 +664,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         //calc_internal force vector
         for(int p=0;p<numOfNodeInElm;p++){
           for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+            for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
           }
         }
 
@@ -751,7 +743,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
               for(int j=0;j<3;j++){
                 for(int k=0;k<3;k++){
                   for(int l=0;l<3;l++){
-                    K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+                    K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
                   }
                 }
               }
@@ -767,10 +759,6 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   // for(int j=0;j<3;j++) lambda_ave[ic][j]*=averageLambda/8e0;
   // if(averageLambda/8e0>1.1e0) cout << "test" << endl;
   // printf("volume=%e\n",volume);
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
 }
 
 
@@ -785,7 +773,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
  * @detail
    PDL model and parameters: Natali et al., J. Biomech. Eng., 1996
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,const DOUBLEARRAY2 &U_tmp,
+void Fem::calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
@@ -793,10 +781,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   double sigma[3][3],S[3][3],C[3][3],invC[3][3],F[3][3],B[3][3];
   double elasticityTensor_ref[3][3][3][3],elasticityTensor_current[3][3][3][3],tangentCoefficient[3][3][3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   double c1=4.3e-3*1e6;
   double alpha1=2.11e0;
@@ -817,7 +805,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   double alpha3=3.39e0;
   double term4,term4_2,a0[3],a[3];
   double averageLambda=0e0;
-  for(int i=0;i<3;i++) lambda_ave[ic][i]=0e0;
+  for(int i=0;i<3;i++) lambda_ave(ic,i)=0e0;
   double F_initial[3][3],Ftmp[3][3];
 
   //------two point---------
@@ -825,8 +813,8 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U_tmp[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U_tmp(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -835,7 +823,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
     for(int i2=0;i2<numOfGaussPoint-1;i2++){
       for(int i3=0;i3<numOfGaussPoint-1;i3++){
 
-  ShapeFunction::C3D8_dNdr(dNdr,gauss0.point[i1],gauss0.point[i2],gauss0.point[i3]);
+  ShapeFunction3D::C3D8_dNdr(dNdr,gauss0.point[i1],gauss0.point[i2],gauss0.point[i3]);
   // ShapeFunction::C3D8_dNdr(dNdr,0e0,0e0,0e0);
   calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
@@ -852,7 +840,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   if(J<0e0){
     cout << "centroid Jacobian is nagtive. Exit..." << endl;
     for(int p=0;p<numOfNodeInElm;p++){
-      printf("%e %e %e\n",x_current[p][0],x_current[p][1],x_current[p][2]);
+      printf("%e %e %e\n",x_current(p,0),x_current(p,1),x_current(p,2));
     }
     exit(1);
   }
@@ -877,7 +865,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
   //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
+      for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
       // for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * 2e0 * 2e0 * 2e0;
     }
   }
@@ -917,7 +905,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
           for(int k=0;k<3;k++){
             for(int l=0;l<3;l++){
               // K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * 2e0 * 2e0 * 2e0;
-              K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
+              K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss0.weight[i1] * gauss0.weight[i2] * gauss0.weight[i3];
             }
           }
         }
@@ -933,10 +921,10 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 
         switch(element[ic].meshType){
           case VTK_HEXAHEDRON:
-            ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           case VTK_TRIQUADRATIC_HEXAHEDRON:
-            ShapeFunction::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+            ShapeFunction3D::C3D27_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
             break;
           default:
             cout << "error " << endl;
@@ -1005,7 +993,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         }
 
         //sigma an-isotropic term
-        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm[ic][i];
+        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
         Ic4=0e0;
         for(int i=0;i<3;i++){
@@ -1018,7 +1006,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         }
         for(int i=0;i<3;i++) a[i] = a[i]/lambda;
         averageLambda+=lambda;
-        for(int i=0;i<3;i++) lambda_ave[ic][i]+=a[i];
+        for(int i=0;i<3;i++) lambda_ave(ic,i)+=a[i];
 
         term4=2e0*(c3/alpha3*exp(alpha3*(Ic4-1e0))-c3*(Ic4-1e0));
         for(int i=0;i<3;i++){
@@ -1038,7 +1026,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
         //calc_internal force vector
         for(int p=0;p<numOfNodeInElm;p++){
           for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+            for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
           }
         }
 
@@ -1124,7 +1112,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
               for(int j=0;j<3;j++){
                 for(int k=0;k<3;k++){
                   for(int l=0;l<3;l++){
-                    K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+                    K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
                   }
                 }
               }
@@ -1135,13 +1123,9 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
       }
     }
   }
-  double tmp=sqrt(lambda_ave[ic][0]*lambda_ave[ic][0]+lambda_ave[ic][1]*lambda_ave[ic][1]+lambda_ave[ic][2]*lambda_ave[ic][2]);
-  for(int j=0;j<3;j++) lambda_ave[ic][j]/=tmp;
-  for(int j=0;j<3;j++) lambda_ave[ic][j]*=averageLambda/8e0;
+  double tmp=sqrt(lambda_ave(ic,0)*lambda_ave(ic,0)+lambda_ave(ic,1)*lambda_ave(ic,1)+lambda_ave(ic,2)*lambda_ave(ic,2));
+  for(int j=0;j<3;j++) lambda_ave(ic,j)/=tmp;
+  for(int j=0;j<3;j++) lambda_ave(ic,j)*=averageLambda/8e0;
   // if(averageLambda/8e0>1.1e0) cout << "test" << endl;
   // printf("volume=%e\n",volume);
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
 }

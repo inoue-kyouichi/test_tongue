@@ -21,12 +21,12 @@ void Fem::corrector_statics(const double *u,const double relaxation,RigidBody &R
 
   #pragma omp parallel for
   for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) U[i][j] += u[i+j*numOfNode]*relaxation;
+    for(int j=0;j<3;j++) U(i,j) += u[i+j*numOfNode]*relaxation;
   }
 
   #pragma omp parallel for
   for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA[i][j] += u[3*numOfNode+i+j*numOfCP]*relaxation;
+    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*numOfNode+i+j*numOfCP]*relaxation;
   }
 
   for(int j=0;j<3;j++) RBdy.U[j] += u[3*numOfNode+3*numOfCP+j]*relaxation;
@@ -43,7 +43,7 @@ void Fem::corrector_statics(const double *u,const double relaxation,RigidBody &R
 void Fem::preprocess_rigidBodyInteraction(const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
-    for(int j=0;j<3;j++) b0[ic][j]=x[CP[ic]][j]-RBdy.xg[j];
+    for(int j=0;j<3;j++) b0(ic,j)=x(CP(ic),j)-RBdy.xg[j];
   }
 }
 
@@ -70,8 +70,8 @@ void Fem::updateb(const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
     for(int i=0;i<3;i++){
-      b[ic][i]=0e0;
-      for(int j=0;j<3;j++) b[ic][i]+=RBdy.R[i][j]*b0[ic][j];
+      b(ic,i)=0e0;
+      for(int j=0;j<3;j++) b(ic,i)+=RBdy.R[i][j]*b0(ic,j);
     }
   }
 }
@@ -85,10 +85,10 @@ void Fem::tildeRB(const RigidBody &RBdy)
 {
   double tmp[3],Rbtmp[3][3];
   for(int ic=0;ic<numOfCP;ic++){
-    for(int i=0;i<3;i++) tmp[i]=b[ic][i];
+    for(int i=0;i<3;i++) tmp[i]=b(ic,i);
     mathTool::skewSymmetricTensor(Rbtmp,tmp);
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Rb[ic][i][j]=Rbtmp[i][j];
+      for(int j=0;j<3;j++) Rb(ic,i,j)=Rbtmp[i][j];
     }
   }
 }
@@ -108,14 +108,14 @@ void Fem::calcKqq(const RigidBody &RBdy)
 
   for(int ic=0;ic<numOfCP;ic++){
 
-   for(int i=0;i<3;i++) lambda_tmp[i]=LAMBDA[ic][i];
+   for(int i=0;i<3;i++) lambda_tmp[i]=LAMBDA(ic,i);
     mathTool::skewSymmetricTensor(TildeLambda,lambda_tmp);
 
     for(int i=0;i<3;i++){
       for(int j=0;j<3;j++){
         matrix[i][j]=0e0;
         for(int k=0;k<3;k++){
-          matrix[i][j]+=TildeLambda[i][k]*Rb[ic][k][j];
+          matrix[i][j]+=TildeLambda[i][k]*Rb(ic,k,j);
         }
       }
     }
@@ -135,7 +135,7 @@ void Fem::calcKqq(const RigidBody &RBdy)
 void Fem::calc_Qlambda(const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
-    for(int j=0;j<3;j++) Qlambda[ic][j]=U[CP[ic]][j]-RBdy.U[j]+b0[ic][j]-b[ic][j];
+    for(int j=0;j<3;j++) Qlambda(ic,j)=U(CP(ic),j)-RBdy.U[j]+b0(ic,j)-b(ic,j);
   }
 }
 
@@ -148,13 +148,13 @@ void Fem::calc_Q_rigid(const RigidBody &RBdy)
 {
   for(int i=0;i<3;i++) QU[i]=0e0;
   for(int ic=0;ic<numOfCP;ic++){
-    for(int i=0;i<3;i++) QU[i]-=LAMBDA[ic][i];
+    for(int i=0;i<3;i++) QU[i]-=LAMBDA(ic,i);
   }
 
   for(int i=0;i<3;i++) Qw[i]=0e0;
   for(int ic=0;ic<numOfCP;ic++){
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Qw[i]-=Rb[ic][i][j]*LAMBDA[ic][j];
+      for(int j=0;j<3;j++) Qw[i]-=Rb(ic,i,j)*LAMBDA(ic,j);
     }
   }
 }

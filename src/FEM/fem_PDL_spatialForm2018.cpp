@@ -19,30 +19,30 @@ using namespace std;
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_2018(const int &ic,const DOUBLEARRAY2 &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
   double C[3][3],F[3][3];
 
-  DOUBLEARRAY2 x_current=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 x_ref=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdr=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
-  DOUBLEARRAY2 dNdx=Allocation::allocate2dDOUBLE(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
+  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
   //PDL
-  double Ic4bar,lambda,averageLambda,tmp;
+  double Ic4bar,lambda,averageLambda=0e0,tmp;
   int fiberNum=0;
   double term4,term4_2,a0[3],a[3];
 
-  for(int j=0;j<3;j++) lambda_ave[ic][j]=0e0;
+  for(int j=0;j<3;j++) lambda_ave(ic,j)=0e0;
   //------two point---------
   Gauss gauss(numOfGaussPoint);
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      x_current[p][i] = x0[element[ic].node[p]][i]+U_tmp[element[ic].node[p]][i];
-      x_ref[p][i]     = x0[element[ic].node[p]][i];
+      x_current(p,i) = x0(element[ic].node[p],i)+U_tmp(element[ic].node[p],i);
+      x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
 
@@ -51,7 +51,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,const DOUBLEARRAY2 &U_
     for(int i2=0;i2<numOfGaussPoint;i2++){
       for(int i3=0;i3<numOfGaussPoint;i3++){
 
-        ShapeFunction::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+        ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
         // ShapeFunction::C3D8_dNdr(dNdr,0e0,0e0,0e0);
         calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
         detJ = mathTool::calcDeterminant_3x3(dxdr);
@@ -69,7 +69,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,const DOUBLEARRAY2 &U_
         if(J<0e0){
           cout << "centroid Jacobian is nagtive. Exit..." << endl;
           for(int p=0;p<numOfNodeInElm;p++){
-            printf("%e %e %e\n",x_current[p][0],x_current[p][1],x_current[p][2]);
+            printf("%e %e %e\n",x_current(p,0),x_current(p,1),x_current(p,2));
           }
           exit(1);
         }
@@ -82,7 +82,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,const DOUBLEARRAY2 &U_
         }
 
         //sigma an-isotropic term
-        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm[ic][i];
+        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
         Ic4bar=0e0;
         for(int i=0;i<3;i++){
@@ -102,19 +102,14 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,const DOUBLEARRAY2 &U_
           for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
         }
         tmp=sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
-        for(int j=0;j<3;j++) lambda_ave[ic][j]+=sqrt(Ic4bar)*a[j]/tmp;
+        for(int j=0;j<3;j++) lambda_ave(ic,j)+=sqrt(Ic4bar)*a[j]/tmp;
       }
     }
   }
 
-  tmp=sqrt(lambda_ave[ic][0]*lambda_ave[ic][0]+lambda_ave[ic][1]*lambda_ave[ic][1]+lambda_ave[ic][2]*lambda_ave[ic][2]);
-  for(int j=0;j<3;j++) lambda_ave[ic][j]/=tmp;
-  for(int j=0;j<3;j++) lambda_ave[ic][j]*=averageLambda/8e0;
-
-  Allocation::free2d(x_current);
-  Allocation::free2d(x_ref);
-  Allocation::free2d(dNdr);
-  Allocation::free2d(dNdx);
+  tmp=sqrt(lambda_ave(ic,0)*lambda_ave(ic,0)+lambda_ave(ic,1)*lambda_ave(ic,1)+lambda_ave(ic,2)*lambda_ave(ic,2));
+  for(int j=0;j<3;j++) lambda_ave(ic,j)/=tmp;
+  for(int j=0;j<3;j++) lambda_ave(ic,j)*=averageLambda/8e0;
 }
 
 // #################################################################
@@ -128,8 +123,8 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,const DOUBLEARRAY2 &U_
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,const DOUBLEARRAY2 &U_tmp,
-const int &numOfNodeInElm,const Gauss &gauss,const DOUBLEARRAY2 &x_current,const DOUBLEARRAY2 &x_ref,const DOUBLEARRAY2 &dNdr,const DOUBLEARRAY2 &dNdx,const int i1,const int i2,const int i3)
+void Fem::calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
@@ -196,7 +191,7 @@ const int &numOfNodeInElm,const Gauss &gauss,const DOUBLEARRAY2 &x_current,const
   }
 
   //sigma an-isotropic term
-  for(int i=0;i<3;i++) a0[i]=fiberDirection_elm[ic][i];
+  for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
   Ic4bar=0e0;
   for(int i=0;i<3;i++){
@@ -258,7 +253,7 @@ const int &numOfNodeInElm,const Gauss &gauss,const DOUBLEARRAY2 &x_current,const
         //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+      for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
     }
 }
 
@@ -344,7 +339,7 @@ for(int i=0;i<3;i++){
         for(int j=0;j<3;j++){
           for(int k=0;k<3;k++){
             for(int l=0;l<3;l++){
-              K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+              K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
             }
           }
         }
@@ -365,8 +360,8 @@ for(int i=0;i<3;i++){
  * @detail
    PDL model and parameters: Bergomi et al., J. Biomech., 2011
  */
-void Fem::calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,const DOUBLEARRAY2 &U_tmp,
-const int &numOfNodeInElm,const Gauss &gauss,const DOUBLEARRAY2 &x_current,const DOUBLEARRAY2 &x_ref,const DOUBLEARRAY2 &dNdr,const DOUBLEARRAY2 &dNdx,const int i1,const int i2,const int i3)
+void Fem::calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
@@ -450,7 +445,7 @@ const int &numOfNodeInElm,const Gauss &gauss,const DOUBLEARRAY2 &x_current,const
         //calc_internal force vector
         for(int p=0;p<numOfNodeInElm;p++){
           for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++) Qu[ic][p][i] += sigma[i][j] * dNdx[p][j] * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+            for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
           }
         }
 
@@ -521,7 +516,7 @@ const int &numOfNodeInElm,const Gauss &gauss,const DOUBLEARRAY2 &x_current,const
               for(int j=0;j<3;j++){
                 for(int k=0;k<3;k++){
                   for(int l=0;l<3;l++){
-                    K[ic][p][q][i][j] += dNdx[p][k]*(tangentCoefficient[i][j][k][l]*dNdx[q][l]) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+                    K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
                   }
                 }
               }
