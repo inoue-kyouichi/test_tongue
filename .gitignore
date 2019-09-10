@@ -1,5 +1,7 @@
 bin
 example/*
-obj
+*.o
+*.d
+*.a
 !example/PDL.tp
 !PDL
