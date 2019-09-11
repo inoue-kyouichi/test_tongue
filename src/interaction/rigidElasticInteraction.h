@@ -1,5 +1,5 @@
-#ifndef _RBD_EBD_INTERACTION_H_
-#define _RBD_EBD_INTERACTION_H_
+#ifndef _RIGID_ELASTIC_INTERACTION_H_
+#define _RIGID_ELASTIC_INTERACTION_H_
 
 //##################################################################################
 //
@@ -25,6 +25,14 @@ class RigidElasticInteraction : public Fem {
 
   //rigidBodyInteraction
  public:
+  void initialize_rigidBodyInteraction();
+  void mainLoop();
+
+private:
+
+  RigidBody RBdy;
+  PARDISO_solver PARDISO;
+
   int numOfCP;
   double FU[3],Fw[3],FU_input[3],FUpoint[3],initialMomentArm[3];
   double Kqq[3][3],QU[3],Qw[3];
@@ -32,15 +40,11 @@ class RigidElasticInteraction : public Fem {
   DOUBLEARRAY2D b,b0,Qlambda;
   DOUBLEARRAY2D LAMBDA;
   DOUBLEARRAY3D Rb;
-  void preprocess_rigidBodyInteraction(const RigidBody &RBdy);
   void inputRigidBodyInterface();
-
-  void femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody &RBdy);
-  int NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy);
-  void calcTemporalFw(RigidBody &RBdy);
-private:
-  void rigidBodyInteraction(const RigidBody &RBdy);
-  void corrector_statics(const double *u,const double relaxation,RigidBody &RBdy);
+  int NRscheme();
+  void calcTemporalFw();
+  void calcRigidBodyInteractionTerm(const RigidBody &RBdy);
+  void corrector_statics(const double *u,const double relaxation);
   void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
   void updateb(const RigidBody &RBdy);
   void tildeRB(const RigidBody &RBdy);

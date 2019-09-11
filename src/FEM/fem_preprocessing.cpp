@@ -15,9 +15,8 @@ using namespace std;
 void Fem::initialize()
 {
   inputDomainInfo();
-  //inputRigidBodyInterface();
-
   inputSolverInfo();
+  inputOutputInfo();
 
   string restartDirName="Restart_"+to_string(dataNumber);
   mkdir(restartDirName.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
@@ -28,7 +27,6 @@ void Fem::initialize()
   inputDirichletBoundaryInfo();
   setFiberDirection_KogaModel();
   // inputFiberInfo();
-  inputOutputInfo();
 }
 
 // #################################################################
@@ -199,8 +197,6 @@ void Fem::inputDomainInfo()
   file2=inputDir+"/"+file2;
   file3=inputDir+"/"+file3;
   set_geometry(file1,file2,file3);
-
-  FILE *fp;
 }
 
 // #################################################################
@@ -366,7 +362,7 @@ void Fem::setFiberDirection_KogaModel()
     angle = A1*sin(omega*s_coordinates) + A2*sin(2e0*omega*s_coordinates);
     angle = angle * PI/180e0;
 
-    calcRotationMatrix(R,rotAxis,angle);
+    mathTool::calcRotationMatrix(R,rotAxis,angle);
 
     for(int i=0;i<3;i++){
       direction[i]=0e0;
@@ -385,31 +381,6 @@ double Fem::arcLength(const double xMin,const double xMax)
 {
   double s = (xMax*sqrt(4e6*xMax*xMax+1e0)/2e0+asinh(2e3*xMax)/4e3)-(xMin*sqrt(4e6*xMin*xMin+1e0)/2e0+asinh(2e3*xMin)/4e3);
   return s;
-}
-
-// #################################################################
-/**
- * @brief calcRotationMatrix
- */
-void Fem::calcRotationMatrix(double (&R)[3][3],const double (&rotAxis)[3],const double angle)
-{
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) R[i][j]=0e0;
-    R[i][i]=1e0;
-  }
-
-  double S[3][3],SS[3][3];
-  mathTool::skewSymmetricTensor(S,rotAxis);
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++){
-      SS[i][j]=0e0;
-      for(int k=0;k<3;k++) SS[i][j] += S[i][k] * S[k][j];
-    }
-  }
-
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) R[i][j] += sin(angle) * S[i][j] + (1e0-cos(angle)) * SS[i][j];
-  }
 }
 
 // #################################################################
@@ -473,21 +444,11 @@ void Fem::allocate()
 
   fiberDirection_elm.allocate(numOfElm,3); //gauss point
 
-  // LAMBDA.allocate(numOfCP,3);
-  // Rb.allocate(numOfCP,3,3);
-  // b0.allocate(numOfCP,3);
-  // b.allocate(numOfCP,3);
-  // Qlambda.allocate(numOfCP,3);
-
   for(int ic=0;ic<numOfElm;ic++) volumeChangeRatio(ic)=1e0;
 
   for(int i=0;i<numOfNode;i++){
     for(int j=0;j<3;j++) U(i,j) = 0e0;
   }
-
-  // for(int i=0;i<numOfCP;i++){
-  //   for(int j=0;j<3;j++) LAMBDA(i,j)=0e0;
-  // }
 
   //dirichlet boundary conditions
   ibd.allocate(numOfNode,3);
@@ -500,5 +461,3 @@ void Fem::allocate()
   }
 
 }
-
-

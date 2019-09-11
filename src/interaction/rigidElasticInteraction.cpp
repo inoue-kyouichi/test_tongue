@@ -15,7 +15,7 @@ using namespace std;
  * @brief fem solid analysis routine
  * @param [inout] PARDISO   PARDISO class
  */
-void RigidElasticInteraction::femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody &RBdy)
+void RigidElasticInteraction::mainLoop()
 {
   int output_iter=1;
   int increment=maxIteration;
@@ -38,7 +38,7 @@ void RigidElasticInteraction::femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody
 
     for(int j=0;j<3;j++) FU[j] = (double)loop/(double)maxIteration * FU_input[j];
 
-    if(NRscheme(PARDISO,RBdy)==1){
+    if(NRscheme()==1){
       printf("loop=%d\n",loop);
       exit(1);
     }
@@ -66,7 +66,7 @@ void RigidElasticInteraction::femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody
     RBdy.exportPLY(output);
 
     double angle[3];
-    calc_thetaFromRotationMatrix(angle,RBdy.R);
+    mathTool::calc_thetaFromRotationMatrix(angle,RBdy.R);
 
     double momentArm[3];
     for(int i=0;i<3;i++){
@@ -88,42 +88,11 @@ void RigidElasticInteraction::femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody
   }
 }
 
-
-// #################################################################
-/**
- * @brief calc theta (Nour-Omid and Rankin, Compt. Methods Appl. Mech. Eng., 1991.)
- * @param [out] ql      rotation angle in local coordinates
- * @param [in] Rbar     rotation matrix [reference to current coorindate (node level)]
- * @param [in] ic element number
- */
-void RigidElasticInteraction::calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3])
-{
-  double trR,Ra[3][3],tau;
-
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++){
-      Ra[i][j] = R[i][j]-R[j][i];
-    }
-  }
-
-  ql[0] = Ra[2][1];
-  ql[1] = Ra[0][2];
-  ql[2] = Ra[1][0];
-  tau=5e-1*sqrt(ql[0]*ql[0]+ql[1]*ql[1]+ql[2]*ql[2]);
-  if(tau<1e-15){
-    for(int i=0;i<3;i++) ql[i]=0e0;
-  }else{
-    for(int i=0;i<3;i++) ql[i]=5e-1*asin(tau)/tau*ql[i];
-  }
-}
-
-
 // #################################################################
 /**
  * @brief fem solid analysis routine
- * @param [inout] PARDISO   PARDISO class
  */
-int RigidElasticInteraction::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
+int RigidElasticInteraction::NRscheme()
 {
     double residual,residual0,norm,norm0;
     string output;
@@ -131,7 +100,7 @@ int RigidElasticInteraction::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
     for(int ic=1;ic<=NRiteration;ic++){
 
       calcStressTensor();  //calc K and Q
-      calcTemporalFw(RBdy);
+      calcTemporalFw();
 
       //elastic body-rigid body interaction
       for(int i=0;i<numOfCP;i++){
@@ -143,7 +112,7 @@ int RigidElasticInteraction::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
       PARDISO.set_CSR_value(K,element,numOfNode,numOfElm,inb);
 
       //-----rigid body interaction term-------
-      rigidBodyInteraction(RBdy);
+      calcRigidBodyInteractionTerm(RBdy);
       PARDISO.set_CSR_value_rigidBodyInteraction(numOfNode,iCP,Rb,Kqq,numOfCP);
       PARDISO.set_CSR_dirichlet_boundary_condition(numOfNode,ibd);
 
@@ -172,7 +141,7 @@ int RigidElasticInteraction::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
         exit(1);
       }
       if(ic==1) norm0 = norm;
-      corrector_statics(PARDISO.x,relaxation,RBdy);
+      corrector_statics(PARDISO.x,relaxation);
 
       for(int i=0;i<numOfNode;i++){
         for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
@@ -195,7 +164,14 @@ int RigidElasticInteraction::NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy)
     return 0;
 }
 
-void RigidElasticInteraction::calcTemporalFw(RigidBody &RBdy)
+// #################################################################
+/**
+ * @brief corrector scheme.
+ * @param [in] u           displacement vector
+ * @param [in] relaxation  relaxation parameters
+ * @param [in] RBdy        Rigid body class
+ */
+void RigidElasticInteraction::calcTemporalFw()
 {
   double momentArm[3];
   for(int i=0;i<3;i++){
@@ -207,6 +183,73 @@ void RigidElasticInteraction::calcTemporalFw(RigidBody &RBdy)
   double tmp;
   mathTool::crossProduct(momentArm,FU,Fw,tmp);
 }
+
+// #################################################################
+/**
+ * @brief corrector scheme.
+ * @param [in] u           displacement vector
+ * @param [in] relaxation  relaxation parameters
+ * @param [in] RBdy        Rigid body class
+ */
+void RigidElasticInteraction::corrector_statics(const double *u,const double relaxation)
+{
+  double w[3];
+
+  #pragma omp parallel for
+  for(int i=0;i<numOfNode;i++){
+    for(int j=0;j<3;j++) U(i,j) += u[i+j*numOfNode]*relaxation;
+  }
+
+  #pragma omp parallel for
+  for(int i=0;i<numOfCP;i++){
+    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*numOfNode+i+j*numOfCP]*relaxation;
+  }
+
+  for(int j=0;j<3;j++) RBdy.U[j] += u[3*numOfNode+3*numOfCP+j]*relaxation;
+  for(int j=0;j<3;j++) w[j]       = u[3*numOfNode+3*numOfCP+3+j]*relaxation;
+
+  RBdy.updateRotationMatrix_spatialForm(w);
+}
+
+// #################################################################
+/**
+ * @brief calc b0
+ * @param [in] RBdy          rigid body class
+ */
+void RigidElasticInteraction::initialize_rigidBodyInteraction()
+{
+  initialize();
+  RBdy.initialize(tp);
+  inputRigidBodyInterface();
+
+  LAMBDA.allocate(numOfCP,3);
+  Rb.allocate(numOfCP,3,3);
+  b0.allocate(numOfCP,3);
+  b.allocate(numOfCP,3);
+  Qlambda.allocate(numOfCP,3);
+
+  for(int i=0;i<numOfCP;i++){
+    for(int j=0;j<3;j++) LAMBDA(i,j)=0e0;
+  }
+
+  for(int ic=0;ic<numOfCP;ic++){
+    for(int j=0;j<3;j++) b0(ic,j)=x(CP(ic),j)-RBdy.xg[j];
+  }
+
+  omp_set_num_threads(OMPnumThreads);
+
+  mkdir(outputDir.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
+
+  //CSR setting
+  PARDISO.initialize(3*numOfNode,3*numOfCP);
+  PARDISO.CSR_initialize(inb,numOfNode,iCP,CP,numOfCP,3);
+
+  string output = outputDir + "/" + fileName + "_boundary" + ".vtu";
+  fileIO::export_vtu_boundary(x,element,numOfNode,numOfElm,ibd,bd,fiberDirection_elm,output);
+  output = outputDir + "/start.ply";
+  RBdy.exportPLY(output);
+}
+
 
 // #################################################################
 /**

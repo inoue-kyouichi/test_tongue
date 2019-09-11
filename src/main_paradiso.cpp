@@ -1,6 +1,6 @@
 //##################################################################################
 //
-// FEM solid analysis
+// rigid body-elastic body interaction
 //
 // Copyright (c) 2016-8 Mechanical and Bioengineering Systems Lab.,
 //                      Department of Mechanical Science and Bioengineering,
@@ -26,10 +26,7 @@ int main(int argc,char *argv[])
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
-  RigidElasticInteraction FEM;
-  RigidBody RBdy;
-  PARDISO_solver PARDISO;
-  string output;
+  RigidElasticInteraction rigidBodyInteraction;
 
   if(argc!=2){
     cout << "Invalid input" << endl;
@@ -39,32 +36,17 @@ int main(int argc,char *argv[])
   //read tp file
   std::string input_file = argv[1];
   int ierror;
-  if ((ierror = FEM.tp.read(input_file)) != TP_NO_ERROR) {
+  if ((ierror = rigidBodyInteraction.tp.read(input_file)) != TP_NO_ERROR) {
     printf("\tError at reading '%s' file\n", input_file.c_str());
     return 1;
   }
 
-  FEM.initialize();
-  RBdy.initialize(FEM.tp);
-  FEM.inputRigidBodyInterface();
-  FEM.preprocess_rigidBodyInteraction(RBdy);
-
-  omp_set_num_threads(FEM.OMPnumThreads);
-
-  mkdir(FEM.outputDir.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
-
-  //CSR setting
-  PARDISO.initialize(3*FEM.numOfNode,3*FEM.numOfCP);
-  PARDISO.CSR_initialize(FEM.inb,FEM.numOfNode,FEM.iCP,FEM.CP,FEM.numOfCP,3);
-
-  output = FEM.outputDir + "/" + FEM.fileName + "_boundary" + ".vtu";
-  fileIO::export_vtu_boundary(FEM.x,FEM.element,FEM.numOfNode,FEM.numOfElm,FEM.ibd,FEM.bd,FEM.fiberDirection_elm,output);
-  output = FEM.outputDir + "/start.ply";
-  RBdy.exportPLY(output);
+  cout << "---------preprocess start----------" << endl;
+  rigidBodyInteraction.initialize_rigidBodyInteraction();
+  cout << "---------preprocess completed----------" << endl << endl;
 
   cout << "---------main loop start----------" << endl;
-
-  FEM.femSolidAnalysis(PARDISO,RBdy);
+  rigidBodyInteraction.mainLoop();
 
   return 0;
 }

@@ -83,18 +83,14 @@ class Fem : public Domain{
   double tibiaRotation,femurRotation;
 
   void rotationalDirichlet(const int loop);
-  // int NRscheme(PARDISO_solver &PARDISO,RigidBody &RBdy);
   void calcStressTensor();
   void set_rhs_statics();
   void calc_MassMatrix();
   void corrector_statistics(const double *u,const double relaxation);
-  // void femSolidAnalysis(PARDISO_solver &PARDISO,RigidBody &RBdy);
   void calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   void calc_B_matrix(DOUBLEARRAY3D &B,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],DOUBLEARRAY2D &u,const int &numOfNodeInElm);
   void stress_tensor_initialize();
-  // void calcTemporalFw(RigidBody &RBdy);
-
 
  private:
   double rho;
@@ -104,7 +100,6 @@ class Fem : public Domain{
   DOUBLEARRAY3D Mass;
   INTARRAY1D boundaryNode_femur,boundaryNode_tibia;
   void exportRestartData(const int loop);
-  // void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
 
   //line search
   double line_search(const double *u);
@@ -126,7 +121,6 @@ class Fem : public Domain{
   void calc_normal_quad(double (&normal)[3],double (&X)[4][3]);
   void setFiberDirection();
   void setFiberDirection_KogaModel();
-  void calcRotationMatrix(double (&R)[3][3],const double (&rotAxis)[3],const double angle);
   double arcLength(const double xMin,const double xMax);
 
   //fem_postprocessing.cpp
@@ -196,29 +190,6 @@ private:
   void calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x,const int &numOfNodeInElm);
   void calc_dNdX(DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],const int &numOfNodeInElm);
   void calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm);
-
-  //rigidBodyInteraction
-//  public:
-//   int numOfCP;
-//   double FU[3],Fw[3],FU_input[3],FUpoint[3],initialMomentArm[3];
-//   double Kqq[3][3],QU[3],Qw[3];
-//   INTARRAY1D CP,iCP;
-//   DOUBLEARRAY2D b,b0,Qlambda;
-//   DOUBLEARRAY2D LAMBDA;
-//   DOUBLEARRAY3D Rb;
-//   void preprocess_rigidBodyInteraction(const RigidBody &RBdy);
-
-// private:
-//   void inputRigidBodyInterface();
-//   void rigidBodyInteraction(const RigidBody &RBdy);
-//   void corrector_statics(const double *u,const double relaxation,RigidBody &RBdy);
-
-//   void updateb(const RigidBody &RBdy);
-//   void tildeRB(const RigidBody &RBdy);
-//   void calcKqq(const RigidBody &RBdy);
-//   void updateRotationMatrix_spatialForm(double (&R)[3][3],const double (&w)[3]);
-//   void calc_Qlambda(const RigidBody &RBdy);
-//   void calc_Q_rigid(const RigidBody &RBdy);
 
 };
 

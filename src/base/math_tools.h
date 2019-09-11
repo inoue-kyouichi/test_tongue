@@ -34,6 +34,8 @@ class mathTool {
     static int Jacobi3x3(const int &ct, const double &eps,const double (&A)[3][3], double (&A1)[3][3],double (&X1)[3][3]);
     static void skewSymmetricTensor(double (&M)[3][3],const double (&v)[3]);
     static void quaternion2rotation(double (&R)[3][3],const double (&q)[4]);
+    static void calcRotationMatrix(double (&R)[3][3],const double (&rotAxis)[3],const double angle);
+    static void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
 };
 
 

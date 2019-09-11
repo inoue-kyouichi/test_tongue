@@ -259,3 +259,56 @@ void mathTool::quaternion2rotation(double (&R)[3][3],const double (&q)[4])
   R[2][1]=2e0*(q[2]*q[3]+q[0]*q[1]);
   R[2][2]=q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3];
 }
+
+// #################################################################
+/**
+ * @brief calcRotationMatrix
+ */
+void mathTool::calcRotationMatrix(double (&R)[3][3],const double (&rotAxis)[3],const double angle)
+{
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++) R[i][j]=0e0;
+    R[i][i]=1e0;
+  }
+
+  double S[3][3],SS[3][3];
+  mathTool::skewSymmetricTensor(S,rotAxis);
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++){
+      SS[i][j]=0e0;
+      for(int k=0;k<3;k++) SS[i][j] += S[i][k] * S[k][j];
+    }
+  }
+
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++) R[i][j] += sin(angle) * S[i][j] + (1e0-cos(angle)) * SS[i][j];
+  }
+}
+
+// #################################################################
+/**
+ * @brief calc theta (Nour-Omid and Rankin, Compt. Methods Appl. Mech. Eng., 1991.)
+ * @param [out] ql      rotation angle in local coordinates
+ * @param [in] Rbar     rotation matrix [reference to current coorindate (node level)]
+ * @param [in] ic element number
+ */
+void mathTool::calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3])
+{
+  double trR,Ra[3][3],tau;
+
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++){
+      Ra[i][j] = R[i][j]-R[j][i];
+    }
+  }
+
+  ql[0] = Ra[2][1];
+  ql[1] = Ra[0][2];
+  ql[2] = Ra[1][0];
+  tau=5e-1*sqrt(ql[0]*ql[0]+ql[1]*ql[1]+ql[2]*ql[2]);
+  if(tau<1e-15){
+    for(int i=0;i<3;i++) ql[i]=0e0;
+  }else{
+    for(int i=0;i<3;i++) ql[i]=5e-1*asin(tau)/tau*ql[i];
+  }
+}

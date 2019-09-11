@@ -1,5 +1,5 @@
 /**
- * @file fem_rigidBodyInteraction.cpp
+ * @file NRscheme_rigidBodyInteraction.cpp
  * @brief Fem class
  * @author T. Otani
  */
@@ -8,61 +8,13 @@
 
 using namespace std;
 
-// #################################################################
-/**
- * @brief corrector scheme.
- * @param [in] u           displacement vector
- * @param [in] relaxation  relaxation parameters
- * @param [in] RBdy        Rigid body class
- */
-void RigidElasticInteraction::corrector_statics(const double *u,const double relaxation,RigidBody &RBdy)
-{
-  double w[3];
-
-  #pragma omp parallel for
-  for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) U(i,j) += u[i+j*numOfNode]*relaxation;
-  }
-
-  #pragma omp parallel for
-  for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*numOfNode+i+j*numOfCP]*relaxation;
-  }
-
-  for(int j=0;j<3;j++) RBdy.U[j] += u[3*numOfNode+3*numOfCP+j]*relaxation;
-  for(int j=0;j<3;j++) w[j]       = u[3*numOfNode+3*numOfCP+3+j]*relaxation;
-
-  RBdy.updateRotationMatrix_spatialForm(w);
-}
-
-// #################################################################
-/**
- * @brief calc b0
- * @param [in] RBdy          rigid body class
- */
-void RigidElasticInteraction::preprocess_rigidBodyInteraction(const RigidBody &RBdy)
-{
-  LAMBDA.allocate(numOfCP,3);
-  Rb.allocate(numOfCP,3,3);
-  b0.allocate(numOfCP,3);
-  b.allocate(numOfCP,3);
-  Qlambda.allocate(numOfCP,3);
-
-  for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA(i,j)=0e0;
-  }
-
-  for(int ic=0;ic<numOfCP;ic++){
-    for(int j=0;j<3;j++) b0(ic,j)=x(CP(ic),j)-RBdy.xg[j];
-  }
-}
 
 // #################################################################
 /**
  * @brief rigid body term
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::rigidBodyInteraction(const RigidBody &RBdy)
+void RigidElasticInteraction::calcRigidBodyInteractionTerm(const RigidBody &RBdy)
 {
   updateb(RBdy);
   tildeRB(RBdy);
