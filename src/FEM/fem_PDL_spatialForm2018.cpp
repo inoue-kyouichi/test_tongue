@@ -10,8 +10,6 @@
 #include <Eigen/Eigen>
 
 using namespace Eigen;
-
-
 using namespace std;
 
 
@@ -530,7 +528,13 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
         }
 }
 
-
+// #################################################################
+/**
+ * @brief calc stretching direction
+ * @param [out] stretch    principal stretches
+ * @param [out] stretch direction     associating direction vector
+ * @param [in]  C     right Cauchy-Green deformation tensor
+ */
 void Fem::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
 {
   Matrix3d M;

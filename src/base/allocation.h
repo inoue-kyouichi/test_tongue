@@ -15,24 +15,10 @@
 /**
  * @file   allocation.h
  * @brief  bdim definition Header
- * @author T.Otani, S.Ii
+ * @author T.Otani
  */
 #include <string>
-#include <vector>
-
-typedef std::vector<int> INTVECTOR1;
-typedef std::vector<std::vector<int>> INTVECTOR2;
-typedef std::vector<std::vector<std::vector<int>>> INTVECTOR3;
-typedef std::vector<std::vector<std::vector<std::vector<int>>>> INTVECTOR4;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<int>>>>> INTVECTOR5;
-
-typedef std::vector<double> DOUBLEVECTOR1;
-typedef std::vector<std::vector<double>> DOUBLEVECTOR2;
-typedef std::vector<std::vector<std::vector<double>>> DOUBLEVECTOR3;
-typedef std::vector<std::vector<std::vector<std::vector<double>>>> DOUBLEVECTOR4;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> DOUBLEVECTOR5;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>> DOUBLEVECTOR6;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>>> DOUBLEVECTOR7;
+#include <iostream>
 
 class INTARRAY1D
 {
