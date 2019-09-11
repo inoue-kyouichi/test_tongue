@@ -10,9 +10,6 @@ Domain
 
   internalSurface = "PDL/internalSurface.dat"
   externalSurface = "PDL/externalSurface.dat"
-  planeElement=1584
-  //initialStretch=10e-1
-  //prescribedDisplacement=2e-3
 
   //fiber group (Koga model)
   thetaMax = 40 // degree
@@ -30,7 +27,7 @@ RigidBody
 Output
 {
   outputFormat = "vtk"
-  outputDir    = "Results_40_compress"
+  outputDir    = "Results_40_compress20190911"
   fileName     = "test"
 }
 
@@ -44,5 +41,3 @@ solver
   OMPnumThreads = 2
   relaxation=2e-1
 }
-
-

@@ -129,10 +129,10 @@ class Fem : public Domain{
   DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
   void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
   const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void postProcess_ACL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void postProcess_ACL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
-    const int &numOfNodeInElm,const int &numOfGaussPoint);
+  // void postProcess_ACL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
+  // const int &numOfNodeInElm,const int &numOfGaussPoint);
+  // void postProcess_ACL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
+  //   const int &numOfNodeInElm,const int &numOfGaussPoint);
     private:
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
   void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
@@ -140,8 +140,8 @@ class Fem : public Domain{
   void tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J);
 
   //fem_neoHookean_spatialForm.cpp
-  void calcStressTensor_NeoHookean_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  void calcStressTensor_NeoHookean_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // void calcStressTensor_NeoHookean_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // void calcStressTensor_NeoHookean_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   //fem_ACL_spatialForm.cpp
   public:
@@ -149,39 +149,39 @@ class Fem : public Domain{
   DOUBLEARRAY3D fiberDirection;
   DOUBLEARRAY2D lambda_ave;
 
-  //fem_PDL_spatialForm.cpp
+  //fem_PDL_spatialForm2018.cpp
 public:
   DOUBLEARRAY2D fiberDirection_elm;
+  void postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
 private:
-  void calcStressTensor_PDL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  void calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  void calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  void calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  int calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
+  // void calcStressTensor_PDL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
+  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // void calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
+  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // void calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
+  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // void calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
+  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // int calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
 
   void calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
   void calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
-      const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3);
+      const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop);
   void calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3);
-
+  const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop);
   //fem_hyperFoam_spatialForm.cpp
-  void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
   void calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3]);
 
   //fem_boundary.cpp
- public:
-  double boundaryPressure;
-  void calc_surfaceBoundaryForce();
- private:
-  void calc_TractionByPressure_element(const int &ic);
-  void calc_Traction_element_quad(const int &ic,const int numOfNodeInBdElm,const int numOfGaussPoint);
-  void calc_TractionByPressure_element(const int &ic,const Element &boundaryElement);
-  void calcBFe_inGaussIntegral(DOUBLEARRAY3D &BFe,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &X,const int numOfNodeInBdElm,const double weight,const int ic);
+//  public:
+//   double boundaryPressure;
+//   void calc_surfaceBoundaryForce();
+//  private:
+//   void calc_TractionByPressure_element(const int &ic);
+//   void calc_Traction_element_quad(const int &ic,const int numOfNodeInBdElm,const int numOfGaussPoint);
+//   void calc_TractionByPressure_element(const int &ic,const Element &boundaryElement);
+//   void calcBFe_inGaussIntegral(DOUBLEARRAY3D &BFe,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &X,const int numOfNodeInBdElm,const double weight,const int ic);
 
   //fem_base.cpp
  private:

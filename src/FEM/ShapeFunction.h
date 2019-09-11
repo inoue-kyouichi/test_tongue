@@ -31,7 +31,6 @@ class ShapeFunction2D{
     N(1) = L2;
     N(2) = L3;
   }
-
   static void C2D4_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
   {
     N(0) = 2.5e-1 * (1e+0-g1) * (1e+0-g2);
@@ -578,8 +577,6 @@ class ShapeFunction3D{
   dNdr(26,1)  = H3(g1) * dH3(g2) * H3(g3);
   dNdr(26,2)  = H3(g1) * H3(g2) * dH3(g3);
   }
-
-
 
  private:
   static double dH1(const double r) { return -5e-1 * (1e+0-2e+0*r); }

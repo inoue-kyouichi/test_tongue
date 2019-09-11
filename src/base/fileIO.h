@@ -38,6 +38,11 @@ class fileIO{
   static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,
             const int &numOfNode,const int &numOfElm,
             DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
+            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY3D &sigmaEigenVector_ave,
+            const std::string &file);
+  static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,
+            const int &numOfNode,const int &numOfElm,
+            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
             DOUBLEARRAY1D &bundle,INTARRAY1D &bundleElement,
             DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
             DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce, const std::string &file);

@@ -5,7 +5,7 @@
 //
 // FEM Base
 //
-// Copyright (c) 2016 Mechanical and Bioengineering Systems Lab.,
+// Copyright (c) 2019 Mechanical and Bioengineering Systems Lab.,
 //                    Graduate School of Engineering Science and Bioengineering,
 //                    Osaka University.
 // All rights reserved.
@@ -20,7 +20,6 @@
 
 #include "fem.h"
 
-
 class RigidElasticInteraction : public Fem {
 
   //rigidBodyInteraction
@@ -28,7 +27,7 @@ class RigidElasticInteraction : public Fem {
   void initialize_rigidBodyInteraction();
   void mainLoop();
 
-private:
+ private:
 
   RigidBody RBdy;
   PARDISO_solver PARDISO;
@@ -40,16 +39,18 @@ private:
   DOUBLEARRAY2D b,b0,Qlambda;
   DOUBLEARRAY2D LAMBDA;
   DOUBLEARRAY3D Rb;
+
   void inputRigidBodyInterface();
   int NRscheme();
   void calcTemporalFw();
-  void calcRigidBodyInteractionTerm(const RigidBody &RBdy);
+  void updateRotationMatrix_spatialForm(double (&R)[3][3],const double (&w)[3]);
   void corrector_statics(const double *u,const double relaxation);
   void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
+
+  void calcRigidBodyInteractionTerm(const RigidBody &RBdy);
   void updateb(const RigidBody &RBdy);
   void tildeRB(const RigidBody &RBdy);
   void calcKqq(const RigidBody &RBdy);
-  void updateRotationMatrix_spatialForm(double (&R)[3][3],const double (&w)[3]);
   void calc_Qlambda(const RigidBody &RBdy);
   void calc_Q_rigid(const RigidBody &RBdy);
 

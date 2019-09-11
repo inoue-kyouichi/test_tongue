@@ -5,8 +5,6 @@
  */
 
 #include "rigidElasticInteraction.h"
-#include <ostream>
-#include <fstream>
 
 using namespace std;
 
@@ -32,7 +30,7 @@ void RigidElasticInteraction::mainLoop()
   for(int j=0;j<3;j++) initialMomentArm[j] = FUpoint[j]-RBdy.xg[j];
   printf("%e %e %e\n",initialMomentArm[0],initialMomentArm[1],initialMomentArm[2]);
 
-  for(int ic=0;ic<numOfElm;ic++) calcVolume_hexa(ic,volume0,8,2,0);
+  for(int ic=0;ic<numOfElm;ic++) calcVolume_hexa(ic,volume0,8,2,false);
 
   for(int loop=1;loop<=maxIteration;loop++){
 
@@ -47,13 +45,11 @@ void RigidElasticInteraction::mainLoop()
       for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
     }
     for(int i=0;i<numOfElm;i++){
-      calcVolume_hexa(i,volume,8,2,1);
+      calcVolume_hexa(i,volume,8,2,true);
       volumeChangeRatio(i)=volume(i)/volume0(i);
     }
 
-    // exportRestartData(loop);
-    for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_spatialForm_hexa_SRI(ic,U,8,2);
-
+    for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
     // exportRestartData(loop);
 
     // if(loop%output_iter==0){
@@ -83,7 +79,7 @@ void RigidElasticInteraction::mainLoop()
     fclose(fp);
 
     output = outputDir + "/PDL_"+to_string(dataNumber)+"_"+to_string(loop)+".vtu";
-    fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,AEigen_Ave,sigmaEigenVector_Ave,AEigenVector_Ave,innerForce,output);
+    fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
     //fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,output);
   }
 }
@@ -117,25 +113,20 @@ int RigidElasticInteraction::NRscheme()
       PARDISO.set_CSR_dirichlet_boundary_condition(numOfNode,ibd);
 
       for(int i=0;i<numOfNode;i++){
-        for(int j=0;j<3;j++){
-          PARDISO.b[i+j*numOfNode]=RHS(i,j);
-        }
+        for(int j=0;j<3;j++) PARDISO.b[i+j*numOfNode]=RHS(i,j);
       }
       for(int i=0;i<numOfCP;i++){
-        for(int j=0;j<3;j++){
-          PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda(i,j);
-        }
+        for(int j=0;j<3;j++) PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda(i,j);
       }
       for(int j=0;j<3;j++){
-        PARDISO.b[3*numOfNode+3*numOfCP+j]=FU[j]-QU[j];
-      }
-      for(int j=0;j<3;j++){
-        PARDISO.b[3*numOfNode+3*numOfCP+3+j]=Fw[j]-Qw[j];
+        PARDISO.b[3*numOfNode+3*numOfCP+j]  = FU[j]-QU[j];
+        PARDISO.b[3*numOfNode+3*numOfCP+3+j]= Fw[j]-Qw[j];
       }
       //---------------------------------------
 
       PARDISO.main(3*numOfNode+3*numOfCP+6,OMPnumThreads);
       norm = PARDISO.vector_norm(3*numOfNode+3*numOfCP+6,PARDISO.x);
+
       if(isnan(norm)){
         cout << "norm is nan " << endl;
         exit(1);
@@ -147,16 +138,16 @@ int RigidElasticInteraction::NRscheme()
         for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
       }
 
+      //for debug
       // output = outputDir + "/test_NR_" + to_string(ic) + ".vtu";
       // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,output);
 
+      //for debug
       // RBdy.updateShape();
       // output = outputDir + "/rigidBody_NR_" + to_string(ic) + ".ply";
       // RBdy.exportPLY(output);
-
-      cout << "NewtonRaphson_iteration = " << ic << endl;
-      // cout << " Normalized residual = " <<scientific<< residual/residual0 << " normalized norm = " << scientific<< norm/norm0  <<  endl;
-      printf("Tooth displacement=(%e %e %e)\n",RBdy.U[0],RBdy.U[1],RBdy.U[2]);
+      printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
+      //printf("NR iter=%d Tooth displacement=(%e %e %e)\n",ic,RBdy.U[0],RBdy.U[1],RBdy.U[2]);
 
       if(norm/norm0<NRtolerance) break;
       // if(test!=1 && ic>50) break;
@@ -178,7 +169,7 @@ void RigidElasticInteraction::calcTemporalFw()
     momentArm[i]=0e0;
     for(int j=0;j<3;j++) momentArm[i] += RBdy.R[i][j] * initialMomentArm[j];
   }
-  printf("momentArm=%e %e %e\n",momentArm[0],momentArm[1],momentArm[2]);
+  //printf("momentArm=%e %e %e\n",momentArm[0],momentArm[1],momentArm[2]);
 
   double tmp;
   mathTool::crossProduct(momentArm,FU,Fw,tmp);
