@@ -5,6 +5,13 @@
  */
 
 #include "fem.h"
+
+#include <Eigen/Core>
+#include <Eigen/Eigen>
+
+using namespace Eigen;
+
+
 using namespace std;
 
 
@@ -25,6 +32,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
   double C[3][3],F[3][3];
 
+  Gauss gauss(numOfGaussPoint);
   DOUBLEARRAY2D x_current(numOfNodeInElm,3);
   DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
@@ -36,8 +44,6 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
   double term4,term4_2,a0[3],a[3];
 
   for(int j=0;j<3;j++) lambda_ave(ic,j)=0e0;
-  //------two point---------
-  Gauss gauss(numOfGaussPoint);
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
@@ -46,13 +52,14 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
     }
   }
 
+  for(int j=0;j<3;j++) lambda_ave(ic,j)=0e0;
+
   //--- Selective reduced integration ---
   for(int i1=0;i1<numOfGaussPoint;i1++){
     for(int i2=0;i2<numOfGaussPoint;i2++){
       for(int i3=0;i3<numOfGaussPoint;i3++){
 
         ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
-        // ShapeFunction::C3D8_dNdr(dNdr,0e0,0e0,0e0);
         calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
         detJ = mathTool::calcDeterminant_3x3(dxdr);
         calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
@@ -67,7 +74,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
         J = mathTool::calcDeterminant_3x3(F);
 
         if(J<0e0){
-          cout << "centroid Jacobian is nagtive. Exit..." << endl;
+          printf("Jacobian is nagtive (element number=%d). Exit...\n",ic);
           for(int p=0;p<numOfNodeInElm;p++){
             printf("%e %e %e\n",x_current(p,0),x_current(p,1),x_current(p,2));
           }
@@ -145,8 +152,6 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   double k1=0.298e0*1e6;
   double k2=1.525e0;
   double term4,term4_2,a0[3],a[3];
-  // double averageLambda=0e0;
-  // for(int i=0;i<3;i++) lambda_ave[ic][i]=0e0;
   double F_initial[3][3],Ftmp[3][3];
 
   calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
@@ -523,4 +528,60 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
             }
           }
         }
+}
+
+
+void Fem::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
+{
+  Matrix3d M;
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++) M(i,j)=C[i][j];
+  }
+  SelfAdjointEigenSolver<Matrix3d> ES(M);
+  // cout << "The eigenvalues of M=\n" << ES.eigenvalues() << endl;
+  // cout << "The corresponding eigenvectors of M=\n"<< ES.eigenvectors() << endl;
+  // Vector3d min_eigen_vector2 = ES.eigenvectors().col(2);
+  // cout << "The␣eigenvector␣corresponding␣the␣minimum␣eigenvalue␣=␣"
+  //  << min_eigen_vector2.transpose() << endl;
+
+  stretch[0] = sqrt(ES.eigenvalues()(2));  //max
+  stretch[1] = sqrt(ES.eigenvalues()(1));  //med
+  stretch[2] = sqrt(ES.eigenvalues()(0));  //min
+  // cout << "The␣minimum␣eigenvalue␣=␣" << min_eigen << endl;
+  Vector3d max_eigen_vector = ES.eigenvectors().col(2); //max
+  Vector3d med_eigen_vector = ES.eigenvectors().col(1);  //med
+  Vector3d min_eigen_vector = ES.eigenvectors().col(0);  //min
+  for(int j=0;j<3;j++){
+    stretchDirection[0][j]=max_eigen_vector(j);
+    stretchDirection[1][j]=med_eigen_vector(j);
+    stretchDirection[2][j]=min_eigen_vector(j);
+  }
+}
+
+// #################################################################
+/**
+ * @brief push forward routine for 4th order tensor
+ * @param [out] c4    elasticity tensor in current coordinates
+ * @param [in]  C4    elasticity tensor in reference coordinates
+ * @param [in]  F     deformation gradient tensor
+ * @param [in]  J     Jacobian (volume change ratio)
+ */
+void Fem::tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J)
+{
+  for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++){
+        for(int k=0;k<3;k++){
+          for(int l=0;l<3;l++){
+            c4[i][j][k][l]=0e0;
+            for(int p=0;p<3;p++){
+              for(int q=0;q<3;q++){
+                for(int r=0;r<3;r++){
+                  for(int s=0;s<3;s++) c4[i][j][k][l]+=F[i][p]*F[j][q]*F[k][r]*F[l][s]*C4[p][q][r][s]/J;
+                }
+            }
+          }
+        }
+      }
+    }
+  }
 }

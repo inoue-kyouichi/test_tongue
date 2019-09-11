@@ -36,29 +36,16 @@ void Fem::exportRestartData(const int loop)
  */
 void Fem::calcStressTensor()
 {
-  double elementVolume,volume;
-
   stress_tensor_initialize();
 
-  volume = 0e0;
-  int test;
-
   // #pragma omp parallel for
-  // for(int ic=0;ic<numOfElm;ic++){
-  //   test=calcStressTensor_PDL_element_fibreStretch(ic,U,8,2);
-  //   if(test==1){
-  //     calcStressTensor_PDL_element_spatialForm_hexa_2018(ic,U,8,2,true);
-  //   }else{
-  //     calcStressTensor_hyperFoam_element_spatialForm_hexa(ic,U,8,2,true);
-  //   }
-  // }
-  // for(int ic=0;ic<numOfElm;ic++) calcStressTensor_ACL_element_spatialForm_hexa_Fbar(ic,U,8,2,true);
   //for(int ic=0;ic<numOfElm;ic++) calcStressTensor_PDL_element_spatialForm_hexa_SRI(ic,U,8,2,true);
   //for(int ic=0;ic<numOfElm;ic++) calcStressTensor_hyperFoam_element_spatialForm_hexa(ic,U,8,2,true);
   // for(int ic=0;ic<numOfElm;ic++) calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(ic,U,8,2,true);
   // for(int ic=0;ic<numOfElm;ic++) calcStressTensor_PDL_element_spatialForm_hexa_2018(ic,U,8,2,true);
+
+  #pragma omp parallel for
   for(int ic=0;ic<numOfElm;ic++) calcStressTensor_PDL_element_2018(ic,U,8,2);
-  totalVolume = volume;
 
   for(int ic=0;ic<numOfElm;ic++){
     for(int p=0;p<element[ic].node.size();p++){
@@ -78,7 +65,6 @@ void Fem::set_rhs_statics()
  // #pragma omp parallel for
   for(int ic=0;ic<numOfNode;ic++){
     for(int j=0;j<3;j++){
-      // RHS[ic][j] = (double)ibd[ic][j]*(BF[ic][j] - GF[ic][j]);
       RHS(ic,j) = (double)ibd(ic,j)*( - innerForce(ic,j));
     }
   }
