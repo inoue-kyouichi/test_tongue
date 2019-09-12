@@ -1,5 +1,5 @@
 /**
- * @file fem_PDL_spatialForm.cpp
+ * @file fem_PDL_spatialForm2018.cpp
  * @brief Fem class
  * @author T. Otani
  */
@@ -19,7 +19,6 @@ using namespace std;
  * @param [in] U_tmp            displacement vector
  * @param [in] numOfNodeInElm   number of node in each element
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
- * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
@@ -36,9 +35,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
   DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
-  //PDL
   double Ic4bar;
-  // int fiberNum=0;
   double term4,term4_2,a0[3],a[3];
 
   for(int p=0;p<numOfNodeInElm;p++){
@@ -300,9 +297,6 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   double sigma[3][3],S[3][3],C[3][3],invC[3][3],F[3][3],B[3][3];
   double elasticityTensor_ref[3][3][3][3],elasticityTensor_current[3][3][3][3],tangentCoefficient[3][3][3][3];
 
-  double c1=1e-2*1e6;
-  double bulkModulus=1e6/9.078e0;
-
   //nearly-incompressible material
   double pressure,dpressure,Siso[3][3],S_aniso[3][3],Sbar[3][3],P4[3][3][3][3],P4bar[3][3][3][3];
   double invC_odot[3][3][3][3],C4iso[3][3][3][3],C4vol[3][3][3][3],C4bar[3][3][3][3],term2;
@@ -311,8 +305,11 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   double Ic4bar;
   int fiberNum=0;
   double lambda;
-  double k1=0.298e0*1e6;
-  double k2=1.525e0;
+
+  const double c1=1e-2*1e6;
+  const double bulkModulus=1e6/9.078e0;
+  const double k1=0.298e0*1e6;
+  const double k2=1.525e0;
   double term4,term4_2,a0[3],a[3];
   double F_initial[3][3],Ftmp[3][3];
 
@@ -372,8 +369,6 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
     for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
   }
   for(int i=0;i<3;i++) a[i] = a[i]/lambda;
-  // averageLambda+=lambda;
-  // for(int i=0;i<3;i++) lambda_ave[ic][i]+=a[i];
 
   if(Ic4bar<1e0){
     term4=0e0;
@@ -385,7 +380,6 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
 
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++) Sbar[i][j]+=2e0*term4*a0[i]*a0[j];
-          // for(int j=0;j<3;j++) S_aniso[i][j]=term4*a0[i]*a0[j];
   }
 
   //S_iso
@@ -411,7 +405,6 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
       for(int k=0;k<3;k++){
-        // for(int l=0;l<3;l++) sigma[i][j] += F[i][k]*(Siso[k][l]+S_aniso[k][l])*F[j][l]/J;
         for(int l=0;l<3;l++) sigma[i][j] += F[i][k]*Siso[k][l]*F[j][l]/J;
       }
     }
@@ -423,28 +416,29 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
     }
     return;
   }
-        //calc_internal force vector
+
+  //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
       for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
     }
-}
+  }
 
-for(int i=0;i<3;i++){
-  for(int j=0;j<3;j++){
-    for(int k=0;k<3;k++){
-      for(int l=0;l<3;l++) invC_odot[i][j][k][l]=5e-1*(invC[i][k]*invC[j][l]+invC[i][l]*invC[j][k]);
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++){
+      for(int k=0;k<3;k++){
+        for(int l=0;l<3;l++) invC_odot[i][j][k][l]=5e-1*(invC[i][k]*invC[j][l]+invC[i][l]*invC[j][k]);
+      }
     }
   }
-}
 
-for(int i=0;i<3;i++){
-  for(int j=0;j<3;j++){
-    for(int k=0;k<3;k++){
-      for(int l=0;l<3;l++) P4bar[i][j][k][l]=invC_odot[i][j][k][l]-1e0/3e0*(invC[i][j]*invC[k][l]);
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++){
+      for(int k=0;k<3;k++){
+        for(int l=0;l<3;l++) P4bar[i][j][k][l]=invC_odot[i][j][k][l]-1e0/3e0*(invC[i][j]*invC[k][l]);
+      }
     }
   }
-}
 
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -532,6 +526,7 @@ for(int i=0;i<3;i++){
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  * @detail
    PDL model and parameters: Bergomi et al., J. Biomech., 2011
+   W=2mu/alpha*[lambda_1^alpha+lambda_2^alpha+lambda_3^alpha-3+1/beta*(J^(alpha*beta)-1)]
  */
 void Fem::calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop)
@@ -548,14 +543,14 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   //hyperFoam
   double term;
   double stretch[3],stretchDirection[3][3],stretchDiff;
-  double alpha=20.9e0;
-  double mu=3e-2*1e6;
-  double poisson=0.257e0;
-  double beta=poisson/(1e0-2e0*poisson);
+  const double alpha=20.9e0;
+  const double mu=3e-2*1e6;
+  const double poisson=0.257e0;
+  const double beta=poisson/(1e0-2e0*poisson);
 
   calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
-  volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+  // volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
 
   calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
   mathTool::calcInverseMatrix_3x3(drdX,dXdr);
@@ -569,10 +564,10 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
 
   J = mathTool::calcDeterminant_3x3(F);
 
-  if(J<0e0){
-    cout << "Jacobian is nagtive. Exit..." << endl;
-    exit(1);
-  }
+  // if(J<0e0){
+  //   cout << "Jacobian is nagtive. Exit..." << endl;
+  //   exit(1);
+  // }
 
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){

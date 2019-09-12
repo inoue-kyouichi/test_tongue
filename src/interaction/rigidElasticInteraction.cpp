@@ -1,6 +1,6 @@
 /**
- * @file fem.cpp
- * @brief Fem class
+ * @file rigidElasticInteraction.cpp
+ * @brief RigidElasticInteraction class
  * @author T. Otani
  */
 
@@ -10,26 +10,24 @@ using namespace std;
 
 // #################################################################
 /**
- * @brief fem solid analysis routine
- * @param [inout] PARDISO   PARDISO class
+ * @brief rigid body-elastic body interaction problem
  */
 void RigidElasticInteraction::mainLoop()
 {
   int output_iter=1;
-  int increment=maxIteration;
   string output;
 
+  //------------------------------------------------------------
   FILE *fp;
   string outputFile_tooth = outputDir + "/toothDisplacement.dat";
   if ((fp = fopen(outputFile_tooth.c_str(), "w")) == NULL) {
     exit(1);
   }
-  fprintf(fp,"loop F Ux Uy Uz Qx Qy Qz Dispx Dispy Dispz\n");
+  fprintf(fp,"loop F Ux Uy Uz Qx Qy Qz ARMx ARMy ARMz\n");
   fclose(fp);
+  //------------------------------------------------------------
 
   for(int j=0;j<3;j++) initialMomentArm[j] = FUpoint[j]-RBdy.xg[j];
-  printf("%e %e %e\n",initialMomentArm[0],initialMomentArm[1],initialMomentArm[2]);
-
   for(int ic=0;ic<numOfElm;ic++) calcVolume_hexa(ic,volume0,8,2,false);
 
   for(int loop=1;loop<=maxIteration;loop++){
@@ -37,7 +35,7 @@ void RigidElasticInteraction::mainLoop()
     for(int j=0;j<3;j++) FU[j] = (double)loop/(double)maxIteration * FU_input[j];
 
     if(NRscheme()==1){
-      printf("loop=%d\n",loop);
+      printf("NR scheme is wrong. Loop=%d\n",loop);
       exit(1);
     }
 
@@ -51,11 +49,6 @@ void RigidElasticInteraction::mainLoop()
 
     for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
     // exportRestartData(loop);
-
-    // if(loop%output_iter==0){
-    //   output = outputDir+"/PDL_"+to_string(loop)+".vtu";
-    //   fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,AEigen_Ave,sigmaEigenVector_Ave,AEigenVector_Ave,innerForce,output);
-    // }
 
     RBdy.updateShape();
     output = outputDir + "/tooth_"+to_string(dataNumber)+"_"+to_string(loop)+".ply";
@@ -74,13 +67,12 @@ void RigidElasticInteraction::mainLoop()
     if ((fp = fopen(outputFile_tooth.c_str(), "a")) == NULL) {
       exit(1);
     }
-    double FroceMagnitude= (double)loop/(double)maxIteration * sqrt(FU_input[0]*FU_input[0]+FU_input[1]*FU_input[1]+FU_input[2]*FU_input[2]);
-    fprintf(fp,"%d %e %e %e %e %e %e %e %e %e %e\n",loop,FroceMagnitude,RBdy.U[0],RBdy.U[1],RBdy.U[2],angle[0],angle[1],angle[2],momentArm[0],momentArm[1],momentArm[2]);
+    double ForceMagnitude= (double)loop/(double)maxIteration * sqrt(FU_input[0]*FU_input[0]+FU_input[1]*FU_input[1]+FU_input[2]*FU_input[2]);
+    fprintf(fp,"%d %e %e %e %e %e %e %e %e %e %e\n",loop,ForceMagnitude,RBdy.U[0],RBdy.U[1],RBdy.U[2],angle[0],angle[1],angle[2],momentArm[0],momentArm[1],momentArm[2]);
     fclose(fp);
 
     output = outputDir + "/PDL_"+to_string(dataNumber)+"_"+to_string(loop)+".vtu";
     fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
-    //fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,output);
   }
 }
 
@@ -90,77 +82,73 @@ void RigidElasticInteraction::mainLoop()
  */
 int RigidElasticInteraction::NRscheme()
 {
-    double residual,residual0,norm,norm0;
-    string output;
+  double residual,residual0,norm,norm0;
+  string output;
 
-    for(int ic=1;ic<=NRiteration;ic++){
+  for(int ic=1;ic<=NRiteration;ic++){
 
-      calcStressTensor();  //calc K and Q
-      calcTemporalFw();
+    calcStressTensor();  //calc K and Q
+    calcTemporalFw();
 
-      //elastic body-rigid body interaction
-      for(int i=0;i<numOfCP;i++){
-        for(int j=0;j<3;j++) innerForce(CP(i),j)+=LAMBDA(i,j);
-      }
-
-      set_rhs_statics();
-
-      PARDISO.set_CSR_value(K,element,numOfNode,numOfElm,inb);
-
-      //-----rigid body interaction term-------
-      calcRigidBodyInteractionTerm(RBdy);
-      PARDISO.set_CSR_value_rigidBodyInteraction(numOfNode,iCP,Rb,Kqq,numOfCP);
-      PARDISO.set_CSR_dirichlet_boundary_condition(numOfNode,ibd);
-
-      for(int i=0;i<numOfNode;i++){
-        for(int j=0;j<3;j++) PARDISO.b[i+j*numOfNode]=RHS(i,j);
-      }
-      for(int i=0;i<numOfCP;i++){
-        for(int j=0;j<3;j++) PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda(i,j);
-      }
-      for(int j=0;j<3;j++){
-        PARDISO.b[3*numOfNode+3*numOfCP+j]  = FU[j]-QU[j];
-        PARDISO.b[3*numOfNode+3*numOfCP+3+j]= Fw[j]-Qw[j];
-      }
-      //---------------------------------------
-
-      PARDISO.main(3*numOfNode+3*numOfCP+6,OMPnumThreads);
-      norm = PARDISO.vector_norm(3*numOfNode+3*numOfCP+6,PARDISO.x);
-
-      if(isnan(norm)){
-        cout << "norm is nan " << endl;
-        exit(1);
-      }
-      if(ic==1) norm0 = norm;
-      corrector_statics(PARDISO.x,relaxation);
-
-      for(int i=0;i<numOfNode;i++){
-        for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
-      }
-
-      //for debug
-      // output = outputDir + "/test_NR_" + to_string(ic) + ".vtu";
-      // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,output);
-
-      //for debug
-      // RBdy.updateShape();
-      // output = outputDir + "/rigidBody_NR_" + to_string(ic) + ".ply";
-      // RBdy.exportPLY(output);
-      printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
-      //printf("NR iter=%d Tooth displacement=(%e %e %e)\n",ic,RBdy.U[0],RBdy.U[1],RBdy.U[2]);
-
-      if(norm/norm0<NRtolerance) break;
-      // if(test!=1 && ic>50) break;
+    //elastic body-rigid body interaction
+    for(int i=0;i<numOfCP;i++){
+      for(int j=0;j<3;j++) innerForce(CP(i),j)+=LAMBDA(i,j);
     }
-    return 0;
+
+    set_rhs_statics();
+    PARDISO.set_CSR_value(K,element,numOfNode,numOfElm,inb);
+
+    //-----rigid body interaction term-------
+    calcRigidBodyInteractionTerm(RBdy);
+    PARDISO.set_CSR_value_rigidBodyInteraction(numOfNode,iCP,Rb,Kqq,numOfCP);
+    PARDISO.set_CSR_dirichlet_boundary_condition(numOfNode,ibd);
+
+    //rhs term
+    for(int i=0;i<numOfNode;i++){
+      for(int j=0;j<3;j++) PARDISO.b[i+j*numOfNode]=RHS(i,j);
+    }
+    for(int i=0;i<numOfCP;i++){
+      for(int j=0;j<3;j++) PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda(i,j);
+    }
+    for(int j=0;j<3;j++){
+      PARDISO.b[3*numOfNode+3*numOfCP+j]  = FU[j]-QU[j];
+      PARDISO.b[3*numOfNode+3*numOfCP+3+j]= Fw[j]-Qw[j];
+    }
+
+    PARDISO.main(3*numOfNode+3*numOfCP+6,OMPnumThreads);
+    norm = PARDISO.vector_norm(3*numOfNode+3*numOfCP+6,PARDISO.x);
+
+    if(isnan(norm)){
+      cout << "norm is nan " << endl;
+      return 1;
+    }
+    if(ic==1) norm0 = norm;
+    corrector_statics(PARDISO.x,relaxation);
+
+    for(int i=0;i<numOfNode;i++){
+      for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
+    }
+
+    //for debug
+    // output = outputDir + "/test_NR_" + to_string(ic) + ".vtu";
+    // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,output);
+
+    //for debug
+    // RBdy.updateShape();
+    // output = outputDir + "/rigidBody_NR_" + to_string(ic) + ".ply";
+    // RBdy.exportPLY(output);
+    printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
+    //printf("NR iter=%d Tooth displacement=(%e %e %e)\n",ic,RBdy.U[0],RBdy.U[1],RBdy.U[2]);
+
+    if(norm/norm0<NRtolerance) break;
+    // if(test!=1 && ic>50) break;
+  }
+  return 0;
 }
 
 // #################################################################
 /**
- * @brief corrector scheme.
- * @param [in] u           displacement vector
- * @param [in] relaxation  relaxation parameters
- * @param [in] RBdy        Rigid body class
+ * @brief temporal fw.
  */
 void RigidElasticInteraction::calcTemporalFw()
 {
@@ -180,7 +168,6 @@ void RigidElasticInteraction::calcTemporalFw()
  * @brief corrector scheme.
  * @param [in] u           displacement vector
  * @param [in] relaxation  relaxation parameters
- * @param [in] RBdy        Rigid body class
  */
 void RigidElasticInteraction::corrector_statics(const double *u,const double relaxation)
 {

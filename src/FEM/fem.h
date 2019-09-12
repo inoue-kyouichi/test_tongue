@@ -78,9 +78,6 @@ class Fem : public Domain{
   DOUBLEARRAY2D U, innerForce, externalForce, RHS;
   DOUBLEARRAY5D Ku,K;
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
-  DOUBLEARRAY1D bundle;
-  INTARRAY1D bundleElement;
-  double tibiaRotation,femurRotation;
 
   void rotationalDirichlet(const int loop);
   void calcStressTensor();
@@ -129,21 +126,12 @@ class Fem : public Domain{
   DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
   void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
   const int &numOfNodeInElm,const int &numOfGaussPoint);
-  // void postProcess_ACL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
-  // const int &numOfNodeInElm,const int &numOfGaussPoint);
-  // void postProcess_ACL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
-  //   const int &numOfNodeInElm,const int &numOfGaussPoint);
-    private:
+  private:
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
   void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
   void tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J);
 
-  //fem_neoHookean_spatialForm.cpp
-  // void calcStressTensor_NeoHookean_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // void calcStressTensor_NeoHookean_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-
-  //fem_ACL_spatialForm.cpp
   public:
   double bulkModulusRatio;
   DOUBLEARRAY3D fiberDirection;

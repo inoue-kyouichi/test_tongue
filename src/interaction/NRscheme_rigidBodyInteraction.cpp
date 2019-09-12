@@ -1,6 +1,6 @@
 /**
  * @file NRscheme_rigidBodyInteraction.cpp
- * @brief Fem class
+ * @brief RigidElasticInteraction class
  * @author T. Otani
  */
 
