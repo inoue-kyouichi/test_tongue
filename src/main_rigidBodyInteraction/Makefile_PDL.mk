@@ -11,7 +11,7 @@
 ###################################################################################
 
 #include ./make_setting.mk
-include make_setting.mk
+include ../make_setting.mk
 
 TARGET = PDLanalysis
 
@@ -20,7 +20,7 @@ SRCS = $(wildcard *.cpp)
 .SUFFIXES: .o .cpp
 CXXOBJS = $(SRCS:.cpp=.o)
 OBJS  = $(CXXOBJS)
-#CXXFLAGS += -I./FEM -I./base
+CXXFLAGS += -I../FEM -I../base -I../interaction -I../RBD -I../linearSolver
 
 $(TARGET):$(OBJS)
 	$(CXX) $(CXXFLAGS) $(UDEF_INC_PATH) -o $(TARGET) $(OBJS) \

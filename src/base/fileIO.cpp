@@ -112,6 +112,12 @@ void fileIO::read_geometry_meshType(elementType &element,int &numOfElm,const str
       case VTK_WEDGE:
         element[i].node.resize(6);
         break;
+      case VTK_QUADRATIC_TETRA:
+        element[i].node.resize(10);
+        break;
+      case VTK_QUADRATIC_TRIANGLE:
+        element[i].node.resize(6);
+        break;
       default:
         cout << "invalid mesh type" << endl;
         exit(1);

@@ -261,6 +261,7 @@ void Fem::inputNeumannBoundaryInfo()
 // #################################################################
 /**
  * @brief fiber information from TP file
+ * @TODO linear hexa element only
  */
 void Fem::setFiberDirection()
 {
@@ -275,6 +276,11 @@ void Fem::setFiberDirection()
   }
 }
 
+// #################################################################
+/**
+ * @brief fiber information from TP file
+ * @TODO linear hexa element only
+ */
 void Fem::calc_normal_quad(double (&normal)[3],double (&X)[4][3])
 {
   double dXdr1[3],dXdr2[3],dXdr3[3],Jacobian,normalVector[3];
@@ -424,14 +430,14 @@ void Fem::inputFiberInfo()
  */
 void Fem::allocate()
 {
-  Mass.allocate(numOfElm,8,8);
+  Mass.allocate(numOfElm,20,20);
   U.allocate(numOfNode,3);
   RHS.allocate(numOfNode,3);
   innerForce.allocate(numOfNode,3);
   externalForce.allocate(numOfNode,3);
-  K.allocate(numOfElm,8,8,3,3);
-  Qu.allocate(numOfElm,8,3);
-  BFe.allocate(numOfElm,4,3);
+  K.allocate(numOfElm,20,20,3,3);
+  Qu.allocate(numOfElm,20,3);
+  BFe.allocate(numOfElm,9,3);
   volume.allocate(numOfElm);
   volume0.allocate(numOfElm);
   volumeChangeRatio.allocate(numOfElm);

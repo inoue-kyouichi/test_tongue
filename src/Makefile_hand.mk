@@ -18,7 +18,7 @@ all:
 	(cd RBD; make -f Makefile_hand.mk)
 	(cd linearSolver; make -f Makefile_hand.mk)
 	(cd interaction; make -f Makefile_hand.mk)
-	(make -f Makefile_PDL.mk)
+	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk)
 
 clean:
 	(cd base; make -f Makefile_hand.mk clean)
@@ -26,7 +26,7 @@ clean:
 	(cd RBD; make -f Makefile_hand.mk clean)
 	(cd linearSolver; make -f Makefile_hand.mk clean)
 	(cd interaction; make -f Makefile_hand.mk clean)
-	(make -f Makefile_PDL.mk clean)
+	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk)
 
 depend:
 	(cd base; make -f Makefile_hand.mk depend)

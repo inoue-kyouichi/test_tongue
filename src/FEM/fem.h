@@ -161,6 +161,10 @@ private:
   // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
   void calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3]);
 
+  void calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option);
+  double LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
+
+
   //fem_boundary.cpp
 //  public:
 //   double boundaryPressure;

@@ -27,7 +27,7 @@ RigidBody
 Output
 {
   outputFormat = "vtk"
-  outputDir    = "Results_40_compress20190911"
+  outputDir    = "Results_40_compress20191125"
   fileName     = "test"
 }
 
