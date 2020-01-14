@@ -47,6 +47,18 @@ void Fem::calcStressTensor()
   #pragma omp parallel for
   for(int ic=0;ic<numOfElm;ic++) calcStressTensor_PDL_element_2018(ic,U,8,2);
 
+  //linear elastic material only
+  for (int ic = 0; ic < numOfElm; ic++){
+    for (int p = 0; p < element[ic].node.size(); p++){
+      for (int q = 0; q < element[ic].node.size(); q++){
+        for (int i = 0; i < 3; i++){
+          for (int j = 0; j < 3; j++) innerForce(element[ic].node[p],i) += K(ic,p,q,i,j) * U(element[ic].node[q],j);
+        }
+      }
+    }
+  }
+
+
   for(int ic=0;ic<numOfElm;ic++){
     for(int p=0;p<element[ic].node.size();p++){
       for(int i=0;i<3;i++){

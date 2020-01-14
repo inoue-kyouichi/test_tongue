@@ -28,7 +28,11 @@ void RigidElasticInteraction::mainLoop()
   //------------------------------------------------------------
 
   for(int j=0;j<3;j++) initialMomentArm[j] = FUpoint[j]-RBdy.xg[j];
-  for(int ic=0;ic<numOfElm;ic++) calcVolume_hexa(ic,volume0,8,2,false);
+  // for(int ic=0;ic<numOfElm;ic++) calcVolume_hexa(ic,volume0,8,2,false);
+
+  //linear elastic material only
+  stress_tensor_initialize();
+  for(int ic=0;ic<numOfElm;ic++) calcStressTensor_LinearElastic_element_spatialForm(ic,true);
 
   for(int loop=1;loop<=maxIteration;loop++){
 
@@ -42,12 +46,14 @@ void RigidElasticInteraction::mainLoop()
     for(int i=0;i<numOfNode;i++){
       for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
     }
-    for(int i=0;i<numOfElm;i++){
-      calcVolume_hexa(i,volume,8,2,true);
-      volumeChangeRatio(i)=volume(i)/volume0(i);
-    }
+    // for(int i=0;i<numOfElm;i++){
+    //   calcVolume_hexa(i,volume,8,2,true);
+    //   volumeChangeRatio(i)=volume(i)/volume0(i);
+    // }
 
-    for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
+
+    for(int ic=0;ic<numOfElm;ic++) postProcess_LinearElastic_element_spatialForm(ic,true);
+    // for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
     // exportRestartData(loop);
 
     RBdy.updateShape();
@@ -67,12 +73,13 @@ void RigidElasticInteraction::mainLoop()
     if ((fp = fopen(outputFile_tooth.c_str(), "a")) == NULL) {
       exit(1);
     }
-    double ForceMagnitude= (double)loop/(double)maxIteration * sqrt(FU_input[0]*FU_input[0]+FU_input[1]*FU_input[1]+FU_input[2]*FU_input[2]);
-    fprintf(fp,"%d %e %e %e %e %e %e %e %e %e %e\n",loop,ForceMagnitude,RBdy.U[0],RBdy.U[1],RBdy.U[2],angle[0],angle[1],angle[2],momentArm[0],momentArm[1],momentArm[2]);
-    fclose(fp);
+    // double ForceMagnitude= (double)loop/(double)maxIteration * sqrt(FU_input[0]*FU_input[0]+FU_input[1]*FU_input[1]+FU_input[2]*FU_input[2]);
+    // fprintf(fp,"%d %e %e %e %e %e %e %e %e %e %e\n",loop,ForceMagnitude,RBdy.U[0],RBdy.U[1],RBdy.U[2],angle[0],angle[1],angle[2],momentArm[0],momentArm[1],momentArm[2]);
+    // fclose(fp);
 
     output = outputDir + "/PDL_"+to_string(dataNumber)+"_"+to_string(loop)+".vtu";
-    fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
+    fileIO::export_vtu_Mises(x,element,numOfNode,numOfElm,U,Mises,output);
+    // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
   }
 }
 
@@ -87,7 +94,24 @@ int RigidElasticInteraction::NRscheme()
 
   for(int ic=1;ic<=NRiteration;ic++){
 
-    calcStressTensor();  //calc K and Q
+    // calcStressTensor();  //calc K and Q
+
+    #pragma omp parallel for
+    for(int i=0;i<numOfNode;i++){
+      for(int j=0;j<3;j++) innerForce(i,j) = 0e0;
+    }
+
+    //linear elastic material only
+    for (int ia = 0; ia < numOfElm; ia++){
+      for (int p = 0; p < element[ia].node.size(); p++){
+       for (int q = 0; q < element[ia].node.size(); q++){
+        for (int i = 0; i < 3; i++){
+          for (int j = 0; j < 3; j++) innerForce(element[ia].node[p],i) += K(ia,p,q,i,j) * U(element[ia].node[q],j);
+        }
+      }
+    }
+  }
+
     calcTemporalFw();
 
     //elastic body-rigid body interaction
@@ -217,6 +241,10 @@ void RigidElasticInteraction::initialize_rigidBodyInteraction()
   omp_set_num_threads(OMPnumThreads);
 
   mkdir(outputDir.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
+
+  for(int i=0;i<numOfNode;i++){
+      if(ibd(i,0)==0 && iCP(i)!=-1) cout << i << endl;
+  }
 
   //CSR setting
   PARDISO.initialize(3*numOfNode,3*numOfCP);

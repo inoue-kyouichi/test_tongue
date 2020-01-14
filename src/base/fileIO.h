@@ -52,6 +52,7 @@ class fileIO{
             const int &numOfNode,const int &numOfElm,
             INTARRAY2D &ibd,DOUBLEARRAY2D &bd,DOUBLEARRAY2D &fiberDirection_elm,const std::string &file);
 
+  static void export_vtu_Mises(DOUBLEARRAY2D &x,const elementType &element,const int &numOfNode,const int &numOfElm,DOUBLEARRAY2D &U,DOUBLEARRAY1D &Mises,const std::string &file);
 };
 
 #endif //_FILE_IO_H_

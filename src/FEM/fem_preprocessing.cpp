@@ -25,7 +25,7 @@ void Fem::initialize()
   restart_setting();
 
   inputDirichletBoundaryInfo();
-  setFiberDirection_KogaModel();
+  // setFiberDirection_KogaModel();
   // inputFiberInfo();
 }
 
@@ -442,6 +442,7 @@ void Fem::allocate()
   volume0.allocate(numOfElm);
   volumeChangeRatio.allocate(numOfElm);
 
+  Mises.allocate(numOfElm);
   lambda_ave.allocate(numOfElm,3);
   AEigen_Ave.allocate(numOfElm,3);
   sigmaEigen_Ave.allocate(numOfElm,3);

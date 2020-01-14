@@ -122,6 +122,7 @@ class Fem : public Domain{
 
   //fem_postprocessing.cpp
   public:
+  DOUBLEARRAY1D Mises;
   DOUBLEARRAY2D AEigen_Ave,sigmaEigen_Ave;
   DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
   void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
@@ -141,6 +142,8 @@ class Fem : public Domain{
 public:
   DOUBLEARRAY2D fiberDirection_elm;
   void postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
+  void postProcess_LinearElastic_element_spatialForm(const int ic,const bool option);
+  void calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option);
 private:
   // void calcStressTensor_PDL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
   // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
@@ -161,9 +164,8 @@ private:
   // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
   void calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3]);
 
-  void calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option);
   double LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
-
+  double postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
 
   //fem_boundary.cpp
 //  public:

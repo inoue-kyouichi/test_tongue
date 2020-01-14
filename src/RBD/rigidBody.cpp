@@ -19,6 +19,9 @@ void RigidBody::initialize(TextParser &tp)
   rho=1e0;
   calcMassProperties();
 
+  printf("rigid body center=%e %e %e\n",xg[0],xg[1],xg[2]);
+
+
   for(int j=0;j<3;j++) U[j]=0e0;
 
   for(int i=0;i<3;i++){
