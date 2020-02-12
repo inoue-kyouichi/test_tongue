@@ -2,10 +2,10 @@
 //
 // rigid body-elastic body interaction
 //
-// Copyright (c) 2016-8 Mechanical and Bioengineering Systems Lab.,
-//                      Department of Mechanical Science and Bioengineering,
-//                      Graduate School of Engineering Science,
-//                      Osaka University.
+// Copyright (c) 2016- Mechanical and Bioengineering Systems Lab.,
+//                     Department of Mechanical Science and Bioengineering,
+//                     Graduate School of Engineering Science,
+//                     Osaka University.
 // All rights reserved.
 //
 //##################################################################################

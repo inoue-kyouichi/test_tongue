@@ -60,10 +60,16 @@ static const double PI = 3.1415926535897932384626;
 //diciclet boundary condiiton
 #define WALL     0
 
+typedef enum {
+  PULP       = 0,
+  PDL        = 1,
+  NUMBER_OF_MATERIALTYPE
+} MATERIALType;
 
 class Element{
  public:
   VTKCellType meshType;
+  MATERIALType materialType;
   INTVECTOR1 node;
 };
 

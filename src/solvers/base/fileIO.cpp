@@ -129,6 +129,25 @@ void fileIO::read_geometry_meshType(elementType &element,int &numOfElm,const str
 /**
  * @brief import triangle element
  */
+void fileIO::read_geometry_materialType(elementType &element,int &numOfElm,const string &file)
+{
+  string str,tmp;
+
+  ifstream materialType_file(file);
+  if(!materialType_file){
+    cout << "Error:Input "<< file << " not found" << endl;
+    exit(1);
+  }
+  for(int i=0;i<numOfElm;i++){
+    getline(materialType_file,str);
+    element[i].materialType = MATERIALType(stoi(str));
+  }
+}
+
+// #################################################################
+/**
+ * @brief import triangle element
+ */
 void fileIO::read_geometry_element(elementType &element,const int &numOfElm,const string &file)
 {
   string str,tmp;
@@ -636,10 +655,15 @@ void fileIO::export_vtu_Mises(DOUBLEARRAY2D &x,const elementType &element,
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
 
-  fprintf(fp,"<CellData Scalars=\"Mises\">\n");
+  fprintf(fp,"<CellData>\n");
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"Mises\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<numOfElm;i++){
     fprintf(fp,"%e\n",Mises(i));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"UInt8\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%d\n",element[i].materialType);
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");

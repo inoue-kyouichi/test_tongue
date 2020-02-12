@@ -16,7 +16,7 @@
 
 LIBDIR = /home/totani/lib
 INSTALL_BASE = /home/totani/lib
-TARGET_DIR  = ../../
+TARGET_DIR  = ../../../
 
 #########################
 # Architecture assignment
@@ -186,18 +186,18 @@ endif
 
 
 UDEF_INC_PATH=-I. \
-                                -I../interaction \
-                                -I../FEM \
-                                -I../linearSolver \
-                                -I../RBD \
-                                -I../base \
+                                -I../../solvers/interaction \
+                                -I../../solvers/FEM \
+                                -I../../solvers/linearSolver \
+                                -I../../solvers/RBD \
+                                -I../../solvers/base \
 
 UDEF_LIB_PATH= \
-                                  -L../interaction -lInteraction \
-                                  -L../FEM -lFEM \
-                                  -L../RBD -lRBD \
-                                  -L../linearSolver -lLIS \
-                                  -L../base -lBase \
+                                  -L../../solvers/lib -lInteraction \
+                                  -L../../solvers/lib -lFEM \
+                                  -L../../solvers/lib -lRBD \
+                                  -L../../solvers/lib -lLIS \
+                                  -L../../solvers/lib -lBase \
 
 #for SX-ACE?
 # UDEF_LIB_PATH= \

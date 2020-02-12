@@ -193,10 +193,18 @@ void Fem::inputDomainInfo()
     cout << label << " is not found" << endl;
     exit(0);
   }
+
+  label = base_label + "/materialTypeFile";
+  if ( !tp.getInspectedValue(label,file4)){
+    cout << label << " is not found" << endl;
+    exit(0);
+  }
   file1=inputDir+"/"+file1;
   file2=inputDir+"/"+file2;
   file3=inputDir+"/"+file3;
   set_geometry(file1,file2,file3);
+
+  fileIO::read_geometry_materialType(element,numOfElm,file4);
 }
 
 // #################################################################

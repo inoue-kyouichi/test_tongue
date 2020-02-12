@@ -13,13 +13,10 @@
 .PHONY: depend clean all
 
 all:
-	(cd solvers; make -f Makefile_hand.mk)
-	(cd applications; make -f Makefile_hand.mk)
+	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk)
 
 clean:
-	(cd solvers; make -f Makefile_hand.mk clean)
-	(cd applications; make -f Makefile_hand.mk clean)
+	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk clean)
 
 depend:
-	(cd solvers; make -f Makefile_hand.mk depend)
-	(cd applications; make -f Makefile_hand.mk depend)
+	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk depend)

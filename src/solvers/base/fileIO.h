@@ -27,6 +27,7 @@ class fileIO{
   static int CountNumbersOfTextLines(const std::string &filePath);
   static void read_geometry_node(DOUBLEARRAY2D &x, int &numOfNode,const std::string &file);
   static void read_geometry_meshType(elementType &element,int &numOfElm,const std::string &file);
+  static void read_geometry_materialType(elementType &element,int &numOfElm,const std::string &file);
   static void read_geometry_element(elementType &element,const int &numOfElm,const std::string &file);
   static void export_vtu(DOUBLEARRAY2D &x,const elementType &element,const int &numOfNode,const int &numOfElm,
               DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,const std::string &file);

@@ -17,10 +17,16 @@ using namespace std;
  */
 void Fem::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
-  double young = 66.7e0; //(MPa)
+  double young = 66.7e-3; //(MPa)
   double poisson = 0.49e0;
-  double lambda = young * poisson / ((1e0+poisson) * (1e0-2e0*poisson));
-  double mu = 5e-1 * young / (1e0+poisson);
+  double PDL_lambda = young * poisson / ((1e0+poisson) * (1e0-2e0*poisson));
+  double PDL_mu = 5e-1 * young / (1e0+poisson);
+
+  young = 2.1e-3; //(MPa)
+  poisson = 0.45e0;
+  double PULP_lambda = young * poisson / ((1e0+poisson) * (1e0-2e0*poisson));
+  double PULP_mu = 5e-1 * young / (1e0+poisson);
+
   int numOfNodeInElm=element[ic].node.size();
   DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
@@ -53,7 +59,11 @@ void Fem::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const 
     case VTK_QUADRATIC_TETRA:
       for(int i1=0;i1<4;i1++){
         ShapeFunction3D::C3D10_dNdr(dNdr,gTet2.point[i1][0],gTet2.point[i1][1],gTet2.point[i1][2],gTet2.point[i1][3]);
-        LinearElastic_inGaussIntegral(dNdr,x_ref,numOfNodeInElm,gTet2.weight[i1]*1e0/6e0,ic,lambda,mu,option);
+        if(element[ic].materialType==PDL){
+          LinearElastic_inGaussIntegral(dNdr,x_ref,numOfNodeInElm,gTet2.weight[i1]*1e0/6e0,ic,PDL_lambda,PDL_mu,option);
+        }else if(element[ic].materialType==PULP){
+          LinearElastic_inGaussIntegral(dNdr,x_ref,numOfNodeInElm,gTet2.weight[i1]*1e0/6e0,ic,PULP_lambda,PULP_mu,option);
+        }
       }
       break;
     case VTK_QUADRATIC_HEXAHEDRON:

@@ -11,9 +11,10 @@
 #
 ###################################################################################
 
-include ../make_setting.mk
+include ../../make_setting.mk
 
-TARGET = libLIS.a
+TARGET = libBase.a
+TARGET_DIR = ../lib
 
 CXXSRCS = $(wildcard *.cpp)
 
@@ -22,11 +23,14 @@ SRCS = $(CXXSRCS)
 .SUFFIXES: .o .cpp
 CXXOBJS = $(CXXSRCS:.cpp=.o)
 OBJS  = $(CXXOBJS)
-CXXFLAGS +=  -I../. -I../base -I../FEM -I../RBD
+CXXFLAGS +=  -I../.
 
 $(TARGET):$(OBJS)
+	-mkdir -p $(TARGET_DIR)
 	$(AR) $(TARGET) $(OBJS)
 	$(RANLIB) $(TARGET)
+	mv $(TARGET) $(TARGET_DIR)
+
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(UDEF_INC_PATH) -o $@ -c $<
