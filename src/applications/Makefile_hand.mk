@@ -13,10 +13,13 @@
 .PHONY: depend clean all
 
 all:
-	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk)
+	(cd PDL_tooth_interactionAnalysis; make -f Makefile_PDL.mk)
+	(cd rat_analysis; make -f Makefile_PDL.mk)
 
 clean:
-	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk clean)
+	(cd PDL_tooth_interactionAnalysis; make -f Makefile_PDL.mk clean)
+	(cd rat_analysis; make -f Makefile_PDL.mk clean)
 
 depend:
-	(cd main_rigidBodyInteraction; make -f Makefile_PDL.mk depend)
+	(cd PDL_tooth_interactionAnalysis; make -f Makefile_PDL.mk depend)
+	(cd rat_analysis; make -f Makefile_PDL.mk depend)
