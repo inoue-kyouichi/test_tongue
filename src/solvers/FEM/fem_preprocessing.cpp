@@ -15,16 +15,12 @@ using namespace std;
 void Fem::initialize(TextParser &tp)
 {
   inputDomainInfo(tp);
-
   // string restartDirName="Restart_"+to_string(dataNumber);
   // mkdir(restartDirName.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
 
   allocate();
   // restart_setting(dataNumber,Restart);
-
   inputDirichletBoundaryInfo(tp);
-  // setFiberDirection_KogaModel(tp);
-  // inputFiberInfo();
 }
 
 // #################################################################
@@ -214,17 +210,14 @@ void Fem::allocate()
 {
   Mass.resize(numOfElm);
   Qu.resize(numOfElm);
-  K.resize(numOfElm);
+  Ku.resize(numOfElm);
 
   for(int ic=0;ic<numOfElm;ic++){
     int numOfNodeInElm = element[ic].node.size();
     Mass[ic].allocate(numOfNodeInElm,numOfNodeInElm);
     Qu[ic].allocate(numOfNodeInElm,3);
-    K[ic].allocate(numOfNodeInElm,numOfNodeInElm,3,3);
+    Ku[ic].allocate(numOfNodeInElm,numOfNodeInElm,3,3);
   }
-  // Mass.allocate(numOfElm,20,20);
-  // K.allocate(numOfElm,20,20,3,3);
-  // Qu.allocate(numOfElm,20,3);
 
   BFe.allocate(numOfElm,9,3);
 

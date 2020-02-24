@@ -66,8 +66,7 @@ class Fem : public Domain{
   double totalVolume;
 
   DOUBLEARRAY2D U, innerForce, externalForce, RHS;
-  DOUBLEARRAY5D Ku;
-  std::vector<DOUBLEARRAY4D> K;
+  std::vector<DOUBLEARRAY4D> Ku;
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
 
   void rotationalDirichlet(const int loop);

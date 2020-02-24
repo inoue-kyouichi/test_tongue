@@ -14,12 +14,12 @@ using namespace std;
  * @brief rigid body term
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::calcRigidBodyInteractionTerm(const RigidBody &RBdy)
+void RigidElasticInteraction_base::calcRigidBodyInteractionTerm(DOUBLEARRAY2D &U,const RigidBody &RBdy)
 {
   updateb(RBdy);
   tildeRB(RBdy);
   calcKqq(RBdy);
-  calc_Qlambda(RBdy);
+  calc_Qlambda(U,RBdy);
   calc_Q_rigid(RBdy);
 }
 
@@ -28,7 +28,7 @@ void RigidElasticInteraction::calcRigidBodyInteractionTerm(const RigidBody &RBdy
  * @brief update b
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::updateb(const RigidBody &RBdy)
+void RigidElasticInteraction_base::updateb(const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
     for(int i=0;i<3;i++){
@@ -43,7 +43,7 @@ void RigidElasticInteraction::updateb(const RigidBody &RBdy)
  * @brief skew-symmetric matrix determined by b
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::tildeRB(const RigidBody &RBdy)
+void RigidElasticInteraction_base::tildeRB(const RigidBody &RBdy)
 {
   double tmp[3],Rbtmp[3][3];
   for(int ic=0;ic<numOfCP;ic++){
@@ -60,7 +60,7 @@ void RigidElasticInteraction::tildeRB(const RigidBody &RBdy)
  * @brief calc Kqq of Kww
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::calcKqq(const RigidBody &RBdy)
+void RigidElasticInteraction_base::calcKqq(const RigidBody &RBdy)
 {
   double lambda_tmp[3],matrix[3][3],TildeLambda[3][3];
 
@@ -94,10 +94,10 @@ void RigidElasticInteraction::calcKqq(const RigidBody &RBdy)
  * @brief calc Q_lambda vector
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::calc_Qlambda(const RigidBody &RBdy)
+void RigidElasticInteraction_base::calc_Qlambda(DOUBLEARRAY2D &U,const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
-    for(int j=0;j<3;j++) Qlambda(ic,j)=ElasticBody.U(CP(ic),j)-RBdy.U[j]+b0(ic,j)-b(ic,j);
+    for(int j=0;j<3;j++) Qlambda(ic,j)=U(CP(ic),j)-RBdy.U[j]+b0(ic,j)-b(ic,j);
   }
 }
 
@@ -106,7 +106,7 @@ void RigidElasticInteraction::calc_Qlambda(const RigidBody &RBdy)
  * @brief calc Q_rigid vector
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::calc_Q_rigid(const RigidBody &RBdy)
+void RigidElasticInteraction_base::calc_Q_rigid(const RigidBody &RBdy)
 {
   for(int i=0;i<3;i++) QU[i]=0e0;
   for(int ic=0;ic<numOfCP;ic++){
@@ -119,4 +119,47 @@ void RigidElasticInteraction::calc_Q_rigid(const RigidBody &RBdy)
       for(int j=0;j<3;j++) Qw[i]-=Rb(ic,i,j)*LAMBDA(ic,j);
     }
   }
+}
+
+// #################################################################
+/**
+ * @brief temporal fw.
+ */
+void RigidElasticInteraction_base::calcTemporalFw(const RigidBody &RBdy)
+{
+  double momentArm[3];
+  for(int i=0;i<3;i++){
+    momentArm[i]=0e0;
+    for(int j=0;j<3;j++) momentArm[i] += RBdy.R[i][j] * initialMomentArm[j];
+  }
+  //printf("momentArm=%e %e %e\n",momentArm[0],momentArm[1],momentArm[2]);
+
+  double tmp;
+  mathTool::crossProduct(momentArm,FU,Fw,tmp);
+}
+
+// #################################################################
+/**
+ * @brief corrector scheme.
+ * @param [in] u           displacement vector
+ * @param [in] relaxation  relaxation parameters
+ */
+void RigidElasticInteraction_base::corrector_statics(DOUBLEARRAY2D &U,const double *u,RigidBody &RBdy,const int numOfNode,const double relaxation)
+{
+  double w[3];
+
+  #pragma omp parallel for
+  for(int i=0;i<numOfNode;i++){
+    for(int j=0;j<3;j++) U(i,j) += u[i+j*numOfNode]*relaxation;
+  }
+
+  #pragma omp parallel for
+  for(int i=0;i<numOfCP;i++){
+    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*numOfNode+i+j*numOfCP]*relaxation;
+  }
+
+  for(int j=0;j<3;j++) RBdy.U[j] += u[3*numOfNode+3*numOfCP+j]*relaxation;
+  for(int j=0;j<3;j++) w[j]       = u[3*numOfNode+3*numOfCP+3+j]*relaxation;
+
+  RBdy.updateRotationMatrix_spatialForm(w);
 }

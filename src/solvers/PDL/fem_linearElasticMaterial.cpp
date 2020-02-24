@@ -118,7 +118,7 @@ const int numOfNodeInElm,const double weight,const int ic,const double lambda,co
         for(int j=0;j<3;j++){
           for(int k=0;k<3;k++){
             for(int l=0;l<3;l++){
-              K[ic](p,q,i,j) += dNdx(p,k)*C4[i][k][j][l]*dNdx(q,l) * detJ * weight;
+              Ku[ic](p,q,i,j) += dNdx(p,k)*C4[i][k][j][l]*dNdx(q,l) * detJ * weight;
             }
           }
         }

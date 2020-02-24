@@ -112,7 +112,7 @@ int RigidElasticInteraction::NRscheme()
   //   }
   // }
 
-    calcTemporalFw();
+    calcTemporalFw(RBdy);
 
     //elastic body-rigid body interaction
     for(int i=0;i<numOfCP;i++){
@@ -120,10 +120,10 @@ int RigidElasticInteraction::NRscheme()
     }
 
     ElasticBody.set_rhs_statics();
-    PARDISO.set_CSR_value3D(ElasticBody.K,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.inb);
+    PARDISO.set_CSR_value3D(ElasticBody.Ku,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.inb);
 
     //-----rigid body interaction term-------
-    calcRigidBodyInteractionTerm(RBdy);
+    calcRigidBodyInteractionTerm(ElasticBody.U,RBdy);
     PARDISO.set_CSR_value_rigidBodyInteraction(ElasticBody.numOfNode,iCP,Rb,Kqq,numOfCP);
     PARDISO.set_CSR_dirichlet_boundary_condition(ElasticBody.numOfNode,ElasticBody.ibd);
 
@@ -147,7 +147,7 @@ int RigidElasticInteraction::NRscheme()
       return 1;
     }
     if(ic==1) norm0 = norm;
-    corrector_statics(PARDISO.x,relaxation);
+    corrector_statics(ElasticBody.U,PARDISO.x,RBdy,ElasticBody.numOfNode,relaxation);
 
     for(int i=0;i<ElasticBody.numOfNode;i++){
       for(int j=0;j<3;j++) ElasticBody.x(i,j) = ElasticBody.x0(i,j) + ElasticBody.U(i,j);
@@ -168,49 +168,6 @@ int RigidElasticInteraction::NRscheme()
     // if(test!=1 && ic>50) break;
   }
   return 0;
-}
-
-// #################################################################
-/**
- * @brief temporal fw.
- */
-void RigidElasticInteraction::calcTemporalFw()
-{
-  double momentArm[3];
-  for(int i=0;i<3;i++){
-    momentArm[i]=0e0;
-    for(int j=0;j<3;j++) momentArm[i] += RBdy.R[i][j] * initialMomentArm[j];
-  }
-  //printf("momentArm=%e %e %e\n",momentArm[0],momentArm[1],momentArm[2]);
-
-  double tmp;
-  mathTool::crossProduct(momentArm,FU,Fw,tmp);
-}
-
-// #################################################################
-/**
- * @brief corrector scheme.
- * @param [in] u           displacement vector
- * @param [in] relaxation  relaxation parameters
- */
-void RigidElasticInteraction::corrector_statics(const double *u,const double relaxation)
-{
-  double w[3];
-
-  #pragma omp parallel for
-  for(int i=0;i<ElasticBody.numOfNode;i++){
-    for(int j=0;j<3;j++) ElasticBody.U(i,j) += u[i+j*ElasticBody.numOfNode]*relaxation;
-  }
-
-  #pragma omp parallel for
-  for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*ElasticBody.numOfNode+i+j*numOfCP]*relaxation;
-  }
-
-  for(int j=0;j<3;j++) RBdy.U[j] += u[3*ElasticBody.numOfNode+3*numOfCP+j]*relaxation;
-  for(int j=0;j<3;j++) w[j]       = u[3*ElasticBody.numOfNode+3*numOfCP+3+j]*relaxation;
-
-  RBdy.updateRotationMatrix_spatialForm(w);
 }
 
 // #################################################################

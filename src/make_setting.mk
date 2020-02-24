@@ -186,7 +186,7 @@ endif
 
 
 UDEF_INC_PATH=-I. \
-                                -I../../solvers/interaction \
+                                -I../../solvers/PDL_TOOTH_interaction \
                                 -I../../solvers/PDL \
                                 -I../../solvers/FEM \
                                 -I../../solvers/linearSolver \
