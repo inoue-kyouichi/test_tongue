@@ -52,8 +52,8 @@ void RigidElasticInteraction::mainLoop()
     // }
 
 
-    for(int ic=0;ic<ElasticBody.numOfElm;ic++) ElasticBody.postProcess_LinearElastic_element_spatialForm(ic,true);
-    // for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
+    // for(int ic=0;ic<ElasticBody.numOfElm;ic++) ElasticBody.postProcess_LinearElastic_element_spatialForm(ic,true);
+    for(int ic=0;ic<ElasticBody.numOfElm;ic++) ElasticBody.postProcess_PDL_element_2018(ic,ElasticBody.U,8,2);
     // exportRestartData(loop);
 
     RBdy.updateShape();
@@ -96,12 +96,12 @@ int RigidElasticInteraction::NRscheme()
 
     ElasticBody.calcStressTensor();  //calc K and Q
 
-    #pragma omp parallel for
-    for(int i=0;i<ElasticBody.numOfNode;i++){
-      for(int j=0;j<3;j++) ElasticBody.innerForce(i,j) = 0e0;
-    }
-
     //linear elastic material only
+    // #pragma omp parallel for
+    // for(int i=0;i<ElasticBody.numOfNode;i++){
+    //   for(int j=0;j<3;j++) ElasticBody.innerForce(i,j) = 0e0;
+    // }
+
   //   for (int ia = 0; ia < numOfElm; ia++){
   //     for (int p = 0; p < element[ia].node.size(); p++){
   //      for (int q = 0; q < element[ia].node.size(); q++){
@@ -221,6 +221,8 @@ void RigidElasticInteraction::corrector_statics(const double *u,const double rel
 void RigidElasticInteraction::initialize_rigidBodyInteraction()
 {
   ElasticBody.initialize(tp);
+  ElasticBody.allocatePDLvariables();
+  ElasticBody.setFiberDirection_KogaModel(tp);
   RBdy.initialize(tp);
   inputSolverInfo(tp);
   inputOutputInfo(tp);

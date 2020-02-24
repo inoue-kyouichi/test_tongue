@@ -3,7 +3,7 @@
  * @brief Fem class
  * @author T. Otani
  */
-#include "fem.h"
+#include "PDL.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -23,7 +23,7 @@ using namespace Eigen;
  * @param [in] U_tmp            displacement vector
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void Fem::postProcess_LinearElastic_element_spatialForm(const int ic,const bool option)
+void PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
   double young = 66.7e-3; //(MPa)
   double poisson = 0.49e0;
@@ -118,7 +118,7 @@ void Fem::postProcess_LinearElastic_element_spatialForm(const int ic,const bool 
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double Fem::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
+double PeriodontalLigament::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
   double dXdr[3][3],C4[3][3][3][3];

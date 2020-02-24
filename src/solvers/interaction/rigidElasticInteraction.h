@@ -18,13 +18,14 @@
  * @author T. Otani
  */
 
-#include "fem.h"
+#include "PDL.h"
+#include "RigidBody.h"
 
 class RigidElasticInteraction {
 
   //rigidBodyInteraction
  public:
-  Fem ElasticBody;
+  PeriodontalLigament ElasticBody;
   void initialize_rigidBodyInteraction();
   void mainLoop();
 

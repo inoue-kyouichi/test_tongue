@@ -1,12 +1,11 @@
 #ifndef _FEM_H_
 #define _FEM_H_
 
-
 //##################################################################################
 //
 // FEM Base
 //
-// Copyright (c) 2016 Mechanical and Bioengineering Systems Lab.,
+// Copyright (c) 2020 Mechanical and Bioengineering Systems Lab.,
 //                    Graduate School of Engineering Science and Bioengineering,
 //                    Osaka University.
 // All rights reserved.
@@ -39,8 +38,7 @@
 #include "ShapeFunction.h"
 #include "fileIO.h"
 #include "pardiso_solver.h"
-#include "rigidBody.h"
-
+#include "TextParser.h"
 
 class Fem : public Domain{
 
@@ -72,21 +70,20 @@ class Fem : public Domain{
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
 
   void rotationalDirichlet(const int loop);
-  void calcStressTensor();
   void set_rhs_statics();
   void calc_MassMatrix();
   void corrector_statistics(const double *u,const double relaxation);
   void calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   void stress_tensor_initialize();
+  void setInnerForce();
 
- private:
   double rho;
   int ConstitutiveLawName;
   DOUBLEARRAY3D BFe;
   DOUBLEARRAY3D Qu;
   DOUBLEARRAY3D Mass;
-  INTARRAY1D boundaryNode_femur,boundaryNode_tibia;
+ private:
   void exportRestartData(const int loop);
 
   //line search
@@ -105,56 +102,12 @@ class Fem : public Domain{
   void inputNeumannBoundaryInfo(TextParser &tp);
   void inputFiberInfo(TextParser &tp);
   void restart_setting(const int dataNumber,const bool Restart,TextParser &tp);
-  void calc_normal_quad(double (&normal)[3],double (&X)[4][3]);
-  void setFiberDirection();
-  void setFiberDirection_KogaModel(TextParser &tp);
-  double arcLength(const double xMin,const double xMax);
 
   //fem_postprocessing.cpp
   public:
   DOUBLEARRAY1D Mises;
   DOUBLEARRAY2D AEigen_Ave,sigmaEigen_Ave;
   DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
-  void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const int &numOfGaussPoint);
-  private:
-  void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
-  void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
-
-
-  public:
-  double bulkModulusRatio;
-  DOUBLEARRAY3D fiberDirection;
-  DOUBLEARRAY2D lambda_ave;
-
-  //fem_PDL_spatialForm2018.cpp
-public:
-  DOUBLEARRAY2D fiberDirection_elm;
-  void postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void postProcess_LinearElastic_element_spatialForm(const int ic,const bool option);
-  void calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option);
-private:
-  // void calcStressTensor_PDL_element_spatialForm_hexa_Fbar(const int &ic,DOUBLEARRAY2D &U_tmp,
-  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // void calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
-  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // void calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
-  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // void calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
-  // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  // int calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
-
-  void calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
-      const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop);
-  void calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
-  const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop);
-  //fem_hyperFoam_spatialForm.cpp
-  // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
-  void calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3]);
-
-  double LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
-  double postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
 
   //fem_boundary.cpp
 //  public:

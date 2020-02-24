@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "fem.h"
+#include "PDL.h"
 
 #include <Eigen/Core>
 #include <Eigen/Eigen>
@@ -22,7 +22,7 @@ using namespace std;
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
@@ -113,7 +113,7 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
@@ -231,7 +231,7 @@ void Fem::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const 
 /**
  * @brief normalize vectors
  */
-void Fem::normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic)
+void PeriodontalLigament::normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic)
 {
   double tmp=0e0;
   for(int i=0;i<3;i++){
@@ -247,7 +247,7 @@ void Fem::normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const 
 /**
  * @brief calc eigenvalues and eigenVectors using Eigen library
  */
-void Fem::calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3])
+void PeriodontalLigament::calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3])
 {
   int order[3];
   double E[3][3],Vec[3][3];
@@ -289,7 +289,7 @@ void Fem::calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenV
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop)
 {
   double detJ,volume=0e0,J;
@@ -528,7 +528,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
    PDL model and parameters: Bergomi et al., J. Biomech., 2011
    W=2mu/alpha*[lambda_1^alpha+lambda_2^alpha+lambda_3^alpha-3+1/beta*(J^(alpha*beta)-1)]
  */
-void Fem::calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const int i1,const int i2,const int i3,double (&stress)[3][3],const bool mainLoop)
 {
   double detJ,volume=0e0,J;
@@ -707,7 +707,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
  * @param [out] stretch direction     associating direction vector
  * @param [in]  C     right Cauchy-Green deformation tensor
  */
-void Fem::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
+void PeriodontalLigament::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
 {
   Matrix3d M;
   for(int i=0;i<3;i++){

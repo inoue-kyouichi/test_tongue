@@ -13,7 +13,7 @@
 
 include ../../make_setting.mk
 
-TARGET = libFEM.a
+TARGET = libPDL.a
 TARGET_DIR = ../lib
 
 CXXSRCS = $(wildcard *.cpp)
@@ -23,7 +23,7 @@ SRCS = $(CXXSRCS)
 .SUFFIXES: .o .cpp
 CXXOBJS = $(CXXSRCS:.cpp=.o)
 OBJS  = $(CXXOBJS)
-CXXFLAGS +=  -I../. -I../base -I../linearSolver
+CXXFLAGS +=  -I../. -I../base -I../linearSolver -I../FEM
 
 $(TARGET):$(OBJS)
 	-mkdir -p $(TARGET_DIR)

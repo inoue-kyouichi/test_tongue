@@ -5,7 +5,7 @@
  * @author T. Otani
  */
 
-#include "fem.h"
+#include "PDL.h"
 using namespace std;
 
 
@@ -20,7 +20,7 @@ using namespace std;
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+int PeriodontalLigament::calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
@@ -116,7 +116,7 @@ int Fem::calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_hexa_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
@@ -405,7 +405,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_hexa_SRI_2018(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
@@ -773,7 +773,7 @@ const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
  * @detail
    PDL model and parameters: Natali et al., J. Biomech. Eng., 1996
  */
-void Fem::calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;

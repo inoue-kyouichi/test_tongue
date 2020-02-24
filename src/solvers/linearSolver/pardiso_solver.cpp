@@ -148,7 +148,7 @@ void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,I
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const elementType &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -187,7 +187,7 @@ void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const elementType &element
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -234,7 +234,7 @@ void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const elementType &element
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value3D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value3D(DOUBLEARRAY5D &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;

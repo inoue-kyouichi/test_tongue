@@ -187,6 +187,7 @@ endif
 
 UDEF_INC_PATH=-I. \
                                 -I../../solvers/interaction \
+                                -I../../solvers/PDL \
                                 -I../../solvers/FEM \
                                 -I../../solvers/linearSolver \
                                 -I../../solvers/RBD \
@@ -194,6 +195,7 @@ UDEF_INC_PATH=-I. \
 
 UDEF_LIB_PATH= \
                                   -L../../solvers/lib -lInteraction \
+                                  -L../../solvers/lib -lPDL \
                                   -L../../solvers/lib -lFEM \
                                   -L../../solvers/lib -lRBD \
                                   -L../../solvers/lib -lLIS \

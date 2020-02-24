@@ -23,7 +23,7 @@ SRCS = $(CXXSRCS)
 .SUFFIXES: .o .cpp
 CXXOBJS = $(CXXSRCS:.cpp=.o)
 OBJS  = $(CXXOBJS)
-CXXFLAGS +=  -I../. -I../base -I../linearSolver -I../RBD -I../FEM
+CXXFLAGS +=  -I../. -I../base -I../linearSolver -I../RBD -I../FEM -I../PDL
 
 $(TARGET):$(OBJS)
 	-mkdir -p $(TARGET_DIR)

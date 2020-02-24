@@ -53,9 +53,9 @@ class PARDISO_solver{
 
   double vector_norm(const int &nump,const double *x);
 
-  void set_CSR_value1D(DOUBLEARRAY3D &K,const elementType &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
-  void set_CSR_value2D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
-  void set_CSR_value3D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value1D(DOUBLEARRAY3D &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value2D(DOUBLEARRAY5D &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value3D(DOUBLEARRAY5D &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
   void set_CSR_dirichlet_boundary_condition(const int &numOfNode,INTARRAY2D &ibd);
 
 private:

@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "fem.h"
+#include "PDL.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ using namespace std;
  * @param [in] U_tmp            displacement vector
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void Fem::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
+void PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
   double young = 66.7e-3; //(MPa)
   double poisson = 0.49e0;
@@ -89,7 +89,7 @@ void Fem::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const 
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double Fem::LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,
+double PeriodontalLigament::LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,
 const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
