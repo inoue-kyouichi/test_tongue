@@ -75,7 +75,6 @@ class Fem : public Domain{
   double totalVolume;
   double relaxation;
 
-  // int numOfGaussPoint;
   DOUBLEARRAY2D U, innerForce, externalForce, RHS;
   DOUBLEARRAY5D Ku,K;
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
@@ -110,6 +109,7 @@ class Fem : public Domain{
   void allocate();
  private:
   void inputDomainInfo();
+  void inputMaterialInfo();
   void inputDirichletBoundaryInfo();
   void inputNeumannBoundaryInfo();
   void inputFiberInfo();

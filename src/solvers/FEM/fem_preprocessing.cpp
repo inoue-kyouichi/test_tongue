@@ -15,6 +15,7 @@ using namespace std;
 void Fem::initialize()
 {
   inputDomainInfo();
+  // inputMaterialInfo();
   inputSolverInfo();
   inputOutputInfo();
 
@@ -194,15 +195,36 @@ void Fem::inputDomainInfo()
     exit(0);
   }
 
+  file1=inputDir+"/"+file1;
+  file2=inputDir+"/"+file2;
+  file3=inputDir+"/"+file3;
+  set_geometry(file1,file2,file3);
+
+}
+
+// #################################################################
+/**
+ * @brief domain information from tp file
+ */
+void Fem::inputMaterialInfo()
+{
+  string str,base_label,label,inputDir;
+
+  base_label = "/Domain";
+
+  label = base_label + "/inputDir";
+  if ( !tp.getInspectedValue(label,inputDir)){
+    cout << "data format is not set" << endl;
+    exit(0);
+  }
+  string file1,file2,file3,file4,file5;
+
   label = base_label + "/materialTypeFile";
   if ( !tp.getInspectedValue(label,file4)){
     cout << label << " is not found" << endl;
     exit(0);
   }
-  file1=inputDir+"/"+file1;
-  file2=inputDir+"/"+file2;
-  file3=inputDir+"/"+file3;
-  set_geometry(file1,file2,file3);
+  file4=inputDir+"/"+file4;
 
   fileIO::read_geometry_materialType(element,numOfElm,file4);
 }
