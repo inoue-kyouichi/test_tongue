@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include "vtkCellType.h"
+#include "allocation.h"
 
 template<typename T>
 using VECTOR1D = std::vector<T>;
@@ -40,25 +41,6 @@ using VECTOR7D = std::vector<std::vector<std::vector<std::vector<std::vector<std
 constexpr double GRAVITY = 9.80665; // (m/s2)
 constexpr double PI = 3.1415926535897932384626;
 
-// general
-// #define ON          1
-// #define OFF         0
-
-// //data encode
-// #define INT         0
-// #define DOUBLE      1
-// #define ASCII       0
-// #define BINARY      1
-
-// // IO file format
-// #define ORIGINAL    0
-// #define HDF5        1
-// #define VTK         2
-// #define VTU         3
-
-// //diciclet boundary condiiton
-// #define WALL     0
-
 typedef enum {
   PULP       = 0,
   PDL        = 1,
@@ -73,8 +55,6 @@ class ElementType{
   //MATERIALType  materialType;
   VECTOR1D<int> node;
 };
-
-// using elementType = std::vector<Element>;
 
 
 #endif // _FB_DEFINE_H_

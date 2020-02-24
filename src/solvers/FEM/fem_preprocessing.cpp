@@ -208,13 +208,23 @@ void Fem::inputNeumannBoundaryInfo(TextParser &tp)
 
 // #################################################################
 /**
- * @brief allocation. 高次要素を用いる場合は修正が必要。
+ * @brief allocation.
  */
 void Fem::allocate()
 {
-  Mass.allocate(numOfElm,20,20);
-  K.allocate(numOfElm,20,20,3,3);
-  Qu.allocate(numOfElm,20,3);
+  Mass.resize(numOfElm);
+  Qu.resize(numOfElm);
+  K.resize(numOfElm);
+
+  for(int ic=0;ic<numOfElm;ic++){
+    int numOfNodeInElm = element[ic].node.size();
+    Mass[ic].allocate(numOfNodeInElm,numOfNodeInElm);
+    Qu[ic].allocate(numOfNodeInElm,3);
+    K[ic].allocate(numOfNodeInElm,numOfNodeInElm,3,3);
+  }
+  // Mass.allocate(numOfElm,20,20);
+  // K.allocate(numOfElm,20,20,3,3);
+  // Qu.allocate(numOfElm,20,3);
 
   BFe.allocate(numOfElm,9,3);
 

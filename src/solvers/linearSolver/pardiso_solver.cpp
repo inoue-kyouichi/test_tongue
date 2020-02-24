@@ -148,7 +148,7 @@ void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,I
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const std::vector<ElementType> &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value1D(std::vector<DOUBLEARRAY2D> &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -168,7 +168,7 @@ void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const std::vector<ElementT
 
         for(int i=ptr[tmp1];i<ptr[tmp1+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K(ielm,p,q);
+            value[i]     += K[ielm](p,q);
             break;
           }
         }
@@ -187,7 +187,7 @@ void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const std::vector<ElementT
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const std::vector<ElementType> &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value2D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -207,15 +207,15 @@ void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const std::vector<ElementT
 
         for(int i=ptr[tmp1];i<ptr[tmp1+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K(ielm,p,q,0,0);
-            value[i+tmp3]  += K(ielm,p,q,0,1);
+            value[i]     += K[ielm](p,q,0,0);
+            value[i+tmp3]  += K[ielm](p,q,0,1);
             break;
           }
         }
         for(int i=ptr[tmp1+numOfNode];i<ptr[tmp1+numOfNode+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K(ielm,p,q,1,0);
-            value[i+tmp3]  += K(ielm,p,q,1,1);
+            value[i]     += K[ielm](p,q,1,0);
+            value[i+tmp3]  += K[ielm](p,q,1,1);
             break;
           }
         }
@@ -234,7 +234,7 @@ void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const std::vector<ElementT
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value3D(DOUBLEARRAY5D &K,const std::vector<ElementType> &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value3D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -254,25 +254,25 @@ void PARDISO_solver::set_CSR_value3D(DOUBLEARRAY5D &K,const std::vector<ElementT
 
         for(int i=ptr[tmp1];i<ptr[tmp1+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K(ielm,p,q,0,0);
-            value[i+tmp3]  += K(ielm,p,q,0,1);
-            value[i+tmp3*2] += K(ielm,p,q,0,2);
+            value[i]     += K[ielm](p,q,0,0);
+            value[i+tmp3]  += K[ielm](p,q,0,1);
+            value[i+tmp3*2] += K[ielm](p,q,0,2);
             break;
           }
         }
         for(int i=ptr[tmp1+numOfNode];i<ptr[tmp1+numOfNode+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K(ielm,p,q,1,0);
-            value[i+tmp3]  += K(ielm,p,q,1,1);
-            value[i+tmp3*2] += K(ielm,p,q,1,2);
+            value[i]     += K[ielm](p,q,1,0);
+            value[i+tmp3]  += K[ielm](p,q,1,1);
+            value[i+tmp3*2] += K[ielm](p,q,1,2);
             break;
           }
         }
         for(int i=ptr[tmp1+2*numOfNode];i<ptr[tmp1+2*numOfNode+1];i++){
           if(tmp2==index[i]){
-            value[i]     += K(ielm,p,q,2,0);
-            value[i+tmp3]  += K(ielm,p,q,2,1);
-            value[i+tmp3*2] += K(ielm,p,q,2,2);
+            value[i]     += K[ielm](p,q,2,0);
+            value[i+tmp3]  += K[ielm](p,q,2,1);
+            value[i+tmp3*2] += K[ielm](p,q,2,2);
             break;
           }
         }

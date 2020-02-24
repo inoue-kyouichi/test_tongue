@@ -39,7 +39,7 @@ void Fem::setInnerForce()
   for(int ic=0;ic<numOfElm;ic++){
     for(int p=0;p<element[ic].node.size();p++){
       for(int i=0;i<3;i++){
-        innerForce(element[ic].node[p],i) += Qu(ic,p,i);
+        innerForce(element[ic].node[p],i) += Qu[ic](p,i);
       }
     }
   }
@@ -71,10 +71,10 @@ void Fem::stress_tensor_initialize()
     for(int p=0;p<element[ic].node.size();p++){
       for(int q=0;q<element[ic].node.size();q++){
         for(int i=0;i<3;i++){
-          for(int j=0;j<3;j++) K(ic,p,q,i,j) = 0e0;
+          for(int j=0;j<3;j++) K[ic](p,q,i,j) = 0e0;
         }
       }
-      for(int i=0;i<3;i++) Qu(ic,p,i) = 0e0;
+      for(int i=0;i<3;i++) Qu[ic](p,i) = 0e0;
     }
   }
 
@@ -127,7 +127,7 @@ void Fem::calc_MassMatrix()
     }
 
     for(int p=0;p<numOfNodeInElm;p++){
-      for(int q=0;q<numOfNodeInElm;q++) Mass(ic,p,q) = 0e0;
+      for(int q=0;q<numOfNodeInElm;q++) Mass[ic](p,q) = 0e0;
      }
 
     for(int i1=0;i1<numOfGaussPoint;i1++){
@@ -153,7 +153,7 @@ void Fem::calc_MassMatrix()
           //calc_internal force vector
           for(int p=0;p<numOfNodeInElm;p++){
             for(int q=0;q<numOfNodeInElm;q++){
-              Mass(ic,p,q) += rho * N(p) * N(q) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+              Mass[ic](p,q) += rho * N(p) * N(q) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
             }
           }
 

@@ -420,7 +420,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+      for(int j=0;j<3;j++) Qu[ic](p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
     }
   }
 
@@ -506,7 +506,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
         for(int j=0;j<3;j++){
           for(int k=0;k<3;k++){
             for(int l=0;l<3;l++){
-              K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+              K[ic](p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
             }
           }
         }
@@ -620,7 +620,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++) Qu(ic,p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+      for(int j=0;j<3;j++) Qu[ic](p,i) += sigma[i][j] * dNdx(p,j) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
     }
   }
 
@@ -691,7 +691,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
         for(int j=0;j<3;j++){
           for(int k=0;k<3;k++){
             for(int l=0;l<3;l++){
-              K(ic,p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+              K[ic](p,q,i,j) += dNdx(p,k)*(tangentCoefficient[i][j][k][l]*dNdx(q,l)) * detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
             }
           }
         }
