@@ -64,16 +64,8 @@ class Fem : public Domain{
   }
 
   double I2[3][3],I4[3][3][3][3];
-  TextParser tp;
-  std::string outputDir,fileName;
 
-  int dataNumber;
-  int Restart;
-  int OMPnumThreads;
-  int maxIteration,NRiteration;
-  double NRtolerance;
   double totalVolume;
-  double relaxation;
 
   DOUBLEARRAY2D U, innerForce, externalForce, RHS;
   DOUBLEARRAY5D Ku,K;
@@ -86,7 +78,6 @@ class Fem : public Domain{
   void corrector_statistics(const double *u,const double relaxation);
   void calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
-  void calc_B_matrix(DOUBLEARRAY3D &B,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],DOUBLEARRAY2D &u,const int &numOfNodeInElm);
   void stress_tensor_initialize();
 
  private:
@@ -105,20 +96,18 @@ class Fem : public Domain{
 
   //fem_preprocessing.cpp
  public:
-  void initialize();
+  void initialize(TextParser &tp);
   void allocate();
  private:
-  void inputDomainInfo();
-  void inputMaterialInfo();
-  void inputDirichletBoundaryInfo();
-  void inputNeumannBoundaryInfo();
-  void inputFiberInfo();
-  void inputSolverInfo();
-  void inputOutputInfo();
-  void restart_setting();
+  void inputDomainInfo(TextParser &tp);
+  void inputMaterialInfo(TextParser &tp);
+  void inputDirichletBoundaryInfo(TextParser &tp);
+  void inputNeumannBoundaryInfo(TextParser &tp);
+  void inputFiberInfo(TextParser &tp);
+  void restart_setting(const int dataNumber,const bool Restart,TextParser &tp);
   void calc_normal_quad(double (&normal)[3],double (&X)[4][3]);
   void setFiberDirection();
-  void setFiberDirection_KogaModel();
+  void setFiberDirection_KogaModel(TextParser &tp);
   double arcLength(const double xMin,const double xMax);
 
   //fem_postprocessing.cpp
@@ -132,7 +121,6 @@ class Fem : public Domain{
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
   void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
-  // void tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J);
 
   public:
   double bulkModulusRatio;

@@ -20,14 +20,25 @@
 
 #include "fem.h"
 
-class RigidElasticInteraction : public Fem {
+class RigidElasticInteraction {
 
   //rigidBodyInteraction
  public:
+  Fem ElasticBody;
   void initialize_rigidBodyInteraction();
   void mainLoop();
 
+  TextParser tp;
+  std::string outputDir,fileName;
+
  private:
+
+  int dataNumber;
+  int Restart;
+  int OMPnumThreads;
+  int maxIteration,NRiteration;
+  double NRtolerance;
+  double relaxation;
 
   RigidBody RBdy;
   PARDISO_solver PARDISO;
@@ -53,6 +64,9 @@ class RigidElasticInteraction : public Fem {
   void calcKqq(const RigidBody &RBdy);
   void calc_Qlambda(const RigidBody &RBdy);
   void calc_Q_rigid(const RigidBody &RBdy);
+
+  void inputSolverInfo(TextParser &tp);
+  void inputOutputInfo(TextParser &tp);
 
 };
 

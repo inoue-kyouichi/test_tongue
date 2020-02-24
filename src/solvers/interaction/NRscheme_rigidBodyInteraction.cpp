@@ -97,7 +97,7 @@ void RigidElasticInteraction::calcKqq(const RigidBody &RBdy)
 void RigidElasticInteraction::calc_Qlambda(const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
-    for(int j=0;j<3;j++) Qlambda(ic,j)=U(CP(ic),j)-RBdy.U[j]+b0(ic,j)-b(ic,j);
+    for(int j=0;j<3;j++) Qlambda(ic,j)=ElasticBody.U(CP(ic),j)-RBdy.U[j]+b0(ic,j)-b(ic,j);
   }
 }
 

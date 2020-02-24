@@ -43,8 +43,8 @@ void RigidElasticInteraction::mainLoop()
       exit(1);
     }
 
-    for(int i=0;i<numOfNode;i++){
-      for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
+    for(int i=0;i<ElasticBody.numOfNode;i++){
+      for(int j=0;j<3;j++) ElasticBody.x(i,j) = ElasticBody.x0(i,j) + ElasticBody.U(i,j);
     }
     // for(int i=0;i<numOfElm;i++){
     //   calcVolume_hexa(i,volume,8,2,true);
@@ -52,8 +52,8 @@ void RigidElasticInteraction::mainLoop()
     // }
 
 
-    // for(int ic=0;ic<numOfElm;ic++) postProcess_LinearElastic_element_spatialForm(ic,true);
-    for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
+    for(int ic=0;ic<ElasticBody.numOfElm;ic++) ElasticBody.postProcess_LinearElastic_element_spatialForm(ic,true);
+    // for(int ic=0;ic<numOfElm;ic++) postProcess_PDL_element_2018(ic,U,8,2);
     // exportRestartData(loop);
 
     RBdy.updateShape();
@@ -78,9 +78,8 @@ void RigidElasticInteraction::mainLoop()
     // fclose(fp);
 
     output = outputDir + "/PDL_"+to_string(dataNumber)+"_"+to_string(loop)+".vtu";
-    // fileIO::export_vtu_Mises(x,element,numOfNode,numOfElm,U,Mises,output);
-    fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
-    exit(1);
+    fileIO::export_vtu_Mises(ElasticBody.x,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.U,ElasticBody.Mises,output);
+    // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
   }
 }
 
@@ -95,53 +94,53 @@ int RigidElasticInteraction::NRscheme()
 
   for(int ic=1;ic<=NRiteration;ic++){
 
-    calcStressTensor();  //calc K and Q
+    ElasticBody.calcStressTensor();  //calc K and Q
 
     #pragma omp parallel for
-    for(int i=0;i<numOfNode;i++){
-      for(int j=0;j<3;j++) innerForce(i,j) = 0e0;
+    for(int i=0;i<ElasticBody.numOfNode;i++){
+      for(int j=0;j<3;j++) ElasticBody.innerForce(i,j) = 0e0;
     }
 
     //linear elastic material only
-    for (int ia = 0; ia < numOfElm; ia++){
-      for (int p = 0; p < element[ia].node.size(); p++){
-       for (int q = 0; q < element[ia].node.size(); q++){
-        for (int i = 0; i < 3; i++){
-          for (int j = 0; j < 3; j++) innerForce(element[ia].node[p],i) += K(ia,p,q,i,j) * U(element[ia].node[q],j);
-        }
-      }
-    }
-  }
+  //   for (int ia = 0; ia < numOfElm; ia++){
+  //     for (int p = 0; p < element[ia].node.size(); p++){
+  //      for (int q = 0; q < element[ia].node.size(); q++){
+  //       for (int i = 0; i < 3; i++){
+  //         for (int j = 0; j < 3; j++) innerForce(element[ia].node[p],i) += K(ia,p,q,i,j) * U(element[ia].node[q],j);
+  //       }
+  //     }
+  //   }
+  // }
 
     calcTemporalFw();
 
     //elastic body-rigid body interaction
     for(int i=0;i<numOfCP;i++){
-      for(int j=0;j<3;j++) innerForce(CP(i),j)+=LAMBDA(i,j);
+      for(int j=0;j<3;j++) ElasticBody.innerForce(CP(i),j)+=LAMBDA(i,j);
     }
 
-    set_rhs_statics();
-    PARDISO.set_CSR_value3D(K,element,numOfNode,numOfElm,inb);
+    ElasticBody.set_rhs_statics();
+    PARDISO.set_CSR_value3D(ElasticBody.K,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.inb);
 
     //-----rigid body interaction term-------
     calcRigidBodyInteractionTerm(RBdy);
-    PARDISO.set_CSR_value_rigidBodyInteraction(numOfNode,iCP,Rb,Kqq,numOfCP);
-    PARDISO.set_CSR_dirichlet_boundary_condition(numOfNode,ibd);
+    PARDISO.set_CSR_value_rigidBodyInteraction(ElasticBody.numOfNode,iCP,Rb,Kqq,numOfCP);
+    PARDISO.set_CSR_dirichlet_boundary_condition(ElasticBody.numOfNode,ElasticBody.ibd);
 
     //rhs term
-    for(int i=0;i<numOfNode;i++){
-      for(int j=0;j<3;j++) PARDISO.b[i+j*numOfNode]=RHS(i,j);
+    for(int i=0;i<ElasticBody.numOfNode;i++){
+      for(int j=0;j<3;j++) PARDISO.b[i+j*ElasticBody.numOfNode]=ElasticBody.RHS(i,j);
     }
     for(int i=0;i<numOfCP;i++){
-      for(int j=0;j<3;j++) PARDISO.b[3*numOfNode+i+j*numOfCP]=-Qlambda(i,j);
+      for(int j=0;j<3;j++) PARDISO.b[3*ElasticBody.numOfNode+i+j*numOfCP]=-Qlambda(i,j);
     }
     for(int j=0;j<3;j++){
-      PARDISO.b[3*numOfNode+3*numOfCP+j]  = FU[j]-QU[j];
-      PARDISO.b[3*numOfNode+3*numOfCP+3+j]= Fw[j]-Qw[j];
+      PARDISO.b[3*ElasticBody.numOfNode+3*numOfCP+j]  = FU[j]-QU[j];
+      PARDISO.b[3*ElasticBody.numOfNode+3*numOfCP+3+j]= Fw[j]-Qw[j];
     }
 
-    PARDISO.main(3*numOfNode+3*numOfCP+6,OMPnumThreads);
-    norm = PARDISO.vector_norm(3*numOfNode+3*numOfCP+6,PARDISO.x);
+    PARDISO.main(3*ElasticBody.numOfNode+3*numOfCP+6,OMPnumThreads);
+    norm = PARDISO.vector_norm(3*ElasticBody.numOfNode+3*numOfCP+6,PARDISO.x);
 
     if(isnan(norm)){
       cout << "norm is nan " << endl;
@@ -150,8 +149,8 @@ int RigidElasticInteraction::NRscheme()
     if(ic==1) norm0 = norm;
     corrector_statics(PARDISO.x,relaxation);
 
-    for(int i=0;i<numOfNode;i++){
-      for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
+    for(int i=0;i<ElasticBody.numOfNode;i++){
+      for(int j=0;j<3;j++) ElasticBody.x(i,j) = ElasticBody.x0(i,j) + ElasticBody.U(i,j);
     }
 
     //for debug
@@ -199,17 +198,17 @@ void RigidElasticInteraction::corrector_statics(const double *u,const double rel
   double w[3];
 
   #pragma omp parallel for
-  for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) U(i,j) += u[i+j*numOfNode]*relaxation;
+  for(int i=0;i<ElasticBody.numOfNode;i++){
+    for(int j=0;j<3;j++) ElasticBody.U(i,j) += u[i+j*ElasticBody.numOfNode]*relaxation;
   }
 
   #pragma omp parallel for
   for(int i=0;i<numOfCP;i++){
-    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*numOfNode+i+j*numOfCP]*relaxation;
+    for(int j=0;j<3;j++) LAMBDA(i,j) += u[3*ElasticBody.numOfNode+i+j*numOfCP]*relaxation;
   }
 
-  for(int j=0;j<3;j++) RBdy.U[j] += u[3*numOfNode+3*numOfCP+j]*relaxation;
-  for(int j=0;j<3;j++) w[j]       = u[3*numOfNode+3*numOfCP+3+j]*relaxation;
+  for(int j=0;j<3;j++) RBdy.U[j] += u[3*ElasticBody.numOfNode+3*numOfCP+j]*relaxation;
+  for(int j=0;j<3;j++) w[j]       = u[3*ElasticBody.numOfNode+3*numOfCP+3+j]*relaxation;
 
   RBdy.updateRotationMatrix_spatialForm(w);
 }
@@ -221,8 +220,10 @@ void RigidElasticInteraction::corrector_statics(const double *u,const double rel
  */
 void RigidElasticInteraction::initialize_rigidBodyInteraction()
 {
-  initialize();
+  ElasticBody.initialize(tp);
   RBdy.initialize(tp);
+  inputSolverInfo(tp);
+  inputOutputInfo(tp);
   inputRigidBodyInterface();
 
   LAMBDA.allocate(numOfCP,3);
@@ -236,23 +237,23 @@ void RigidElasticInteraction::initialize_rigidBodyInteraction()
   }
 
   for(int ic=0;ic<numOfCP;ic++){
-    for(int j=0;j<3;j++) b0(ic,j)=x(CP(ic),j)-RBdy.xg[j];
+    for(int j=0;j<3;j++) b0(ic,j)=ElasticBody.x(CP(ic),j)-RBdy.xg[j];
   }
 
   omp_set_num_threads(OMPnumThreads);
 
   mkdir(outputDir.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
 
-  for(int i=0;i<numOfNode;i++){
-      if(ibd(i,0)==0 && iCP(i)!=-1) cout << i << endl;
+  for(int i=0;i<ElasticBody.numOfNode;i++){
+      if(ElasticBody.ibd(i,0)==0 && iCP(i)!=-1) cout << i << endl;
   }
 
   //CSR setting
-  PARDISO.initialize(3*numOfNode,3*numOfCP);
-  PARDISO.CSR_initialize(inb,numOfNode,iCP,CP,numOfCP,3);
+  PARDISO.initialize(3*ElasticBody.numOfNode,3*numOfCP);
+  PARDISO.CSR_initialize(ElasticBody.inb,ElasticBody.numOfNode,iCP,CP,numOfCP,3);
 
   string output = outputDir + "/" + fileName + "_boundary" + ".vtu";
-  fileIO::export_vtu_boundary(x,element,numOfNode,numOfElm,ibd,bd,fiberDirection_elm,output);
+  fileIO::export_vtu_boundary(ElasticBody.x,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.ibd,ElasticBody.bd,ElasticBody.fiberDirection_elm,output);
   output = outputDir + "/start.ply";
   RBdy.exportPLY(output);
 }
@@ -284,7 +285,7 @@ void RigidElasticInteraction::inputRigidBodyInterface()
 
   numOfCP = fileIO::CountNumbersOfTextLines(file);
   CP.allocate(numOfCP);
-  iCP.allocate(numOfNode);
+  iCP.allocate(ElasticBody.numOfNode);
 
   FILE *fp;
   if ((fp = fopen(file.c_str(), "r")) == NULL) {
@@ -294,7 +295,7 @@ void RigidElasticInteraction::inputRigidBodyInterface()
   for(int i=0;i<numOfCP;i++) fscanf(fp,"%d\n",&CP(i));
   fclose(fp);
 
-  for(int i=0;i<numOfNode;i++) iCP(i)=-1;
+  for(int i=0;i<ElasticBody.numOfNode;i++) iCP(i)=-1;
   for(int i=0;i<numOfCP;i++) iCP(CP(i))=i;
 
   base_label = "/RigidBody";
@@ -314,4 +315,81 @@ void RigidElasticInteraction::inputRigidBodyInterface()
   //   cout << label << " is not found" << endl;
   //   exit(0);
   // }
+}
+
+// #################################################################
+/**
+ * @brief solver information from TP file
+ */
+void RigidElasticInteraction::inputSolverInfo(TextParser &tp)
+{
+  string str,base_label,label;
+  int tmp;
+
+  base_label = "/Solver";
+
+  label = base_label + "/dataNumber";
+  if ( !tp.getInspectedValue(label, dataNumber)){
+    cout << "maxiteration is not set" << endl;
+    exit(0);
+  }
+
+  label = base_label + "/maxIteration";
+  if ( !tp.getInspectedValue(label, maxIteration)){
+    cout << "maxiteration is not set" << endl;
+    exit(0);
+  }
+
+  label = base_label + "/NR_iteration";
+  if ( !tp.getInspectedValue(label, NRiteration)){
+    cout << "NLiteration is not set" << endl;
+    exit(0);
+  }
+
+  label = base_label + "/NR_tolerance";
+  if ( !tp.getInspectedValue(label, tmp)){
+    cout << "NRtolerance is not set" << endl;
+    exit(0);
+  }
+  NRtolerance = pow(1e-1,tmp);
+
+  label = base_label + "/Restart";
+  if ( !tp.getInspectedValue(label, Restart)){
+    cout << label <<" is not set" << endl;
+    exit(0);
+  }
+
+  label = base_label + "/OMPnumThreads";
+  if ( !tp.getInspectedValue(label, OMPnumThreads)){
+    cout << "OMPnumThreads is not set" << endl;
+    exit(0);
+  }
+
+  label = base_label + "/relaxation";
+  if ( !tp.getInspectedValue(label,relaxation)){
+    cout << "NLiteration is not set" << endl;
+    exit(0);
+  }
+}
+
+// #################################################################
+/**
+ * @brief output information from TP file
+ */
+void RigidElasticInteraction::inputOutputInfo(TextParser &tp)
+{
+  string str,base_label,label;
+
+  base_label = "/Output";
+  label = base_label + "/outputDir";
+  if ( !tp.getInspectedValue(label, outputDir)){
+    cout << "outputDir is not set" << endl;
+    exit(0);
+  }
+
+  label = base_label + "/fileName";
+  if ( !tp.getInspectedValue(label, fileName)){
+    cout << "fileName is not set" << endl;
+    exit(0);
+  }
 }

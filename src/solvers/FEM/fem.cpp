@@ -16,19 +16,19 @@ using namespace std;
  * @brief fem solid analysis routine
  * @param [inout] PARDISO   PARDISO class
  */
-void Fem::exportRestartData(const int loop)
-{
-  FILE *fp;
-  string output = "Restart_"+to_string(dataNumber)+"/U_" + to_string(loop) + ".dat";
-  if ((fp = fopen(output.c_str(), "w")) == NULL) {
-    cout << "file open error" << endl;
-    exit(1);
-  }
-  for(int i=0;i<numOfNode;i++){
-    fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
-  }
-  fclose(fp);
-}
+// void Fem::exportRestartData(const int loop)
+// {
+//   FILE *fp;
+//   string output = "Restart_"+to_string(dataNumber)+"/U_" + to_string(loop) + ".dat";
+//   if ((fp = fopen(output.c_str(), "w")) == NULL) {
+//     cout << "file open error" << endl;
+//     exit(1);
+//   }
+//   for(int i=0;i<numOfNode;i++){
+//     fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
+//   }
+//   fclose(fp);
+// }
 
 // #################################################################
 /**

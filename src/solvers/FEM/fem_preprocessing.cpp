@@ -12,21 +12,18 @@ using namespace std;
 /**
  * @brief initialize FEM class
  */
-void Fem::initialize()
+void Fem::initialize(TextParser &tp)
 {
-  inputDomainInfo();
-  // inputMaterialInfo();
-  inputSolverInfo();
-  inputOutputInfo();
+  inputDomainInfo(tp);
 
-  string restartDirName="Restart_"+to_string(dataNumber);
-  mkdir(restartDirName.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
+  // string restartDirName="Restart_"+to_string(dataNumber);
+  // mkdir(restartDirName.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
 
   allocate();
-  restart_setting();
+  // restart_setting(dataNumber,Restart);
 
-  inputDirichletBoundaryInfo();
-  // setFiberDirection_KogaModel();
+  inputDirichletBoundaryInfo(tp);
+  setFiberDirection_KogaModel(tp);
   // inputFiberInfo();
 }
 
@@ -34,7 +31,7 @@ void Fem::initialize()
 /**
  * @brief output information from TP file
  */
-void Fem::restart_setting()
+void Fem::restart_setting(const int dataNumber,const bool Restart,TextParser &tp)
 {
   FILE *fp;
   string output;
@@ -42,7 +39,7 @@ void Fem::restart_setting()
   string str,base_label,label;
 
   base_label = "/Domain";
-  if(Restart==0){
+  if(Restart==false){
     output = "Restart_"+to_string(dataNumber)+"/x0.dat";
     if ((fp = fopen(output.c_str(), "w")) == NULL) {
       cout << output << " open error" << endl;
@@ -86,88 +83,9 @@ void Fem::restart_setting()
 
 // #################################################################
 /**
- * @brief output information from TP file
- */
-void Fem::inputOutputInfo()
-{
-  string str,base_label,label;
-
-  base_label = "/Output";
-  label = base_label + "/outputDir";
-  if ( !tp.getInspectedValue(label, outputDir)){
-    cout << "outputDir is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/fileName";
-  if ( !tp.getInspectedValue(label, fileName)){
-    cout << "fileName is not set" << endl;
-    exit(0);
-  }
-}
-
-// #################################################################
-/**
- * @brief solver information from TP file
- */
-void Fem::inputSolverInfo()
-{
-  string str,base_label,label;
-  int tmp;
-
-  base_label = "/Solver";
-
-  label = base_label + "/dataNumber";
-  if ( !tp.getInspectedValue(label, dataNumber)){
-    cout << "maxiteration is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/maxIteration";
-  if ( !tp.getInspectedValue(label, maxIteration)){
-    cout << "maxiteration is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/NR_iteration";
-  if ( !tp.getInspectedValue(label, NRiteration)){
-    cout << "NLiteration is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/NR_tolerance";
-  if ( !tp.getInspectedValue(label, tmp)){
-    cout << "NRtolerance is not set" << endl;
-    exit(0);
-  }
-  NRtolerance = pow(1e-1,tmp);
-
-  label = base_label + "/Restart";
-  if ( !tp.getInspectedValue(label, Restart)){
-    cout << label <<" is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/OMPnumThreads";
-  if ( !tp.getInspectedValue(label, OMPnumThreads)){
-    cout << "OMPnumThreads is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/relaxation";
-  if ( !tp.getInspectedValue(label,relaxation)){
-    cout << "NLiteration is not set" << endl;
-    exit(0);
-  }
-}
-
-
-
-// #################################################################
-/**
  * @brief domain information from tp file
  */
-void Fem::inputDomainInfo()
+void Fem::inputDomainInfo(TextParser &tp)
 {
   string str,base_label,label,inputDir;
 
@@ -206,7 +124,7 @@ void Fem::inputDomainInfo()
 /**
  * @brief domain information from tp file
  */
-void Fem::inputMaterialInfo()
+void Fem::inputMaterialInfo(TextParser &tp)
 {
   string str,base_label,label,inputDir;
 
@@ -233,7 +151,7 @@ void Fem::inputMaterialInfo()
 /**
  * @brief Dirichlet information from TP file
  */
-void Fem::inputDirichletBoundaryInfo()
+void Fem::inputDirichletBoundaryInfo(TextParser &tp)
 {
   string str,base_label,label,inputDir;
   base_label = "/Domain";
@@ -261,7 +179,7 @@ void Fem::inputDirichletBoundaryInfo()
 /**
  * @brief Neumann information from TP file
  */
-void Fem::inputNeumannBoundaryInfo()
+void Fem::inputNeumannBoundaryInfo(TextParser &tp)
 {
   string str,base_label,label,inputDir;
   string N_file,Nvalue_file,NmeshType_file;
@@ -350,7 +268,7 @@ void Fem::calc_normal_quad(double (&normal)[3],double (&X)[4][3])
 /**
  * @brief fiber information from TP file
  */
-void Fem::setFiberDirection_KogaModel()
+void Fem::setFiberDirection_KogaModel(TextParser &tp)
 {
   string str,base_label,label,inputDir;
   double thetaMax,horizontalFiberPosition;
@@ -423,7 +341,7 @@ double Fem::arcLength(const double xMin,const double xMax)
 /**
  * @brief fiber information from TP file
  */
-void Fem::inputFiberInfo()
+void Fem::inputFiberInfo(TextParser &tp)
 {
   string str,base_label,label,inputDir;
 
