@@ -35,6 +35,7 @@
 #include "gauss.h"
 #include "math_tools.h"
 #include "fem_define.h"
+#include "fem_base_mathTool.h"
 #include "ShapeFunction.h"
 #include "fileIO.h"
 #include "pardiso_solver.h"
@@ -74,7 +75,7 @@ class Fem : public Domain{
   double totalVolume;
   double relaxation;
 
-  int numOfGaussPoint;
+  // int numOfGaussPoint;
   DOUBLEARRAY2D U, innerForce, externalForce, RHS;
   DOUBLEARRAY5D Ku,K;
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
@@ -131,7 +132,7 @@ class Fem : public Domain{
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
   void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
-  void tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J);
+  // void tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J);
 
   public:
   double bulkModulusRatio;
@@ -176,14 +177,6 @@ private:
 //   void calc_Traction_element_quad(const int &ic,const int numOfNodeInBdElm,const int numOfGaussPoint);
 //   void calc_TractionByPressure_element(const int &ic,const Element &boundaryElement);
 //   void calcBFe_inGaussIntegral(DOUBLEARRAY3D &BFe,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &X,const int numOfNodeInBdElm,const double weight,const int ic);
-
-  //fem_base.cpp
- private:
-  void calc_dudX(double (&dudX)[3][3],DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &u,const int &numOfNodeInElm);
-  void calc_dXdr(double (&dXdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x0,const int &numOfNodeInElm);
-  void calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x,const int &numOfNodeInElm);
-  void calc_dNdX(DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],const int &numOfNodeInElm);
-  void calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm);
 
 };
 

@@ -36,7 +36,7 @@ void PARDISO_solver::initialize(const int &DOF)
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim)
+void PARDISO_solver::CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim)
 {
   ptr = (MKL_INT *)malloc((numOfNode*dim+1)*sizeof(MKL_INT));
 
@@ -71,7 +71,7 @@ double PARDISO_solver::vector_norm(const int &nump,const double *x)
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim)
+void PARDISO_solver::CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim)
 {
   nnz = 0;
   for(int i=0;i<dim;i++){
@@ -90,7 +90,7 @@ void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNo
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim)
+void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim)
 {
   int tmp = 0;
   for(int dim2=0;dim2<dim;dim2++){
@@ -148,8 +148,94 @@ void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,I
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
-                               const int &numOfElm,const INTVECTOR2 &inb)
+void PARDISO_solver::set_CSR_value1D(DOUBLEARRAY3D &K,const elementType &element,const int &numOfNode,
+                               const int &numOfElm,const VECTOR2D<int> &inb)
+{
+  int tmp1,tmp2,tmp3;
+
+  #pragma omp parallel for
+  for(int ic=0;ic<nnz;ic++) value[ic] = 0e0;
+
+  for(int ielm=0;ielm<numOfElm;ielm++){
+    for(int p=0;p<element[ielm].node.size();p++){
+
+      tmp1 = element[ielm].node[p];
+      tmp3 = inb[tmp1].size();
+
+      for(int q=0;q<element[ielm].node.size();q++){
+
+        tmp2 = element[ielm].node[q];
+
+        for(int i=ptr[tmp1];i<ptr[tmp1+1];i++){
+          if(tmp2==index[i]){
+            value[i]     += K(ielm,p,q);
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+// #################################################################
+/**
+ * @brief calc set CSR matrix (Vector)
+ * @param [in] K element stiffness matrix
+ * @param [in] ie elements
+ * @param [in] numOfNode number of nodes
+ * @param [in] numOfElm number of elements
+ * @param [in] numOfNodeInElm nubmer of node in each elements
+ * @param [in] inb nodes around each node
+ */
+void PARDISO_solver::set_CSR_value2D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
+                               const int &numOfElm,const VECTOR2D<int> &inb)
+{
+  int tmp1,tmp2,tmp3;
+
+  #pragma omp parallel for
+  for(int ic=0;ic<nnz;ic++) value[ic] = 0e0;
+
+  for(int ielm=0;ielm<numOfElm;ielm++){
+    for(int p=0;p<element[ielm].node.size();p++){
+
+      tmp1 = element[ielm].node[p];
+      tmp3 = inb[tmp1].size();
+
+      for(int q=0;q<element[ielm].node.size();q++){
+
+        tmp2 = element[ielm].node[q];
+
+        for(int i=ptr[tmp1];i<ptr[tmp1+1];i++){
+          if(tmp2==index[i]){
+            value[i]     += K(ielm,p,q,0,0);
+            value[i+tmp3]  += K(ielm,p,q,0,1);
+            break;
+          }
+        }
+        for(int i=ptr[tmp1+numOfNode];i<ptr[tmp1+numOfNode+1];i++){
+          if(tmp2==index[i]){
+            value[i]     += K(ielm,p,q,1,0);
+            value[i+tmp3]  += K(ielm,p,q,1,1);
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+// #################################################################
+/**
+ * @brief calc set CSR matrix (Vector)
+ * @param [in] K element stiffness matrix
+ * @param [in] ie elements
+ * @param [in] numOfNode number of nodes
+ * @param [in] numOfElm number of elements
+ * @param [in] numOfNodeInElm nubmer of node in each elements
+ * @param [in] inb nodes around each node
+ */
+void PARDISO_solver::set_CSR_value3D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
+                               const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
 

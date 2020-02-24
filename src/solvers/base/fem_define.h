@@ -22,24 +22,38 @@
 #include "TextParser.h"
 #include "vtkCellType.h"
 
-typedef std::vector<int> INTVECTOR1;
-typedef std::vector<std::vector<int>> INTVECTOR2;
-typedef std::vector<std::vector<std::vector<int>>> INTVECTOR3;
-typedef std::vector<std::vector<std::vector<std::vector<int>>>> INTVECTOR4;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<int>>>>> INTVECTOR5;
+template<typename T>
+using VECTOR1D = std::vector<T>;
+template<typename T>
+using VECTOR2D = std::vector<std::vector<T>>;
+template<typename T>
+using VECTOR3D = std::vector<std::vector<std::vector<T>>>;
+template<typename T>
+using VECTOR4D = std::vector<std::vector<std::vector<std::vector<T>>>>;
+template<typename T>
+using VECTOR5D = std::vector<std::vector<std::vector<std::vector<std::vector<T>>>>>;
+template<typename T>
+using VECTOR6D = std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<T>>>>>>;
+template<typename T>
+using VECTOR7D = std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<T>>>>>>>;
 
-typedef std::vector<double> DOUBLEVECTOR1;
-typedef std::vector<std::vector<double>> DOUBLEVECTOR2;
-typedef std::vector<std::vector<std::vector<double>>> DOUBLEVECTOR3;
-typedef std::vector<std::vector<std::vector<std::vector<double>>>> DOUBLEVECTOR4;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> DOUBLEVECTOR5;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>> DOUBLEVECTOR6;
-typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>>> DOUBLEVECTOR7;
+// typedef std::vector<int> INTVECTOR1;
+// typedef std::vector<std::vector<int>> INTVECTOR2;
+// typedef std::vector<std::vector<std::vector<int>>> INTVECTOR3;
+// typedef std::vector<std::vector<std::vector<std::vector<int>>>> INTVECTOR4;
+// typedef std::vector<std::vector<std::vector<std::vector<std::vector<int>>>>> INTVECTOR5;
 
+// typedef std::vector<double> DOUBLEVECTOR1;
+// typedef std::vector<std::vector<double>> DOUBLEVECTOR2;
+// typedef std::vector<std::vector<std::vector<double>>> DOUBLEVECTOR3;
+// typedef std::vector<std::vector<std::vector<std::vector<double>>>> DOUBLEVECTOR4;
+// typedef std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> DOUBLEVECTOR5;
+// typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>> DOUBLEVECTOR6;
+// typedef std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>>> DOUBLEVECTOR7;
 
 #define FEM_VERS "1.0"
-#define GRAVITY     9.80665 // (m/s2)
-static const double PI = 3.1415926535897932384626;
+constexpr double GRAVITY = 9.80665; // (m/s2)
+constexpr double PI = 3.1415926535897932384626;
 
 // general
 #define ON          1
@@ -69,11 +83,13 @@ typedef enum {
 class Element{
  public:
   VTKCellType meshType;
-  MATERIALType materialType;
-  INTVECTOR1 node;
+  int materialType;
+  int numOfGaussPoint;
+  //MATERIALType  materialType;
+  VECTOR1D<int> node;
 };
 
-typedef std::vector<Element> elementType;
+using elementType = std::vector<Element>;
 
 
 #endif // _FB_DEFINE_H_

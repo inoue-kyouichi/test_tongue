@@ -104,8 +104,8 @@ const int numOfNodeInElm,const double weight,const int ic,const double lambda,co
     }
   }
 
-  calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
-  calc_dNdx(dNdx,dNdr,dXdr,numOfNodeInElm);
+  FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+  FEM_MathTool::calc_dNdx(dNdx,dNdr,dXdr,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dXdr);
   volume = detJ * weight;
 

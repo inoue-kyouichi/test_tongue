@@ -4,7 +4,8 @@
  * @author T. Otani
  */
 
-#include "fem.h"
+#include "fem_base_mathTool.h"
+#include "math_tools.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ using namespace std;
  * @brief calc dudX
  * @param [in] stress
  */
-void Fem::calc_dudX(double (&dudX)[3][3],DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &u,const int &numOfNodeInElm)
+void FEM_MathTool::calc_dudX(double (&dudX)[3][3],DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &u,const int &numOfNodeInElm)
 {
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -28,7 +29,7 @@ void Fem::calc_dudX(double (&dudX)[3][3],DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &u,co
  * @brief calc dxdr
  * @param [in] stress
  */
-void Fem::calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x1,const int &numOfNodeInElm)
+void FEM_MathTool::calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x1,const int &numOfNodeInElm)
 {
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -44,7 +45,7 @@ void Fem::calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x1,c
  * @brief calc dXdr
  * @param [in] stress
  */
-void Fem::calc_dXdr(double (&dXdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x0,const int &numOfNodeInElm)
+void FEM_MathTool::calc_dXdr(double (&dXdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x0,const int &numOfNodeInElm)
 {
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -61,7 +62,7 @@ void Fem::calc_dXdr(double (&dXdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x0,c
  * @brief calc dNdx
  * @param [in] stress
  */
-void Fem::calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm)
+void FEM_MathTool::calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm)
 {
   double drdx[3][3];
 
@@ -80,7 +81,7 @@ void Fem::calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)
  * @brief calc dNdX
  * @param [in] stress
  */
-void Fem::calc_dNdX(DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],const int &numOfNodeInElm)
+void FEM_MathTool::calc_dNdX(DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],const int &numOfNodeInElm)
 {
   double drdX[3][3];
 
@@ -96,3 +97,30 @@ void Fem::calc_dNdX(DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &dNdr,const double (&dXdr)
   }
 }
 
+// #################################################################
+/**
+ * @brief push forward routine for 4th order tensor
+ * @param [out] c4    elasticity tensor in current coordinates
+ * @param [in]  C4    elasticity tensor in reference coordinates
+ * @param [in]  F     deformation gradient tensor
+ * @param [in]  J     Jacobian (volume change ratio)
+ */
+void FEM_MathTool::tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J)
+{
+  for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++){
+        for(int k=0;k<3;k++){
+          for(int l=0;l<3;l++){
+            c4[i][j][k][l]=0e0;
+            for(int p=0;p<3;p++){
+              for(int q=0;q<3;q++){
+                for(int r=0;r<3;r++){
+                  for(int s=0;s<3;s++) c4[i][j][k][l]+=F[i][p]*F[j][q]*F[k][r]*F[l][s]*C4[p][q][r][s]/J;
+                }
+            }
+          }
+        }
+      }
+    }
+  }
+}

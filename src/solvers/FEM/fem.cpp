@@ -134,11 +134,12 @@ void Fem::calc_MassMatrix()
   DOUBLEARRAY1D N;
   DOUBLEARRAY2D dNdr,X;
 
-  //------two point---------
-  Gauss gauss(numOfGaussPoint);
-  //------------------------
-
   for(int ic=0;ic<numOfElm;ic++){
+
+    int numOfGaussPoint = element[ic].numOfGaussPoint;
+
+    Gauss gauss(numOfGaussPoint);
+
     numOfNodeInElm=element[ic].node.size();
     N.allocate(numOfNodeInElm);
     dNdr.allocate(numOfNodeInElm,3);
@@ -169,7 +170,7 @@ void Fem::calc_MassMatrix()
               cout << "error in calcMassMatrix" << endl;
           }
 
-          calc_dXdr(dXdr,dNdr,X,numOfNodeInElm);
+          FEM_MathTool::calc_dXdr(dXdr,dNdr,X,numOfNodeInElm);
           detJ = mathTool::calcDeterminant_3x3(dXdr);
 
           //calc_internal force vector
@@ -232,11 +233,11 @@ void Fem::calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &
             break;
         }
         if(option==1){
-          calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+          FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
         }else if(option==0){
-          calc_dXdr(dxdr,dNdr,x_ref,numOfNodeInElm);
+          FEM_MathTool::calc_dXdr(dxdr,dNdr,x_ref,numOfNodeInElm);
         }
-        calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
+        FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
         detJ = mathTool::calcDeterminant_3x3(dxdr);
 
         volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];

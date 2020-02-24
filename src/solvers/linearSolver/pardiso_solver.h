@@ -49,27 +49,28 @@ class PARDISO_solver{
 
   void main(MKL_INT n,const int numOfOMP);
   void initialize(const int &DOF);
-  void CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim);
+  void CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim);
 
   double vector_norm(const int &nump,const double *x);
 
-  void set_CSR_value(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,
-                               const int &numOfElm,const INTVECTOR2 &inb);
+  void set_CSR_value1D(DOUBLEARRAY3D &K,const elementType &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value2D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value3D(DOUBLEARRAY5D &K,const elementType &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
   void set_CSR_dirichlet_boundary_condition(const int &numOfNode,INTARRAY2D &ibd);
 
 private:
-  void CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim);
-  void CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,const int &dim);
+  void CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim);
+  void CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim);
 
  public:
   //rigid body interaction
   void initialize(const int &DOF,const int &DOF2);
-  void CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
+  void CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
   void set_CSR_value_rigidBodyInteraction(const int &numOfNode,INTARRAY1D &iCP,DOUBLEARRAY3D &Rb,const double (&Kqq)[3][3],const int numOfCP);
  private:
   //rigid body interaction
-  void CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim);
-  void CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
+  void CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim);
+  void CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
 
 };
 

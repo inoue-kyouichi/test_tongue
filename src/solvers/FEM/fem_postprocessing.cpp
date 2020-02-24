@@ -131,8 +131,8 @@ double Fem::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],do
     }
   }
 
-  calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
-  calc_dNdx(dNdx,dNdr,dXdr,numOfNodeInElm);
+  FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+  FEM_MathTool::calc_dNdx(dNdx,dNdr,dXdr,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dXdr);
   volume = detJ * weight;
 

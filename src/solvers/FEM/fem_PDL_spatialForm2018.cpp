@@ -52,10 +52,10 @@ void Fem::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,c
 
         ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
 
-        calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+        FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
         detJ = mathTool::calcDeterminant_3x3(dxdr);
-        calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
-        calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+        FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
+        FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
         mathTool::calcInverseMatrix_3x3(drdX,dXdr);
         for(int i=0;i<3;i++){
           for(int j=0;j<3;j++){
@@ -157,10 +157,10 @@ void Fem::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const 
 
         ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
 
-        calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+        FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
         detJ = mathTool::calcDeterminant_3x3(dxdr);
-        calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
-        calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+        FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
+        FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
         mathTool::calcInverseMatrix_3x3(drdX,dXdr);
         for(int i=0;i<3;i++){
           for(int j=0;j<3;j++){
@@ -313,11 +313,11 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   double term4,term4_2,a0[3],a[3];
   double F_initial[3][3],Ftmp[3][3];
 
-  calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+  FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
   volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
 
-  calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+  FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
   mathTool::calcInverseMatrix_3x3(drdX,dXdr);
 
   for(int i=0;i<3;i++){
@@ -485,7 +485,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
 
         //------------------------------end specific routine-----------------------------
 
-  tensorPushForward_4order(elasticityTensor_current,C4iso,F,J);
+  FEM_MathTool::tensorPushForward_4order(elasticityTensor_current,C4iso,F,J);
 
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -548,11 +548,11 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   const double poisson=0.257e0;
   const double beta=poisson/(1e0-2e0*poisson);
 
-  calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+  FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
   // volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
 
-  calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+  FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
   mathTool::calcInverseMatrix_3x3(drdX,dXdr);
 
   for(int i=0;i<3;i++){
@@ -670,7 +670,7 @@ const int &numOfNodeInElm,const Gauss &gauss,DOUBLEARRAY2D &x_current,DOUBLEARRA
   }
   //------------------------------end specific routine-----------------------------
 
-  tensorPushForward_4order(elasticityTensor_current,C4iso,F,J);
+  FEM_MathTool::tensorPushForward_4order(elasticityTensor_current,C4iso,F,J);
 
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -731,33 +731,5 @@ void Fem::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const
     stretchDirection[0][j]=max_eigen_vector(j);
     stretchDirection[1][j]=med_eigen_vector(j);
     stretchDirection[2][j]=min_eigen_vector(j);
-  }
-}
-
-// #################################################################
-/**
- * @brief push forward routine for 4th order tensor
- * @param [out] c4    elasticity tensor in current coordinates
- * @param [in]  C4    elasticity tensor in reference coordinates
- * @param [in]  F     deformation gradient tensor
- * @param [in]  J     Jacobian (volume change ratio)
- */
-void Fem::tensorPushForward_4order(double (&c4)[3][3][3][3],const double (&C4)[3][3][3][3],const double (&F)[3][3],const double J)
-{
-  for(int i=0;i<3;i++){
-      for(int j=0;j<3;j++){
-        for(int k=0;k<3;k++){
-          for(int l=0;l<3;l++){
-            c4[i][j][k][l]=0e0;
-            for(int p=0;p<3;p++){
-              for(int q=0;q<3;q++){
-                for(int r=0;r<3;r++){
-                  for(int s=0;s<3;s++) c4[i][j][k][l]+=F[i][p]*F[j][q]*F[k][r]*F[l][s]*C4[p][q][r][s]/J;
-                }
-            }
-          }
-        }
-      }
-    }
   }
 }

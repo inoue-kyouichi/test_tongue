@@ -120,7 +120,7 @@ int RigidElasticInteraction::NRscheme()
     }
 
     set_rhs_statics();
-    PARDISO.set_CSR_value(K,element,numOfNode,numOfElm,inb);
+    PARDISO.set_CSR_value3D(K,element,numOfNode,numOfElm,inb);
 
     //-----rigid body interaction term-------
     calcRigidBodyInteractionTerm(RBdy);

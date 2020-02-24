@@ -36,7 +36,7 @@ void PARDISO_solver::initialize(const int &DOF,const int &DOF2)
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
 {
   ptr = (MKL_INT *)malloc((numOfNode*dim+numOfCP*dim+6+1)*sizeof(MKL_INT));
 
@@ -63,7 +63,7 @@ void PARDISO_solver::CSR_initialize(const INTVECTOR2 &inb,const int &numOfNode,I
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim)
 {
   nnz = 0;
 
@@ -103,7 +103,7 @@ void PARDISO_solver::CSR_ptr_initialize(const INTVECTOR2 &inb,const int &numOfNo
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_index_initialize(const INTVECTOR2 &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
 {
   int tmp = 0;
 

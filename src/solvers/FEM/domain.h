@@ -31,8 +31,8 @@ public:
   INTARRAY2D ibd;
   DOUBLEARRAY2D bd;
   DOUBLEARRAY2D bn;
-  INTVECTOR2 inb;
-  INTVECTOR2 ieb;
+  VECTOR2D<int> inb;
+  VECTOR2D<int> ieb;
 
   void set_geometry(const std::string &file1,const std::string &file2,const std::string &file3);
   void set_dirichlet(const std::string &D_file);
