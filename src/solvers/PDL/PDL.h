@@ -33,8 +33,6 @@ class PeriodontalLigament:public Fem{
   void allocatePDLvariables();
 
   void postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void postProcess_LinearElastic_element_spatialForm(const int ic,const bool option);
-  void calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option);
 
   void inputFiberInfo(TextParser &tp);
 
@@ -43,8 +41,6 @@ class PeriodontalLigament:public Fem{
 
   // void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,DOUBLEARRAY2D &U_tmp,
   // const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
-  void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
  private:
   void calc_normal_quad(double (&normal)[3],double (&X)[4][3]);
@@ -68,10 +64,6 @@ class PeriodontalLigament:public Fem{
   //fem_hyperFoam_spatialForm.cpp
   // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
   void calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3]);
-
-  double LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
-  double postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
-
 };
 
 #endif

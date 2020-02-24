@@ -118,33 +118,6 @@ void Fem::inputDomainInfo(TextParser &tp)
 
 // #################################################################
 /**
- * @brief domain information from tp file
- */
-void Fem::inputMaterialInfo(TextParser &tp)
-{
-  string str,base_label,label,inputDir;
-
-  base_label = "/Domain";
-
-  label = base_label + "/inputDir";
-  if ( !tp.getInspectedValue(label,inputDir)){
-    cout << "data format is not set" << endl;
-    exit(0);
-  }
-  string file1,file2,file3,file4,file5;
-
-  label = base_label + "/materialTypeFile";
-  if ( !tp.getInspectedValue(label,file4)){
-    cout << label << " is not found" << endl;
-    exit(0);
-  }
-  file4=inputDir+"/"+file4;
-
-  fileIO::read_geometry_materialType(element,numOfElm,file4);
-}
-
-// #################################################################
-/**
  * @brief Dirichlet information from TP file
  */
 void Fem::inputDirichletBoundaryInfo(TextParser &tp)

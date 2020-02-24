@@ -52,6 +52,9 @@ class fileIO{
   static void export_vtu_boundary(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
             INTARRAY2D &ibd,DOUBLEARRAY2D &bd,DOUBLEARRAY2D &fiberDirection_elm,const std::string &file);
+  static void export_vtu_boundary(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+            const int &numOfNode,const int &numOfElm,
+            INTARRAY2D &ibd,DOUBLEARRAY2D &bd,const std::string &file);
 
   static void export_vtu_Mises(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,DOUBLEARRAY2D &U,DOUBLEARRAY1D &Mises,const std::string &file);
 };

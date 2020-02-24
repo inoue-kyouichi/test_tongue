@@ -85,6 +85,8 @@ class Fem : public Domain{
   std::vector<DOUBLEARRAY2D> Qu;
   std::vector<DOUBLEARRAY2D> Mass;
   // DOUBLEARRAY3D Mass;
+
+  
  private:
   void exportRestartData(const int loop);
 
@@ -99,7 +101,6 @@ class Fem : public Domain{
   void allocate();
  private:
   void inputDomainInfo(TextParser &tp);
-  void inputMaterialInfo(TextParser &tp);
   void inputDirichletBoundaryInfo(TextParser &tp);
   void inputNeumannBoundaryInfo(TextParser &tp);
   void inputFiberInfo(TextParser &tp);
@@ -110,6 +111,9 @@ class Fem : public Domain{
   DOUBLEARRAY1D Mises;
   DOUBLEARRAY2D AEigen_Ave,sigmaEigen_Ave;
   DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
+
+  void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
+  void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
   //fem_boundary.cpp
 //  public:

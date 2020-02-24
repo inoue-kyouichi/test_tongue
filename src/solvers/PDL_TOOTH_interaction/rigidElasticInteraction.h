@@ -19,6 +19,7 @@
  */
 
 #include "PDL.h"
+#include "Rat_PDL.h"
 #include "RigidBody.h"
 
 class RigidElasticInteraction_base {
@@ -47,6 +48,8 @@ class RigidElasticInteraction_base {
 
 };
 
+
+namespace humanPDL{
 class RigidElasticInteraction :public RigidElasticInteraction_base{
 
   //rigidBodyInteraction
@@ -74,7 +77,39 @@ class RigidElasticInteraction :public RigidElasticInteraction_base{
   int NRscheme();
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);
-
 };
+}
+
+namespace ratAnalysis{
+class RigidElasticInteraction :public RigidElasticInteraction_base{
+
+  //rigidBodyInteraction
+ public:
+  Rat_PeriodontalLigament ElasticBody;
+  void initialize_rigidBodyInteraction();
+  void mainLoop();
+
+  TextParser tp;
+  std::string outputDir,fileName;
+
+ private:
+
+  int dataNumber;
+  int Restart;
+  int OMPnumThreads;
+  int maxIteration,NRiteration;
+  double NRtolerance;
+  double relaxation;
+
+  RigidBody RBdy;
+  PARDISO_solver PARDISO;
+
+  void inputRigidBodyInterface();
+  int NRscheme();
+  void inputSolverInfo(TextParser &tp);
+  void inputOutputInfo(TextParser &tp);
+};
+}
+
 
 #endif //_FEM_H_

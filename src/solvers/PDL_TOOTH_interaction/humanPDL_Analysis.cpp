@@ -12,7 +12,7 @@ using namespace std;
 /**
  * @brief rigid body-elastic body interaction problem
  */
-void RigidElasticInteraction::mainLoop()
+void humanPDL::RigidElasticInteraction::mainLoop()
 {
   int output_iter=1;
   string output;
@@ -87,7 +87,7 @@ void RigidElasticInteraction::mainLoop()
 /**
  * @brief fem solid analysis routine
  */
-int RigidElasticInteraction::NRscheme()
+int humanPDL::RigidElasticInteraction::NRscheme()
 {
   double residual,residual0,norm,norm0;
   string output;
@@ -175,7 +175,7 @@ int RigidElasticInteraction::NRscheme()
  * @brief calc b0
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction::initialize_rigidBodyInteraction()
+void humanPDL::RigidElasticInteraction::initialize_rigidBodyInteraction()
 {
   ElasticBody.initialize(tp);
   ElasticBody.allocatePDLvariables();
@@ -222,7 +222,7 @@ void RigidElasticInteraction::initialize_rigidBodyInteraction()
 /**
  * @brief domain information from tp file
  */
-void RigidElasticInteraction::inputRigidBodyInterface()
+void humanPDL::RigidElasticInteraction::inputRigidBodyInterface()
 {
   string str,base_label,label,inputDir;
 
@@ -280,7 +280,7 @@ void RigidElasticInteraction::inputRigidBodyInterface()
 /**
  * @brief solver information from TP file
  */
-void RigidElasticInteraction::inputSolverInfo(TextParser &tp)
+void humanPDL::RigidElasticInteraction::inputSolverInfo(TextParser &tp)
 {
   string str,base_label,label;
   int tmp;
@@ -335,7 +335,7 @@ void RigidElasticInteraction::inputSolverInfo(TextParser &tp)
 /**
  * @brief output information from TP file
  */
-void RigidElasticInteraction::inputOutputInfo(TextParser &tp)
+void humanPDL::RigidElasticInteraction::inputOutputInfo(TextParser &tp)
 {
   string str,base_label,label;
 

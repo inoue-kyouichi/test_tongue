@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "PDL.h"
+#include "Rat_PDL.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ using namespace std;
  * @param [in] U_tmp            displacement vector
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
+void Rat_PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
   double young = 66.7e-3; //(MPa)
   double poisson = 0.49e0;
@@ -89,7 +89,7 @@ void PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(con
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double PeriodontalLigament::LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,
+double Rat_PeriodontalLigament::LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,
 const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
@@ -127,4 +127,31 @@ const int numOfNodeInElm,const double weight,const int ic,const double lambda,co
   }
 
   return volume;
+}
+
+// #################################################################
+/**
+ * @brief domain information from tp file
+ */
+void Rat_PeriodontalLigament::inputMaterialInfo(TextParser &tp)
+{
+  string str,base_label,label,inputDir;
+
+  base_label = "/Domain";
+
+  label = base_label + "/inputDir";
+  if ( !tp.getInspectedValue(label,inputDir)){
+    cout << "data format is not set" << endl;
+    exit(0);
+  }
+  string file1,file2,file3,file4,file5;
+
+  label = base_label + "/materialTypeFile";
+  if ( !tp.getInspectedValue(label,file4)){
+    cout << label << " is not found" << endl;
+    exit(0);
+  }
+  file4=inputDir+"/"+file4;
+
+  fileIO::read_geometry_materialType(element,numOfElm,file4);
 }

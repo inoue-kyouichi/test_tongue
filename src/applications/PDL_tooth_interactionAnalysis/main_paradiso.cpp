@@ -26,7 +26,7 @@ int main(int argc,char *argv[])
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
-  RigidElasticInteraction rigidBodyInteraction;
+  humanPDL::RigidElasticInteraction rigidBodyInteraction;
 
   if(argc!=2){
     cout << "Invalid input" << endl;

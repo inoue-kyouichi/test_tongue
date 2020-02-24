@@ -41,11 +41,7 @@ using VECTOR7D = std::vector<std::vector<std::vector<std::vector<std::vector<std
 constexpr double GRAVITY = 9.80665; // (m/s2)
 constexpr double PI = 3.1415926535897932384626;
 
-typedef enum {
-  PULP       = 0,
-  PDL        = 1,
-  NUMBER_OF_MATERIALTYPE
-} MATERIALType;
+
 
 class ElementType{
  public:
