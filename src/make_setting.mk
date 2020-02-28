@@ -187,7 +187,8 @@ endif
 
 UDEF_INC_PATH=-I. \
                                 -I../../solvers/PDL_analysis/PDL_TOOTH_interaction \
-                                -I../../solvers/PDL_analysis/PDL \
+                                -I../../solvers/PDL_analysis/humanPDL \
+                                -I../../solvers/PDL_analysis/ratPDL \
                                 -I../../solvers/FEM \
                                 -I../../solvers/linearSolver \
                                 -I../../solvers/RBD \
@@ -195,7 +196,8 @@ UDEF_INC_PATH=-I. \
 
 UDEF_LIB_PATH= \
                                   -L../../solvers/lib -lInteraction \
-                                  -L../../solvers/lib -lPDL \
+                                  -L../../solvers/lib -lPDL_human \
+                                  -L../../solvers/lib -lPDL_rat \
                                   -L../../solvers/lib -lFEM \
                                   -L../../solvers/lib -lRBD \
                                   -L../../solvers/lib -lLIS \

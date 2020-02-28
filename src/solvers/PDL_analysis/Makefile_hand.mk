@@ -13,13 +13,16 @@
 .PHONY: depend clean all
 
 all:
-	(cd PDL; make -f Makefile_hand.mk)
+	(cd humanPDL; make -f Makefile_hand.mk)
+	(cd ratPDL; make -f Makefile_hand.mk)
 	(cd PDL_TOOTH_interaction; make -f Makefile_hand.mk)
 
 clean:
-	(cd PDL; make -f Makefile_hand.mk clean)
+	(cd humanPDL; make -f Makefile_hand.mk clean)
+	(cd ratPDL; make -f Makefile_hand.mk clean)
 	(cd PDL_TOOTH_interaction; make -f Makefile_hand.mk clean)
 
 depend:
-	(cd PDL; make -f Makefile_hand.mk depend)
+	(cd humanPDL; make -f Makefile_hand.mk depend)
+	(cd ratPDL; make -f Makefile_hand.mk depend)
 	(cd PDL_TOOTH_interaction; make -f Makefile_hand.mk depend)

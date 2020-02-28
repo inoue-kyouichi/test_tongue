@@ -13,7 +13,7 @@
 
 include ../../../make_setting.mk
 
-TARGET = libPDL.a
+TARGET = libPDL_rat.a
 TARGET_DIR = ../../lib
 
 CXXSRCS = $(wildcard *.cpp)
