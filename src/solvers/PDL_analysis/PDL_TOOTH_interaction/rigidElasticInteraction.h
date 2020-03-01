@@ -25,7 +25,6 @@
 class RigidElasticInteraction_base {
  public:
 
-
   int numOfCP;
   double FU[3],Fw[3],FU_input[3],FUpoint[3],initialMomentArm[3];
   double Kqq[3][3],QU[3],Qw[3];
@@ -75,6 +74,7 @@ class RigidElasticInteraction :public RigidElasticInteraction_base{
 
   void inputRigidBodyInterface();
   int NRscheme();
+  void set_rhs_statics();
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);
 };
@@ -106,6 +106,7 @@ class RigidElasticInteraction :public RigidElasticInteraction_base{
 
   void inputRigidBodyInterface();
   int NRscheme();
+  void set_rhs_statics();
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);
 };

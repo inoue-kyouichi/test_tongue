@@ -119,7 +119,7 @@ int humanPDL::RigidElasticInteraction::NRscheme()
       for(int j=0;j<3;j++) ElasticBody.innerForce(CP(i),j)+=LAMBDA(i,j);
     }
 
-    ElasticBody.set_rhs_statics();
+    set_rhs_statics();
     PARDISO.set_CSR_value3D(ElasticBody.Ku,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.inb);
 
     //-----rigid body interaction term-------
@@ -350,5 +350,19 @@ void humanPDL::RigidElasticInteraction::inputOutputInfo(TextParser &tp)
   if ( !tp.getInspectedValue(label, fileName)){
     cout << "fileName is not set" << endl;
     exit(0);
+  }
+}
+
+// #################################################################
+/**
+ * @brief assembly right-hand side
+ */
+void humanPDL::RigidElasticInteraction::set_rhs_statics()
+{
+ // #pragma omp parallel for
+  for(int ic=0;ic<ElasticBody.numOfNode;ic++){
+    for(int j=0;j<3;j++){
+      ElasticBody.RHS(ic,j) = (double)ElasticBody.ibd(ic,j)*( - ElasticBody.innerForce(ic,j));
+    }
   }
 }

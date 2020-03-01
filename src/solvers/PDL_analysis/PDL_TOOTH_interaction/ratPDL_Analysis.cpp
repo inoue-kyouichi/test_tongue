@@ -350,3 +350,17 @@ void ratAnalysis::RigidElasticInteraction::inputOutputInfo(TextParser &tp)
     exit(0);
   }
 }
+
+// #################################################################
+/**
+ * @brief assembly right-hand side
+ */
+void ratAnalysis::RigidElasticInteraction::set_rhs_statics()
+{
+ // #pragma omp parallel for
+  for(int ic=0;ic<ElasticBody.numOfNode;ic++){
+    for(int j=0;j<3;j++){
+      ElasticBody.RHS(ic,j) = (double)ElasticBody.ibd(ic,j)*( - ElasticBody.innerForce(ic,j));
+    }
+  }
+}
