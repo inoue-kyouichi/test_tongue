@@ -41,6 +41,7 @@ void InsertionSite::femSolidAnalysis()
       exit(1);
     }
 
+    #pragma omp parallel for
     for(int i=0;i<numOfNode;i++){
       for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
     }
@@ -167,7 +168,7 @@ void InsertionSite::calcStressTensor()
  */
 void InsertionSite::set_rhs_statics()
 {
- // #pragma omp parallel for
+ #pragma omp parallel for
   for(int ic=0;ic<numOfNode;ic++){
     for(int j=0;j<3;j++){
       RHS(ic,j) = (double)ibd(ic,j)*( - innerForce(ic,j));

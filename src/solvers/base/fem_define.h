@@ -48,7 +48,6 @@ class ElementType{
   VTKCellType meshType;
   int materialType;
   int numOfGaussPoint;
-  //MATERIALType  materialType;
   VECTOR1D<int> node;
 };
 

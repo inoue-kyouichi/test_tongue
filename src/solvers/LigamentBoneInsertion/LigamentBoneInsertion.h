@@ -22,6 +22,13 @@
 #include "fem.h"
 #include "pardiso_solver.h"
 
+typedef enum{
+  ligament = 0,
+  interface = 1,
+  bone = 2,
+  numOfMaterials
+}MaterialType;
+
 class InsertionSite : public Fem {
  public:
   TextParser tp;
