@@ -66,6 +66,7 @@ class PeriodontalLigament:public Fem{
   //fem_hyperFoam_spatialForm.cpp
   // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
   void calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3]);
+  void summation_postProcess(double &averageLambda,const double (&stress)[3][3],const double (&F)[3][3],const double Ic4bar,const int ic);
 };
 
 #endif

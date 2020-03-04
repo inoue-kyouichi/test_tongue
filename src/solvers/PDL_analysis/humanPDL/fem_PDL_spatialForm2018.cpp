@@ -163,6 +163,7 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY
   double stress[3][3];
 
   Gauss g(1);
+  GaussTetra gTet2(2);
   DOUBLEARRAY2D x_current(numOfNodeInElm,3);
   DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
@@ -177,7 +178,6 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY
   for(int j=0;j<3;j++) lambda_ave(ic,j)=0e0;
 
   //post process
-  double sigmaEigen[3],sigmaEigenVector[3][3];
   for(int i=0;i<3;i++){
     sigmaEigen_Ave(ic,i)=0e0;
     for(int j=0;j<3;j++){
@@ -194,41 +194,44 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY
 
   double F[3][3];
   //--- Selective reduced integration ---
-  for(int i1=0;i1<numOfGaussPoint;i1++){
-    for(int i2=0;i2<numOfGaussPoint;i2++){
-      for(int i3=0;i3<numOfGaussPoint;i3++){
+  switch(element[ic].meshType){
+    case VTK_HEXAHEDRON:
+    for(int i1=0;i1<2;i1++){
+      for(int i2=0;i2<2;i2++){
+        for(int i3=0;i3<2;i3++){
 
-        double weight = g.weight[i1] * g.weight[i2] * g.weight[i3];
-        ShapeFunction3D::C3D8_dNdr(dNdr,g.point[i1],g.point[i2],g.point[i3]);
-        double Ic4bar = calcI4bar(F,dNdr,dNdx,x_current,x_ref,numOfNodeInElm,ic);
+          double weight = g.weight[i1] * g.weight[i2] * g.weight[i3];
+          ShapeFunction3D::C3D8_dNdr(dNdr,g.point[i1],g.point[i2],g.point[i3]);
+          double Ic4bar = calcI4bar(F,dNdr,dNdx,x_current,x_ref,numOfNodeInElm,ic);
 
-        //sigma an-isotropic term
-        for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
-        lambda=sqrt(Ic4bar);
-        averageLambda+=lambda;
+        if(Ic4bar<1e0){
+          calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,false);
+        }else{
+          calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,false);
+        }
+          summation_postProcess(averageLambda,stress,F,Ic4bar,ic);
+        }
+      }
+    }
+    break;
+    case VTK_QUADRATIC_TETRA:
+    for(int i1=0;i1<4;i1++){
+      double weight = gTet2.weight[i1] * 1e0/6e0;
+      ShapeFunction3D::C3D10_dNdr(dNdr,gTet2.point[i1][0],gTet2.point[i1][1],gTet2.point[i1][2],gTet2.point[i1][3]);
+
+      double Ic4bar = calcI4bar(F,dNdr,dNdx,x_current,x_ref,numOfNodeInElm,ic);
 
       if(Ic4bar<1e0){
         calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,false);
       }else{
         calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,false);
       }
-
-        calcEigen(stress,sigmaEigen,sigmaEigenVector);
-        for(int i=0;i<3;i++){
-          sigmaEigen_Ave(ic,i)+=sigmaEigen[i];
-          for(int j=0;j<3;j++){
-            sigmaEigenVector_Ave(ic,i,j)+=sigmaEigenVector[i][j];
-          }
-        }
-
-        for(int i=0;i<3;i++){
-          a[i]=0e0;
-          for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
-        }
-        tmp=sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
-        for(int j=0;j<3;j++) lambda_ave(ic,j)+=sqrt(Ic4bar)*a[j]/tmp;
-      }
+      summation_postProcess(averageLambda,stress,F,Ic4bar,ic);
     }
+    break;
+    default:
+      cout << "undefined mesh type. Exit..."  << endl;
+    exit(1);
   }
 
   tmp=sqrt(lambda_ave(ic,0)*lambda_ave(ic,0)+lambda_ave(ic,1)*lambda_ave(ic,1)+lambda_ave(ic,2)*lambda_ave(ic,2));
@@ -239,7 +242,40 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY
   normalize(sigmaEigen_Ave,sigmaEigenVector_Ave,ic);
 }
 
+// #################################################################
+/**
+ * @brief calc stress tensor of PDL with using selective reduced integration
+ * @param [in] ic               element number
+ * @param [in] U_tmp            displacement vector
+ * @param [in] numOfNodeInElm   number of node in each element
+ * @param [in] numOfGaussPoint  number of Gauss point set in each element
+ * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
+ * @detail
+   PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
+ */
+void PeriodontalLigament::summation_postProcess(double &averageLambda,const double (&stress)[3][3],const double (&F)[3][3],const double Ic4bar,const int ic)
+{
+  double sigmaEigen[3],sigmaEigenVector[3][3];
+  calcEigen(stress,sigmaEigen,sigmaEigenVector);
+  for(int i=0;i<3;i++){
+    sigmaEigen_Ave(ic,i)+=sigmaEigen[i];
+    for(int j=0;j<3;j++){
+      sigmaEigenVector_Ave(ic,i,j)+=sigmaEigenVector[i][j];
+    }
+  }
 
+  //sigma an-isotropic term
+  double a0[3],a[3];
+  for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
+  double lambda=sqrt(Ic4bar);
+  averageLambda+=lambda;
+  for(int i=0;i<3;i++){
+    a[i]=0e0;
+    for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
+  }
+  double tmp=sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
+  for(int j=0;j<3;j++) lambda_ave(ic,j)+=sqrt(Ic4bar)*a[j]/tmp;
+}
 
 
 // #################################################################
