@@ -26,7 +26,7 @@ void PeriodontalLigament::calcStressTensor()
   for(int ic=0;ic<numOfElm;ic++){
     switch(element[ic].meshType){
       case VTK_HEXAHEDRON:
-        calcStressTensor_PDL_element_2018(ic,U,8,2);
+        calcStressTensor_PDL_element_2018(ic,U);
         break;
       default:
         cout << "undefined meshType. Exit..." << endl;

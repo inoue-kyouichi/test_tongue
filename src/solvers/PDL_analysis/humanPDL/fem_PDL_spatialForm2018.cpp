@@ -22,21 +22,20 @@ using namespace std;
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp)
 {
-  double detJ,volume=0e0,J;
-  double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
-  double C[3][3],F[3][3];
+  const int numOfNodeInElm = element[ic].node.size();
+  double volume=0e0;
   double stress[3][3];
 
-  Gauss gauss(numOfGaussPoint);
+  GaussTetra gTet2(2);
+  Gauss g(1),g2(2);
   DOUBLEARRAY2D x_current(numOfNodeInElm,3);
   DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
 
-  double Ic4bar;
-  double term4,term4_2,a0[3],a[3];
+  double term4,term4_2,a[3];
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
@@ -45,26 +44,80 @@ void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLE
     }
   }
 
-  //--- Selective reduced integration ---
-  for(int i1=0;i1<numOfGaussPoint;i1++){
-    for(int i2=0;i2<numOfGaussPoint;i2++){
-      for(int i3=0;i3<numOfGaussPoint;i3++){
+  double F[3][3];
 
-        double weight = gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
-        ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
+  //--- Selective reduced integration ---
+  switch(element[ic].meshType){
+    case VTK_HEXAHEDRON:
+    for(int i1=0;i1<2;i1++){
+      for(int i2=0;i2<2;i2++){
+        for(int i3=0;i3<2;i3++){
+
+          double weight = g.weight[i1] * g.weight[i2] * g.weight[i3];
+          ShapeFunction3D::C3D8_dNdr(dNdr,g.point[i1],g.point[i2],g.point[i3]);
+
+          double Ic4bar = calcI4bar(F,dNdr,dNdx,x_current,x_ref,numOfNodeInElm,ic);
+
+          if(Ic4bar<1e0){
+            calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,true);
+          }else{
+            calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,true);
+          }
+
+        }
+      }
+    }
+    break;
+    case VTK_QUADRATIC_TETRA:
+    for(int i1=0;i1<4;i1++){
+      double weight = gTet2.weight[i1] * 1e0/6e0;
+      ShapeFunction3D::C3D10_dNdr(dNdr,gTet2.point[i1][0],gTet2.point[i1][1],gTet2.point[i1][2],gTet2.point[i1][3]);
+
+      double Ic4bar = calcI4bar(F,dNdr,dNdx,x_current,x_ref,numOfNodeInElm,ic);
+
+      if(Ic4bar<1e0){
+        calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,true);
+      }else{
+        calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,true);
+      }
+    }
+    break;
+    default:
+      cout << "undefine mesh type. Exit..." << endl;
+      exit(1);
+  }
+
+
+}
+
+// #################################################################
+/**
+ * @brief calc I4 bar
+ * @param [in] F               deformation gradient tensor
+ * @param [in] ic               element number
+ * @param [in] U_tmp            displacement vector
+ * @param [in] numOfNodeInElm   number of node in each element
+ * @param [in] numOfGaussPoint  number of Gauss point set in each element
+ * @detail
+   PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
+ */
+double PeriodontalLigament::calcI4bar(double (&F)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const int ic)
+{
+  double dxdr[3][3],dXdr[3][3],drdX[3][3];
 
         FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
-        detJ = mathTool::calcDeterminant_3x3(dxdr);
+        double detJ = mathTool::calcDeterminant_3x3(dxdr);
         FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
         FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
         mathTool::calcInverseMatrix_3x3(drdX,dXdr);
+
         for(int i=0;i<3;i++){
           for(int j=0;j<3;j++){
             F[i][j]=0e0;
             for(int k=0;k<3;k++) F[i][j] += dxdr[i][k]*drdX[k][j];
           }
         }
-        J = mathTool::calcDeterminant_3x3(F);
+        double J = mathTool::calcDeterminant_3x3(F);
 
         if(J<0e0){
           printf("Jacobian is nagtive (element number=%d). Exit...\n",ic);
@@ -74,6 +127,7 @@ void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLE
           exit(1);
         }
 
+        double C[3][3];
         for(int i=0;i<3;i++){
           for(int j=0;j<3;j++){
             C[i][j]=0e0;
@@ -82,23 +136,15 @@ void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLE
         }
 
         //sigma an-isotropic term
+        double a0[3];
         for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
-        Ic4bar=0e0;
+        double Ic4bar=0e0;
         for(int i=0;i<3;i++){
           for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
         }
 
-        if(Ic4bar<1e0){
-          calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(ic,U,8,x_current,x_ref,dNdr,dNdx,weight,stress,true);
-        }else{
-          calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(ic,U,8,x_current,x_ref,dNdr,dNdx,weight,stress,true);
-        }
-
-      }
-    }
-  }
-
+  return Ic4bar;
 }
 
 // #################################################################
@@ -114,12 +160,9 @@ void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,DOUBLE
  */
 void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
-  double detJ,volume=0e0,J;
-  double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
-  double C[3][3],F[3][3];
   double stress[3][3];
 
-  Gauss gauss(numOfGaussPoint);
+  Gauss g(1);
   DOUBLEARRAY2D x_current(numOfNodeInElm,3);
   DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
   DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
@@ -149,56 +192,25 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY
     }
   }
 
+  double F[3][3];
   //--- Selective reduced integration ---
   for(int i1=0;i1<numOfGaussPoint;i1++){
     for(int i2=0;i2<numOfGaussPoint;i2++){
       for(int i3=0;i3<numOfGaussPoint;i3++){
 
-        double weight = gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
-        ShapeFunction3D::C3D8_dNdr(dNdr,gauss.point[i1],gauss.point[i2],gauss.point[i3]);
-
-        FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
-        detJ = mathTool::calcDeterminant_3x3(dxdr);
-        FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
-        FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
-        mathTool::calcInverseMatrix_3x3(drdX,dXdr);
-        for(int i=0;i<3;i++){
-          for(int j=0;j<3;j++){
-            F[i][j]=0e0;
-            for(int k=0;k<3;k++) F[i][j] += dxdr[i][k]*drdX[k][j];
-          }
-        }
-        J = mathTool::calcDeterminant_3x3(F);
-
-        if(J<0e0){
-          printf("Jacobian is nagtive (element number=%d). Exit...\n",ic);
-          for(int p=0;p<numOfNodeInElm;p++){
-            printf("%e %e %e\n",x_current(p,0),x_current(p,1),x_current(p,2));
-          }
-          exit(1);
-        }
-
-        for(int i=0;i<3;i++){
-          for(int j=0;j<3;j++){
-            C[i][j]=0e0;
-            for(int k=0;k<3;k++) C[i][j]+=F[k][i]*F[k][j];
-          }
-        }
+        double weight = g.weight[i1] * g.weight[i2] * g.weight[i3];
+        ShapeFunction3D::C3D8_dNdr(dNdr,g.point[i1],g.point[i2],g.point[i3]);
+        double Ic4bar = calcI4bar(F,dNdr,dNdx,x_current,x_ref,numOfNodeInElm,ic);
 
         //sigma an-isotropic term
         for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
-
-        Ic4bar=0e0;
-        for(int i=0;i<3;i++){
-          for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
-        }
         lambda=sqrt(Ic4bar);
         averageLambda+=lambda;
 
       if(Ic4bar<1e0){
-        calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(ic,U,8,x_current,x_ref,dNdr,dNdx,weight,stress,false);
+        calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,false);
       }else{
-        calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(ic,U,8,x_current,x_ref,dNdr,dNdx,weight,stress,false);
+        calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(ic,U,numOfNodeInElm,x_current,x_ref,dNdr,dNdx,weight,stress,false);
       }
 
         calcEigen(stress,sigmaEigen,sigmaEigenVector);
@@ -241,7 +253,7 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,DOUBLEARRAY
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const double weight,double (&stress)[3][3],const bool mainLoop)
 {
   double detJ,volume=0e0,J;
@@ -266,6 +278,7 @@ const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEAR
   double F_initial[3][3],Ftmp[3][3];
 
   FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+  FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
   volume += detJ * weight;
 
@@ -480,7 +493,7 @@ const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEAR
    PDL model and parameters: Bergomi et al., J. Biomech., 2011
    W=2mu/alpha*[lambda_1^alpha+lambda_2^alpha+lambda_3^alpha-3+1/beta*(J^(alpha*beta)-1)]
  */
-void PeriodontalLigament::calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+void PeriodontalLigament::calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
 const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const double weight,double (&stress)[3][3],const bool mainLoop)
 {
   double detJ,volume=0e0,J;
@@ -501,6 +514,7 @@ const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEAR
   const double beta=poisson/(1e0-2e0*poisson);
 
   FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+  FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
   // volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
 

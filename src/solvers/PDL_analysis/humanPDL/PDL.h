@@ -56,10 +56,12 @@ class PeriodontalLigament:public Fem{
   // const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
   // int calcStressTensor_PDL_element_fibreStretch(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
 
-  void calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint);
-  void calcStressTensor_PDL_element_spatialForm_hexa_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+  double calcI4bar(double (&F)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const int ic);
+
+  void calcStressTensor_PDL_element_2018(const int &ic,DOUBLEARRAY2D &U_tmp);
+  void calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
       const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const double weight,double (&stress)[3][3],const bool mainLoop);
-  void calcStressTensor_hyperFoam_element_spatialForm_hexa_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
+  void calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(const int &ic,DOUBLEARRAY2D &U_tmp,
   const int &numOfNodeInElm,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &dNdx,const double weight,double (&stress)[3][3],const bool mainLoop);
   //fem_hyperFoam_spatialForm.cpp
   // void calcStressTensor_hyperFoam_element_spatialForm_hexa(const int &ic,DOUBLEARRAY2D &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
