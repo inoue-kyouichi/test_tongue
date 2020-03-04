@@ -113,11 +113,23 @@ void fileIO::read_geometry_meshType(std::vector<ElementType> &element,int &numOf
       case VTK_WEDGE:
         element[i].node.resize(6);
         break;
+      case VTK_QUADRATIC_TRIANGLE:
+        element[i].node.resize(6);
+        break;
+      case VTK_QUADRATIC_QUAD:
+        element[i].node.resize(8);
+        break;
       case VTK_QUADRATIC_TETRA:
         element[i].node.resize(10);
         break;
-      case VTK_QUADRATIC_TRIANGLE:
-        element[i].node.resize(6);
+      case VTK_QUADRATIC_HEXAHEDRON:
+        element[i].node.resize(20);
+        break;
+      case VTK_QUADRATIC_WEDGE:
+        element[i].node.resize(15);
+        break;
+      case VTK_TRIQUADRATIC_HEXAHEDRON:
+        element[i].node.resize(27);
         break;
       default:
         cout << "invalid mesh type" << endl;

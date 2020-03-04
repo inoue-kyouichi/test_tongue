@@ -65,9 +65,14 @@ class Fem : public Domain{
 
   double totalVolume;
 
-  DOUBLEARRAY2D U, innerForce, externalForce, RHS;
-  std::vector<DOUBLEARRAY4D> Ku;
+  double rho;
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
+  DOUBLEARRAY2D U, innerForce, externalForce, RHS;
+  DOUBLEARRAY3D BFe;
+
+  std::vector<DOUBLEARRAY2D> Qu;
+  std::vector<DOUBLEARRAY2D> Mass;
+  std::vector<DOUBLEARRAY4D> Ku;
 
   void rotationalDirichlet(const int loop);
   void set_rhs_statics();
@@ -78,15 +83,8 @@ class Fem : public Domain{
   void stress_tensor_initialize();
   void setInnerForce();
 
-  double rho;
-  int ConstitutiveLawName;
-  DOUBLEARRAY3D BFe;
-  // DOUBLEARRAY3D Qu;
-  std::vector<DOUBLEARRAY2D> Qu;
-  std::vector<DOUBLEARRAY2D> Mass;
-  // DOUBLEARRAY3D Mass;
+  void calcStiffnessMatrix(std::function<void(DOUBLEARRAY2D&,DOUBLEARRAY2D&,DOUBLEARRAY2D&,DOUBLEARRAY2D&)> func,DOUBLEARRAY2D &U_tmp);
 
-  
  private:
   void exportRestartData(const int loop);
 

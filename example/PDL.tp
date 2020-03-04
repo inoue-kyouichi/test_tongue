@@ -38,6 +38,6 @@ solver
   NR_iteration = 50
   NR_tolerance = 3 //1e-4
   Restart =0 //0:no, 1:yes
-  OMPnumThreads = 2
+  OMPnumThreads = 1
   relaxation=2e-1
 }
