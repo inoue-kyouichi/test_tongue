@@ -17,7 +17,6 @@ void Fem::initialize(TextParser &tp)
   inputDomainInfo(tp);
   // string restartDirName="Restart_"+to_string(dataNumber);
   // mkdir(restartDirName.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
-
   allocate();
   // restart_setting(dataNumber,Restart);
   inputDirichletBoundaryInfo(tp);
@@ -192,8 +191,6 @@ void Fem::allocate()
     Ku[ic].allocate(numOfNodeInElm,numOfNodeInElm,3,3);
   }
 
-  BFe.allocate(numOfElm,9,3);
-
   volume.allocate(numOfElm);
   volume0.allocate(numOfElm);
   volumeChangeRatio.allocate(numOfElm);
@@ -212,7 +209,11 @@ void Fem::allocate()
   for(int ic=0;ic<numOfElm;ic++) volumeChangeRatio(ic)=1e0;
 
   for(int i=0;i<numOfNode;i++){
-    for(int j=0;j<3;j++) U(i,j) = 0e0;
+    for(int j=0;j<3;j++){
+      RHS(i,j) = 0e0;
+      externalForce(i,j) = 0e0;
+      U(i,j) = 0e0;
+    }
   }
 
   //dirichlet boundary conditions

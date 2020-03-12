@@ -54,7 +54,7 @@ void Fem::set_rhs_statics()
  // #pragma omp parallel for
   for(int ic=0;ic<numOfNode;ic++){
     for(int j=0;j<3;j++){
-      RHS(ic,j) = (double)ibd(ic,j)*( - innerForce(ic,j));
+      RHS(ic,j) = (double)ibd(ic,j)*(externalForce(ic,j) - innerForce(ic,j));
     }
   }
 }

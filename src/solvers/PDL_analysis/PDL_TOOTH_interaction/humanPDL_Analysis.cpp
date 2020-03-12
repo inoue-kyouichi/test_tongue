@@ -125,7 +125,7 @@ int humanPDL::RigidElasticInteraction::NRscheme()
     //-----rigid body interaction term-------
     calcRigidBodyInteractionTerm(ElasticBody.U,RBdy);
     PARDISO.set_CSR_value_rigidBodyInteraction(ElasticBody.numOfNode,iCP,Rb,Kqq,numOfCP);
-    PARDISO.set_CSR_dirichlet_boundary_condition(ElasticBody.numOfNode,ElasticBody.ibd);
+    PARDISO.set_CSR_dirichlet_boundary_condition3D(ElasticBody.numOfNode,ElasticBody.ibd);
 
     //rhs term
     for(int i=0;i<ElasticBody.numOfNode;i++){

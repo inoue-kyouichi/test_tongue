@@ -21,12 +21,11 @@ void MinimumComplianceProblem::minimumComplianceProblem::mainLoop()
   for (int loop = 1; loop <= 1000; loop++)
   {
     mainProblem.mainLoop();
-    exit(1);
 
-    for (int i = 0; i < mainProblem.elasticBody.numOfNode; i++)
-    {
-        for (int j = 0; j < 3; j++)
-            adjointV(i, j) = mainProblem.elasticBody.U(i, j);
+    //self-adjoint problem
+    #pragma omp parallel for
+    for(int i=0;i<mainProblem.elasticBody.numOfNode;i++){
+      for (int j = 0; j < 3; j++) adjointV(i, j) = mainProblem.elasticBody.U(i, j);
     }
 
     // f0 = costFunction();

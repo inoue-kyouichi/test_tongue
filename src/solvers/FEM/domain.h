@@ -24,7 +24,8 @@
 
 class Domain{
 public:
-  int numOfNode, numOfElm, numOfDirichlet,numOfNeumann;
+  int numOfNode, numOfElm, numOfDirichlet;
+  int numOfNeumann;
   int meshType;
   DOUBLEARRAY2D x,x0;
   std::vector<ElementType> element,belement;

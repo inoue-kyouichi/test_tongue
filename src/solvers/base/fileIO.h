@@ -29,6 +29,7 @@ class fileIO{
   static void read_geometry_meshType(std::vector<ElementType> &element,int &numOfElm,const std::string &file);
   static void read_geometry_materialType(std::vector<ElementType> &element,int &numOfElm,const std::string &file);
   static void read_geometry_element(std::vector<ElementType> &element,const int &numOfElm,const std::string &file);
+  static void export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,DOUBLEARRAY2D &U,const std::string &file);
   static void export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,
               DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,const std::string &file);
   static void export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,

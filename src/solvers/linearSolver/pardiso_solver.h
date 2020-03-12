@@ -56,7 +56,7 @@ class PARDISO_solver{
   void set_CSR_value1D(std::vector<DOUBLEARRAY2D> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
   void set_CSR_value2D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
   void set_CSR_value3D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
-  void set_CSR_dirichlet_boundary_condition(const int &numOfNode,INTARRAY2D &ibd);
+  void set_CSR_dirichlet_boundary_condition3D(const int &numOfNode,INTARRAY2D &ibd);
 
 private:
   void CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim);

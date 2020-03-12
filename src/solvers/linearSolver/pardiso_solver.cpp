@@ -111,7 +111,7 @@ void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &nu
  * @param [in] numOfNode   number of nodes
  * @param [in] ibd         dirichlet boundary mask function
  */
-void PARDISO_solver::set_CSR_dirichlet_boundary_condition(const int &numOfNode,INTARRAY2D &ibd)
+void PARDISO_solver::set_CSR_dirichlet_boundary_condition3D(const int &numOfNode,INTARRAY2D &ibd)
 {
 
   #pragma omp parallel for

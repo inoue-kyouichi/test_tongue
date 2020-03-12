@@ -14,28 +14,29 @@ using namespace std;
  */
 void MinimumComplianceProblem::femSolidAnalysisClass::mainLoop()
 {
-    int output_iter = 1;
-    int increment = 1;
-    string output;
+  int output_iter = 1;
+  int increment = 1;
+  string output;
 
-#pragma omp parallel for
-    for (int i = 0; i < elasticBody.numOfNode; i++)
-    {
-        for (int j = 0; j < 3; j++)
-            elasticBody.U(i, j) = 0e0;
-    }
+  #pragma omp parallel for
+  for (int i = 0; i < elasticBody.numOfNode; i++)
+  {
+      for (int j = 0; j < 3; j++)
+          elasticBody.U(i, j) = 0e0;
+  }
 
-    if (NRscheme() == 1)
-    {
-        printf("calculation errror. Exit...");
-        exit(1);
-    }
+  if (NRscheme() == 1)
+  {
+      printf("calculation error. Exit...");
+      exit(1);
+  }
 
-    for (int i = 0; i < elasticBody.numOfNode; i++)
-    {
-        for (int j = 0; j < 3; j++)
-            elasticBody.x(i, j) = elasticBody.x0(i, j) + elasticBody.U(i, j);
-    }
+  #pragma omp parallel for
+  for (int i = 0; i < elasticBody.numOfNode; i++)
+  {
+      for (int j = 0; j < 3; j++)
+          elasticBody.x(i, j) = elasticBody.x0(i, j) + elasticBody.U(i, j);
+  }
 }
 
 // #################################################################
@@ -45,13 +46,23 @@ void MinimumComplianceProblem::femSolidAnalysisClass::mainLoop()
 bool MinimumComplianceProblem::femSolidAnalysisClass::NRscheme()
 {
   double residual, residual0, norm, norm0;
-  string output;
 
   for (int ic = 1; ic <= NRiteration; ic++)
   {
     elasticBody.calcStressTensor(); //calc K and Q
-    elasticBody.set_rhs_statics();
+
+    //left hand side
     PARDISO.set_CSR_value3D(elasticBody.Ku, elasticBody.element, elasticBody.numOfNode, elasticBody.numOfElm, elasticBody.inb);
+    PARDISO.set_CSR_dirichlet_boundary_condition3D(elasticBody.numOfNode,elasticBody.ibd);
+
+    //right hand side
+    calcExternalSurfaceForce();
+    elasticBody.set_rhs_statics();
+    for(int i = 0; i < elasticBody.numOfNode; i++){
+      for(int j = 0; j < 3; j++){
+        PARDISO.b[i + j * elasticBody.numOfNode] = elasticBody.RHS(i, j);
+      }
+    }
 
     PARDISO.main(3 * elasticBody.numOfNode, OMPnumThreads);
 
@@ -71,14 +82,35 @@ bool MinimumComplianceProblem::femSolidAnalysisClass::NRscheme()
     {
       for (int j = 0; j < 3; j++) elasticBody.x(i, j) = elasticBody.x0(i, j) + elasticBody.U(i, j);
     }
-    // output = outputDir + "/test_NR_" + to_string(ic) + ".vtu";
-    // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,output);
+    // string output = outputDir + "/test_NR_" + to_string(ic) + ".vtu";
+    // fileIO::export_vtu(elasticBody.x,elasticBody.element,elasticBody.numOfNode,elasticBody.numOfElm,elasticBody.U,output);
 
     cout << "NewtonRaphson_iteration = " << ic << endl;
     printf("norm=%e and normalized norm=%e\n", norm, norm / norm0);
     if (norm / norm0 < NRtolerance) break;
   }
   return 0;
+}
+
+void MinimumComplianceProblem::femSolidAnalysisClass::calcExternalSurfaceForce()
+{
+  for(int ic=0;ic<elasticBody.numOfNode;ic++){
+    for(int j=0;j<3;j++) elasticBody.externalForce(ic,j) = 0e0;
+    for(int j=0;j<3;j++) elasticBody.externalSurfaceForce(ic,j) = 0e0;
+  }  
+
+  DOUBLEARRAY2D Traction(elasticBody.belement.size(),3);
+  for(int ic=0;ic<elasticBody.belement.size();ic++){
+    Traction(ic,0) = 0e0;
+    Traction(ic,1) = 0e0;
+    Traction(ic,2) = 1e5;
+  }
+
+  elasticBody.calc_externalSurfaceForce_prescribedTraction(elasticBody.belement,Traction);
+
+  for(int i=0;i<elasticBody.numOfNode;i++){
+    for(int j=0;j<3;j++) elasticBody.externalForce(i,j) += elasticBody.externalSurfaceForce(i,j);
+  }
 }
 
 // #################################################################
@@ -101,21 +133,22 @@ void MinimumComplianceProblem::femSolidAnalysisClass::corrector_statics(DOUBLEAR
  */
 void MinimumComplianceProblem::femSolidAnalysisClass::preprocess()
 {
-    elasticBody.initialize(tp);
-    elasticBody.inputMaterialParameters(tp);
+  elasticBody.initialize(tp);
+  elasticBody.inputMaterialParameters(tp);
+  elasticBody.inputSurfaceBoundary(tp);
 
-    inputSolverInfo(tp);
-    inputOutputInfo(tp);
+  inputSolverInfo(tp);
+  inputOutputInfo(tp);
 
-    omp_set_num_threads(OMPnumThreads);
-    mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+  omp_set_num_threads(OMPnumThreads);
+  mkdir(outputDir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 
-    //CSR setting
-    PARDISO.initialize(3 * elasticBody.numOfNode);
-    PARDISO.CSR_initialize(elasticBody.inb, elasticBody.numOfNode, 3);
+  //CSR setting
+  PARDISO.initialize(3*elasticBody.numOfNode);
+  PARDISO.CSR_initialize(elasticBody.inb, elasticBody.numOfNode, 3);
 
-    string output = outputDir + "/" + fileName + "_boundary" + ".vtu";
-    fileIO::export_vtu_boundary(elasticBody.x, elasticBody.element, elasticBody.numOfNode, elasticBody.numOfElm, elasticBody.ibd, elasticBody.bd, output);
+  string output = outputDir + "/" + fileName + "_boundary" + ".vtu";
+  fileIO::export_vtu_boundary(elasticBody.x, elasticBody.element, elasticBody.numOfNode, elasticBody.numOfElm, elasticBody.ibd, elasticBody.bd, output);
 }
 
 // #################################################################
@@ -129,17 +162,11 @@ void MinimumComplianceProblem::femSolidAnalysisClass::inputSolverInfo(TextParser
 
   base_label = "/Solver";
 
-  label = base_label + "/dataNumber";
-  if ( !tp.getInspectedValue(label, dataNumber)){
-    cout << "maxiteration is not set" << endl;
-    exit(0);
-  }
-
-  label = base_label + "/maxIteration";
-  if ( !tp.getInspectedValue(label, maxIteration)){
-    cout << "maxiteration is not set" << endl;
-    exit(0);
-  }
+  // label = base_label + "/maxIteration";
+  // if ( !tp.getInspectedValue(label, maxIteration)){
+  //   cout << "maxiteration is not set" << endl;
+  //   exit(0);
+  // }
 
   label = base_label + "/NR_iteration";
   if ( !tp.getInspectedValue(label, NRiteration)){

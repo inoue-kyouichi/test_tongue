@@ -44,6 +44,7 @@ class femSolidAnalysisClass{
   double relaxation;
 
   bool NRscheme();
+  void calcExternalSurfaceForce();
   void corrector_statics(DOUBLEARRAY2D &U, const double *u, const int numOfNode, const double relaxation);
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);

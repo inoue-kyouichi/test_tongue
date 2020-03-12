@@ -68,7 +68,6 @@ class Fem : public Domain{
   double rho;
   DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
   DOUBLEARRAY2D U, innerForce, externalForce, RHS;
-  DOUBLEARRAY3D BFe;
 
   std::vector<DOUBLEARRAY2D> Qu;
   std::vector<DOUBLEARRAY2D> Mass;
@@ -114,15 +113,18 @@ class Fem : public Domain{
   void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
 
   //fem_boundary.cpp
-//  public:
-//   double boundaryPressure;
-//   void calc_surfaceBoundaryForce();
-//  private:
-//   void calc_TractionByPressure_element(const int &ic);
-//   void calc_Traction_element_quad(const int &ic,const int numOfNodeInBdElm,const int numOfGaussPoint);
-//   void calc_TractionByPressure_element(const int &ic,const Element &boundaryElement);
-//   void calcBFe_inGaussIntegral(DOUBLEARRAY3D &BFe,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &X,const int numOfNodeInBdElm,const double weight,const int ic);
+ public:
+  double boundaryPressure;
+  DOUBLEARRAY2D externalSurfaceForce;
+  std::vector<DOUBLEARRAY2D> BFe;
 
+  void inputSurfaceBoundary(TextParser &tp);
+  void calc_externalSurfaceForce_prescribedTraction(std::vector<ElementType> &element,DOUBLEARRAY2D &Traction);
+ private:
+  void calc_Traction_element_quad(const int ic,const int numOfNodeInBdElm,const int numOfGaussPoint,ElementType &belement,const double (&TractionForce)[3]);
+  void calc_Traction_element_triangle(const int ic,const int numOfNodeInBdElm,const int numOfGaussPoint,ElementType &belement,const double (&TractionForce)[3]);
+  // void calc_TractionByPressure_element(const int &ic,const Element &boundaryElement);
+  // void calcBFe_inGaussIntegral(DOUBLEARRAY3D &BFe,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &X,const int numOfNodeInBdElm,const double weight,const int ic);
 };
 
 #endif //_FEM_H_
