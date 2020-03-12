@@ -19,6 +19,7 @@ all:
 	(cd linearSolver; make -f Makefile_hand.mk)
 	(cd PDL_analysis; make -f Makefile_hand.mk)
 	(cd LigamentBoneInsertion; make -f Makefile_hand.mk)
+	(cd shapeOptimization; make -f Makefile_hand.mk)
 
 clean:
 	(cd base; make -f Makefile_hand.mk clean)
@@ -27,6 +28,7 @@ clean:
 	(cd linearSolver; make -f Makefile_hand.mk clean)
 	(cd PDL_analysis; make -f Makefile_hand.mk clean)
 	(cd LigamentBoneInsertion; make -f Makefile_hand.mk clean)
+	(cd shapeOptimization; make -f Makefile_hand.mk clean)
 
 depend:
 	(cd base; make -f Makefile_hand.mk depend)
@@ -35,3 +37,4 @@ depend:
 	(cd linearSolver; make -f Makefile_hand.mk depend)
 	(cd PDL_analysis; make -f Makefile_hand.mk depend)
 	(cd LigamentBoneInsertion; make -f Makefile_hand.mk depend)
+	(cd shapeOptimization; make -f Makefile_hand.mk depend)
