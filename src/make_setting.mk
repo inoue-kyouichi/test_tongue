@@ -16,6 +16,7 @@
 
 LIBDIR = /home/totani/lib
 INSTALL_BASE = /home/totani/lib
+INSTALL_BIN = /home/totani/bin
 TARGET_DIR  = ../../../
 
 #########################

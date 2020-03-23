@@ -10,11 +10,15 @@
 #
 ###################################################################################
 
+include make_setting.mk
 .PHONY: depend clean all
 
 all:
 	(cd solvers; make -f Makefile_hand.mk)
 	(cd applications; make -f Makefile_hand.mk)
+
+install:
+	cp ../bin/* $(INSTALL_BIN)/
 
 clean:
 	(cd solvers; make -f Makefile_hand.mk clean)

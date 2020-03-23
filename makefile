@@ -15,6 +15,9 @@
 all:
 	cd src && make -f Makefile_hand.mk
 
+install:
+	cd src && make -f Makefile_hand.mk install
+
 depend:
 	cd src && make -f Makefile_hand.mk depend
 
