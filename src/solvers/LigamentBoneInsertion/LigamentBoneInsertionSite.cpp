@@ -79,7 +79,7 @@ bool InsertionSite::NRscheme()
       set_rhs_statics();
 
       PARDISO.set_CSR_value3D(Ku,element,numOfNode,numOfElm,inb);
-      PARDISO.set_CSR_dirichlet_boundary_condition(numOfNode,ibd);
+      PARDISO.set_CSR_dirichlet_boundary_condition3D(numOfNode,ibd);
 
       for(int i=0;i<numOfNode;i++){
         for(int j=0;j<3;j++) PARDISO.b[i+j*numOfNode]=RHS(i,j);

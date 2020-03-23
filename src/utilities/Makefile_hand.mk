@@ -1,8 +1,8 @@
 ##################################################################################
 #
-# BDIM Library
-
-# Copyright (c) 2016-9 Mechanical and Bioengineering Systems Lab.,
+# BDIM-cpp
+#
+# Copyright (c) 2019-  Mechanical and Bioengineering Systems Lab.,
 #                      Department of Mechanical Science and Bioengineering,
 #                      Graduate School of Engineering Science,
 #                      Osaka University.
@@ -10,19 +10,13 @@
 #
 ###################################################################################
 
-.PHONY: depend clean
-
-all:
-	cd src && make -f Makefile_hand.mk
+.PHONY: depend clean all
 
 utilities:
-	cd src && make -f Makefile_hand.mk utilities
-
-install:
-	cd src && make -f Makefile_hand.mk install
-
-depend:
-	cd src && make -f Makefile_hand.mk depend
+	(cd calcSurfaceCurvature; make -f Makefile.mk)
 
 clean:
-	cd src && make -f Makefile_hand.mk clean
+	(cd calcSurfaceCurvature; make -f Makefile.mk clean)
+
+depend:
+	(cd calcSurfaceCurvature; make -f Makefile.mk depend)
