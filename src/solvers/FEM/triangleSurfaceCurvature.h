@@ -18,7 +18,19 @@
  * @author T. Otani
  */
 
+#include <iostream>
+#include <cmath>
+#include <string>
+#include <cstdlib>
+#include <cstdio>
+#include <string>
+#include <strings.h>
+#include <sys/stat.h>
+#include <omp.h>
+#include <chrono>
+#include <algorithm>
 #include <vector>
+
 #include "allocation.h"
 #include "math_tools.h"
 
@@ -42,6 +54,11 @@ class triangleSurfaceCurvature{
     }
     normal.allocate(numOfNode,3);
     meanCurvature.allocate(numOfNode);
+
+    neighborElements.resize(numOfNode);
+    neighborNodes.resize(numOfNode);
+    calc_adjacent_elements();
+    calc_adjacent_nodes();
   }
 
   int numOfNode,numOfElm;
@@ -55,6 +72,9 @@ class triangleSurfaceCurvature{
   void exportSurfaceMeanCurvature(DOUBLEARRAY1D &meanCurvature_export);
  private:
 
+  void modifyNormalVectorDirection();
+  bool acuteTriangle(double (&x1)[3],double (&x2)[3]);
+  double cot(const double (&x1)[3],const double (&x2)[3]);
   std::vector<std::vector<int>> neighborElements,neighborNodes;
   void calc_adjacent_nodes();
   void calc_adjacent_elements();

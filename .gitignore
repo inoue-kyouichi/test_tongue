@@ -1,8 +1,7 @@
 bin
-example/*
+*.vtu
 *.o
 *.d
 *.a
 lib
-!example/PDL.tp
 !PDL
