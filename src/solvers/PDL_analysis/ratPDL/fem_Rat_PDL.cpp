@@ -28,8 +28,8 @@ void Rat_PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm
   double PULP_mu = 5e-1 * young / (1e0+poisson);
 
   int numOfNodeInElm=element[ic].node.size();
-  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
+  ARRAY2D<double> x_ref(numOfNodeInElm,3);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
@@ -89,12 +89,12 @@ void Rat_PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double Rat_PeriodontalLigament::LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,
+double Rat_PeriodontalLigament::LinearElastic_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
 const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
   double dXdr[3][3],C4[3][3][3][3];
-  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
+  ARRAY2D<double> dNdx(numOfNodeInElm,3);
 
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){

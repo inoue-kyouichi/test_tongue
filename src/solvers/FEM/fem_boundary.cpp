@@ -52,7 +52,7 @@ void Fem::inputSurfaceBoundary(TextParser &tp)
 /**
  * @brief calc external surface boundary force
  */
-void Fem::calc_externalSurfaceForce_prescribedTraction(std::vector<ElementType> &belement,DOUBLEARRAY2D &Traction)
+void Fem::calc_externalSurfaceForce_prescribedTraction(std::vector<ElementType> &belement,ARRAY2D<double> &Traction)
 {
   #pragma omp parallel for
   for(int i=0;i<numOfNode;i++){
@@ -102,9 +102,9 @@ void Fem::calc_Traction_element_quad(const int ic,const int numOfNodeInBdElm,con
 {
   double dXdr1[3],dXdr2[3],dXdr3[3],Jacobian,normalVector[3];
 
-  DOUBLEARRAY2D X(numOfNodeInBdElm,3);
-  DOUBLEARRAY1D N(numOfNodeInBdElm);
-  DOUBLEARRAY2D dNdr(numOfNodeInBdElm,2);
+  ARRAY2D<double> X(numOfNodeInBdElm,3);
+  ARRAY1D<double> N(numOfNodeInBdElm);
+  ARRAY2D<double> dNdr(numOfNodeInBdElm,2);
   Gauss gauss(1);
 
   for(int p=0;p<numOfNodeInBdElm;p++){
@@ -153,9 +153,9 @@ void Fem::calc_Traction_element_triangle(const int ic,const int numOfNodeInBdElm
 {
   double dXdr1[3],dXdr2[3],dXdr3[3],Jacobian,normalVector[3];
 
-  DOUBLEARRAY2D dNdr(numOfNodeInBdElm,2);
-  DOUBLEARRAY2D X(numOfNodeInBdElm,3);
-  DOUBLEARRAY1D N(numOfNodeInBdElm);
+  ARRAY2D<double> dNdr(numOfNodeInBdElm,2);
+  ARRAY2D<double> X(numOfNodeInBdElm,3);
+  ARRAY1D<double> N(numOfNodeInBdElm);
 
   for(int p=0;p<numOfNodeInBdElm;p++){
     for(int i=0;i<3;i++) X(p,i) = x0(belement.node[p],i);

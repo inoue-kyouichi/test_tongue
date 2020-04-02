@@ -66,31 +66,31 @@ class Fem : public Domain{
   double totalVolume;
 
   double rho;
-  DOUBLEARRAY1D volume,volume0,volumeChangeRatio;
-  DOUBLEARRAY2D U, innerForce, externalForce, RHS;
+  ARRAY1D<double> volume,volume0,volumeChangeRatio;
+  ARRAY2D<double> U, innerForce, externalForce, RHS;
 
-  std::vector<DOUBLEARRAY2D> Qu;
-  std::vector<DOUBLEARRAY2D> Mass;
-  std::vector<DOUBLEARRAY4D> Ku;
+  std::vector<ARRAY2D<double>> Qu;
+  std::vector<ARRAY2D<double>> Mass;
+  std::vector<ARRAY4D<double>> Ku;
 
   void rotationalDirichlet(const int loop);
   void set_rhs_statics();
   void calc_MassMatrix();
   void corrector_statistics(const double *u,const double relaxation);
-  void calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
+  void calcVolume_hexa(const int &ic,ARRAY1D<double> &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   void stress_tensor_initialize();
   void setInnerForce();
 
-  void calcStiffnessMatrix(std::function<void(DOUBLEARRAY2D&,DOUBLEARRAY2D&,DOUBLEARRAY2D&,DOUBLEARRAY2D&)> func,DOUBLEARRAY2D &U_tmp);
+  void calcStiffnessMatrix(std::function<void(ARRAY2D<double>&,ARRAY2D<double>&,ARRAY2D<double>&,ARRAY2D<double>&)> func,ARRAY2D<double> &U_tmp);
 
  private:
   void exportRestartData(const int loop);
 
   //line search
   double line_search(const double *u);
-  double line_search_innerProduct(DOUBLEARRAY2D &Q,const double *u);
-  void calc_Q(DOUBLEARRAY2D &innerForce_tmp,DOUBLEARRAY2D &U_tmp);
+  double line_search_innerProduct(ARRAY2D<double> &Q,const double *u);
+  void calc_Q(ARRAY2D<double> &innerForce_tmp,ARRAY2D<double> &U_tmp);
 
   //fem_preprocessing.cpp
  public:
@@ -105,26 +105,26 @@ class Fem : public Domain{
 
   //fem_postprocessing.cpp
   public:
-  DOUBLEARRAY1D Mises;
-  DOUBLEARRAY2D AEigen_Ave,sigmaEigen_Ave;
-  DOUBLEARRAY3D AEigenVector_Ave,sigmaEigenVector_Ave;
+  ARRAY1D<double> Mises;
+  ARRAY2D<double> AEigen_Ave,sigmaEigen_Ave;
+  ARRAY3D<double> AEigenVector_Ave,sigmaEigenVector_Ave;
 
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
-  void normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic);
+  void normalize(ARRAY2D<double> &AEigen,ARRAY3D<double> &AEigenVector_Ave,const int ic);
 
   //fem_boundary.cpp
  public:
   double boundaryPressure;
-  DOUBLEARRAY2D externalSurfaceForce;
-  std::vector<DOUBLEARRAY2D> BFe;
+  ARRAY2D<double> externalSurfaceForce;
+  std::vector<ARRAY2D<double>> BFe;
 
   void inputSurfaceBoundary(TextParser &tp);
-  void calc_externalSurfaceForce_prescribedTraction(std::vector<ElementType> &element,DOUBLEARRAY2D &Traction);
+  void calc_externalSurfaceForce_prescribedTraction(std::vector<ElementType> &element,ARRAY2D<double> &Traction);
  private:
   void calc_Traction_element_quad(const int ic,const int numOfNodeInBdElm,const int numOfGaussPoint,ElementType &belement,const double (&TractionForce)[3]);
   void calc_Traction_element_triangle(const int ic,const int numOfNodeInBdElm,const int numOfGaussPoint,ElementType &belement,const double (&TractionForce)[3]);
   // void calc_TractionByPressure_element(const int &ic,const Element &boundaryElement);
-  // void calcBFe_inGaussIntegral(DOUBLEARRAY3D &BFe,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &X,const int numOfNodeInBdElm,const double weight,const int ic);
+  // void calcBFe_inGaussIntegral(ARRAY3D<double> &BFe,ARRAY2D<double> &dNdr,ARRAY2D<double> &X,const int numOfNodeInBdElm,const double weight,const int ic);
 };
 
 #endif //_FEM_H_

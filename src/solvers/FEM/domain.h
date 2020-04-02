@@ -27,11 +27,11 @@ public:
   int numOfNode, numOfElm, numOfDirichlet;
   int numOfNeumann;
   int meshType;
-  DOUBLEARRAY2D x,x0;
+  ARRAY2D<double> x,x0;
   std::vector<ElementType> element,belement;
-  INTARRAY2D ibd;
-  DOUBLEARRAY2D bd;
-  DOUBLEARRAY2D bn;
+  ARRAY2D<int> ibd;
+  ARRAY2D<double> bd;
+  ARRAY2D<double> bn;
   VECTOR2D<int> inb;
   VECTOR2D<int> ieb;
 

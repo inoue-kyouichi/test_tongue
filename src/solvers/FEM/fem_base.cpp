@@ -14,7 +14,7 @@ using namespace std;
  * @brief calc dudX
  * @param [in] stress
  */
-void FEM_MathTool::calc_dudX(double (&dudX)[3][3],DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &u,const int &numOfNodeInElm)
+void FEM_MathTool::calc_dudX(double (&dudX)[3][3],ARRAY2D<double> &dNdX,ARRAY2D<double> &u,const int &numOfNodeInElm)
 {
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -29,7 +29,7 @@ void FEM_MathTool::calc_dudX(double (&dudX)[3][3],DOUBLEARRAY2D &dNdX,DOUBLEARRA
  * @brief calc dxdr
  * @param [in] stress
  */
-void FEM_MathTool::calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x1,const int &numOfNodeInElm)
+void FEM_MathTool::calc_dxdr(double (&dxdr)[3][3],ARRAY2D<double> &dNdr,ARRAY2D<double> &x1,const int &numOfNodeInElm)
 {
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -45,7 +45,7 @@ void FEM_MathTool::calc_dxdr(double (&dxdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRA
  * @brief calc dXdr
  * @param [in] stress
  */
-void FEM_MathTool::calc_dXdr(double (&dXdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x0,const int &numOfNodeInElm)
+void FEM_MathTool::calc_dXdr(double (&dXdr)[3][3],ARRAY2D<double> &dNdr,ARRAY2D<double> &x0,const int &numOfNodeInElm)
 {
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
@@ -62,7 +62,7 @@ void FEM_MathTool::calc_dXdr(double (&dXdr)[3][3],DOUBLEARRAY2D &dNdr,DOUBLEARRA
  * @brief calc dNdx
  * @param [in] stress
  */
-void FEM_MathTool::calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm)
+void FEM_MathTool::calc_dNdx(ARRAY2D<double> &dNdx,ARRAY2D<double> &dNdr,const double (&dxdr)[3][3],const int &numOfNodeInElm)
 {
   double drdx[3][3];
 
@@ -81,7 +81,7 @@ void FEM_MathTool::calc_dNdx(DOUBLEARRAY2D &dNdx,DOUBLEARRAY2D &dNdr,const doubl
  * @brief calc dNdX
  * @param [in] stress
  */
-void FEM_MathTool::calc_dNdX(DOUBLEARRAY2D &dNdX,DOUBLEARRAY2D &dNdr,const double (&dXdr)[3][3],const int &numOfNodeInElm)
+void FEM_MathTool::calc_dNdX(ARRAY2D<double> &dNdX,ARRAY2D<double> &dNdr,const double (&dXdr)[3][3],const int &numOfNodeInElm)
 {
   double drdX[3][3];
 

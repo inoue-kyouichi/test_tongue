@@ -53,10 +53,10 @@ class PARDISO_solver{
 
   double vector_norm(const int &nump,const double *x);
 
-  void set_CSR_value1D(std::vector<DOUBLEARRAY2D> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
-  void set_CSR_value2D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
-  void set_CSR_value3D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
-  void set_CSR_dirichlet_boundary_condition3D(const int &numOfNode,INTARRAY2D &ibd);
+  void set_CSR_value1D(std::vector<ARRAY2D<double>> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value2D(std::vector<ARRAY4D<double>> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_value3D(std::vector<ARRAY4D<double>> &K,const std::vector<ElementType> &element,const int &numOfNode,const int &numOfElm,const VECTOR2D<int> &inb);
+  void set_CSR_dirichlet_boundary_condition3D(const int &numOfNode,ARRAY2D<int> &ibd);
 
 private:
   void CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,const int &dim);
@@ -65,12 +65,12 @@ private:
  public:
   //rigid body interaction
   void initialize(const int &DOF,const int &DOF2);
-  void CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
-  void set_CSR_value_rigidBodyInteraction(const int &numOfNode,INTARRAY1D &iCP,DOUBLEARRAY3D &Rb,const double (&Kqq)[3][3],const int numOfCP);
+  void CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,ARRAY1D<int> &iCP,ARRAY1D<int> &CP,const int &numOfCP,const int &dim);
+  void set_CSR_value_rigidBodyInteraction(const int &numOfNode,ARRAY1D<int> &iCP,ARRAY3D<double> &Rb,const double (&Kqq)[3][3],const int numOfCP);
  private:
   //rigid body interaction
-  void CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim);
-  void CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim);
+  void CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,ARRAY1D<int> &iCP,const int &numOfCP,const int &dim);
+  void CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,ARRAY1D<int> &iCP,ARRAY1D<int> &CP,const int &numOfCP,const int &dim);
 
 };
 

@@ -14,7 +14,7 @@ using namespace std;
  * @brief rigid body term
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction_base::calcRigidBodyInteractionTerm(DOUBLEARRAY2D &U,const RigidBody &RBdy)
+void RigidElasticInteraction_base::calcRigidBodyInteractionTerm(ARRAY2D<double> &U,const RigidBody &RBdy)
 {
   updateb(RBdy);
   tildeRB(RBdy);
@@ -94,7 +94,7 @@ void RigidElasticInteraction_base::calcKqq(const RigidBody &RBdy)
  * @brief calc Q_lambda vector
  * @param [in] RBdy          rigid body class
  */
-void RigidElasticInteraction_base::calc_Qlambda(DOUBLEARRAY2D &U,const RigidBody &RBdy)
+void RigidElasticInteraction_base::calc_Qlambda(ARRAY2D<double> &U,const RigidBody &RBdy)
 {
   for(int ic=0;ic<numOfCP;ic++){
     for(int j=0;j<3;j++) Qlambda(ic,j)=U(CP(ic),j)-RBdy.U[j]+b0(ic,j)-b(ic,j);
@@ -144,7 +144,7 @@ void RigidElasticInteraction_base::calcTemporalFw(const RigidBody &RBdy)
  * @param [in] u           displacement vector
  * @param [in] relaxation  relaxation parameters
  */
-void RigidElasticInteraction_base::corrector_statics(DOUBLEARRAY2D &U,const double *u,RigidBody &RBdy,const int numOfNode,const double relaxation)
+void RigidElasticInteraction_base::corrector_statics(ARRAY2D<double> &U,const double *u,RigidBody &RBdy,const int numOfNode,const double relaxation)
 {
   double w[3];
 

@@ -45,7 +45,7 @@ int fileIO::CountNumbersOfTextLines(const string &filePath )
 /**
  * @brief import triangle node
  */
-void fileIO::read_geometry_node(DOUBLEARRAY2D &x,int &numOfNode,const string &file)
+void fileIO::read_geometry_node(ARRAY2D<double> &x,int &numOfNode,const string &file)
 {
   FILE *fp;
   string str,tmp;
@@ -186,10 +186,10 @@ void fileIO::read_geometry_element(std::vector<ElementType> &element,const int &
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
-            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY3D &sigmaEigenVector_ave,
+            ARRAY2D<double> &U,ARRAY1D<double> &volumeChangeRatio,ARRAY2D<double> &lambda_ave,
+            ARRAY2D<double> &sigmaEigen_ave,ARRAY3D<double> &sigmaEigenVector_ave,
             const string &file)
 {
   FILE *fp;
@@ -279,11 +279,11 @@ void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
-            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
-            DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce,const string &file)
+            ARRAY2D<double> &U,ARRAY1D<double> &volumeChangeRatio,ARRAY2D<double> &lambda_ave,
+            ARRAY2D<double> &sigmaEigen_ave,ARRAY2D<double> &AEigen_ave,
+            ARRAY3D<double> &sigmaEigenVector_ave,ARRAY3D<double> &AEigenVector_ave,ARRAY2D<double> &innerForce,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -377,12 +377,12 @@ void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,
-            DOUBLEARRAY1D &bundle,INTARRAY1D &bundleElement,
-            DOUBLEARRAY2D &sigmaEigen_ave,DOUBLEARRAY2D &AEigen_ave,
-            DOUBLEARRAY3D &sigmaEigenVector_ave,DOUBLEARRAY3D &AEigenVector_ave,DOUBLEARRAY2D &innerForce,const string &file)
+            ARRAY2D<double> &U,ARRAY1D<double> &volumeChangeRatio,ARRAY2D<double> &lambda_ave,
+            ARRAY1D<double> &bundle,ARRAY1D<int> &bundleElement,
+            ARRAY2D<double> &sigmaEigen_ave,ARRAY2D<double> &AEigen_ave,
+            ARRAY3D<double> &sigmaEigenVector_ave,ARRAY3D<double> &AEigenVector_ave,ARRAY2D<double> &innerForce,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -487,9 +487,9 @@ void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,DOUBLEARRAY2D &lambda_ave,const string &file)
+            ARRAY2D<double> &U,ARRAY1D<double> &volumeChangeRatio,ARRAY2D<double> &lambda_ave,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -557,9 +557,9 @@ void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            DOUBLEARRAY2D &U,DOUBLEARRAY1D &volumeChangeRatio,const string &file)
+            ARRAY2D<double> &U,ARRAY1D<double> &volumeChangeRatio,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -622,8 +622,8 @@ void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
-            const int &numOfNode,const int &numOfElm,DOUBLEARRAY2D &U,const string &file)
+void fileIO::export_vtu(ARRAY2D<double> &x,const std::vector<ElementType> &element,
+            const int &numOfNode,const int &numOfElm,ARRAY2D<double> &U,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -679,9 +679,9 @@ void fileIO::export_vtu(DOUBLEARRAY2D &x,const std::vector<ElementType> &element
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu_Mises(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu_Mises(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            DOUBLEARRAY2D &U,DOUBLEARRAY1D &Mises,const string &file)
+            ARRAY2D<double> &U,ARRAY1D<double> &Mises,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -749,9 +749,9 @@ void fileIO::export_vtu_Mises(DOUBLEARRAY2D &x,const std::vector<ElementType> &e
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu_boundary(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu_boundary(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            INTARRAY2D &ibd,DOUBLEARRAY2D &bd,DOUBLEARRAY2D &fiberDirection_elm,const string &file)
+            ARRAY2D<int> &ibd,ARRAY2D<double> &bd,ARRAY2D<double> &fiberDirection_elm,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {
@@ -820,9 +820,9 @@ void fileIO::export_vtu_boundary(DOUBLEARRAY2D &x,const std::vector<ElementType>
  * @brief calc boundary conditions
  * @param [in] stress
  */
-void fileIO::export_vtu_boundary(DOUBLEARRAY2D &x,const std::vector<ElementType> &element,
+void fileIO::export_vtu_boundary(ARRAY2D<double> &x,const std::vector<ElementType> &element,
             const int &numOfNode,const int &numOfElm,
-            INTARRAY2D &ibd,DOUBLEARRAY2D &bd,const string &file)
+            ARRAY2D<int> &ibd,ARRAY2D<double> &bd,const string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {

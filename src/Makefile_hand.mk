@@ -11,7 +11,7 @@
 ###################################################################################
 
 include make_setting.mk
-.PHONY: depend clean all utilities install
+.PHONY: depend clean all test install
 
 all:
 	(cd solvers; make -f Makefile_hand.mk)
@@ -20,15 +20,16 @@ all:
 install:
 	cp ../bin/* $(INSTALL_BIN)/
 
-utilities:
-	(cd utilities; make -f Makefile_hand.mk utilities)
+test:
+	(cd solvers; make -f Makefile_hand.mk)
+	(cd tests; make -f Makefile_hand.mk)
 
 clean:
 	(cd solvers; make -f Makefile_hand.mk clean)
 	(cd applications; make -f Makefile_hand.mk clean)
-	(cd utilities; make -f Makefile_hand.mk clean)
+	(cd tests; make -f Makefile_hand.mk clean)
 
 depend:
 	(cd solvers; make -f Makefile_hand.mk depend)
 	(cd applications; make -f Makefile_hand.mk depend)
-	(cd utilities; make -f Makefile_hand.mk depend)
+	(cd tests; make -f Makefile_hand.mk depend)

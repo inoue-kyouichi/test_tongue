@@ -28,21 +28,21 @@ class RigidElasticInteraction_base {
   int numOfCP;
   double FU[3],Fw[3],FU_input[3],FUpoint[3],initialMomentArm[3];
   double Kqq[3][3],QU[3],Qw[3];
-  INTARRAY1D CP,iCP;
-  DOUBLEARRAY2D b,b0,Qlambda;
-  DOUBLEARRAY2D LAMBDA;
-  DOUBLEARRAY3D Rb;
+  ARRAY1D<int> CP,iCP;
+  ARRAY2D<double> b,b0,Qlambda;
+  ARRAY2D<double> LAMBDA;
+  ARRAY3D<double> Rb;
 
   void calcTemporalFw(const RigidBody &RBdy);
   void updateRotationMatrix_spatialForm(double (&R)[3][3],const double (&w)[3]);
-  void corrector_statics(DOUBLEARRAY2D &U,const double *u,RigidBody &RBdy,const int numOfNode,const double relaxation);
+  void corrector_statics(ARRAY2D<double> &U,const double *u,RigidBody &RBdy,const int numOfNode,const double relaxation);
   void calc_thetaFromRotationMatrix(double (&ql)[3],const double (&R)[3][3]);
-  void calcRigidBodyInteractionTerm(DOUBLEARRAY2D &U,const RigidBody &RBdy);
+  void calcRigidBodyInteractionTerm(ARRAY2D<double> &U,const RigidBody &RBdy);
  private:
   void updateb(const RigidBody &RBdy);
   void tildeRB(const RigidBody &RBdy);
   void calcKqq(const RigidBody &RBdy);
-  void calc_Qlambda(DOUBLEARRAY2D &U,const RigidBody &RBdy);
+  void calc_Qlambda(ARRAY2D<double> &U,const RigidBody &RBdy);
   void calc_Q_rigid(const RigidBody &RBdy);
 
 };

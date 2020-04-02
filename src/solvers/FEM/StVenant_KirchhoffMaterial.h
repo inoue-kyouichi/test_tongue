@@ -19,8 +19,8 @@ class StVenantKirchhoffMaterial : public Fem{
     void inputMaterialParameters(TextParser &tp);
  private:
     double lambda,mu;
-    void calcStressTensor_SantVenant_element_spatialForm(const int ic,DOUBLEARRAY2D &U_tmp,const bool option);
-    double SantVenant_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,
+    void calcStressTensor_SantVenant_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
+    double SantVenant_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdx,const int numOfNodeInElm,
     const double weight,const int ic,const bool option);
 };
 

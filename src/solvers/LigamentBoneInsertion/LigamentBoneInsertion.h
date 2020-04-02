@@ -45,10 +45,10 @@ class InsertionSite : public Fem {
 
  public:
   double bulkModulusRatio;
-  DOUBLEARRAY3D fiberDirection;
-  DOUBLEARRAY2D lambda_ave;
+  ARRAY3D<double> fiberDirection;
+  ARRAY2D<double> lambda_ave;
 
-  DOUBLEARRAY2D fiberDirection_elm;
+  ARRAY2D<double> fiberDirection_elm;
 
   void preprocess();
   void femSolidAnalysis();
@@ -60,9 +60,9 @@ class InsertionSite : public Fem {
  private:
   bool NRscheme();
   void set_rhs_statics();
-  void calcStressTensor_SantVenant_element_spatialForm(const int ic,DOUBLEARRAY2D &U_tmp,const bool option);
-  double SantVenant_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,
-        DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option);
+  void calcStressTensor_SantVenant_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
+  double SantVenant_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,
+        ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option);
 
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);

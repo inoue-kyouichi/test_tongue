@@ -12,7 +12,7 @@
 
 .PHONY: depend clean all
 
-utilities:
+all:
 	(cd calcSurfaceCurvature; make -f Makefile.mk)
 
 clean:

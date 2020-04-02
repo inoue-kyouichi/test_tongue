@@ -29,8 +29,8 @@
 class TriangleSet{
  public:
   int numOfNode,numOfElm;
-  INTARRAY2D elm;
-  DOUBLEARRAY2D x,x0;
+  ARRAY2D<int> elm;
+  ARRAY2D<double> x,x0;
   void readPLY(const std::string &file);
   void translation(const double (&center)[3]);
 };

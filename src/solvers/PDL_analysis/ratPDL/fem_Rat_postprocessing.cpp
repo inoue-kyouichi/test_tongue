@@ -40,10 +40,10 @@ void Rat_PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(cons
   // double mu = 5e-1 * young / (1e0+poisson);
 
   int numOfNodeInElm=element[ic].node.size();
-  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
-  DOUBLEARRAY2D u(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdX(numOfNodeInElm,3);
+  ARRAY2D<double> x_ref(numOfNodeInElm,3);
+  ARRAY2D<double> u(numOfNodeInElm,3);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
+  ARRAY2D<double> dNdX(numOfNodeInElm,3);
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
@@ -118,7 +118,7 @@ void Rat_PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(cons
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double Rat_PeriodontalLigament::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
+double Rat_PeriodontalLigament::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],ARRAY2D<double> &u,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
   double dXdr[3][3],C4[3][3][3][3];
@@ -169,7 +169,7 @@ double Rat_PeriodontalLigament::postProcess_LinearElastic_inGaussIntegral(double
 /**
  * @brief normalize vectors
  */
-// void Fem::normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic)
+// void Fem::normalize(ARRAY2D<double> &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic)
 // {
 //   double tmp=0e0;
 //   for(int i=0;i<3;i++){

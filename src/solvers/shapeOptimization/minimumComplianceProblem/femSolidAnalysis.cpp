@@ -99,7 +99,7 @@ void MinimumComplianceProblem::femSolidAnalysisClass::calcExternalSurfaceForce()
     for(int j=0;j<3;j++) elasticBody.externalSurfaceForce(ic,j) = 0e0;
   }  
 
-  DOUBLEARRAY2D Traction(elasticBody.belement.size(),3);
+  ARRAY2D<double> Traction(elasticBody.belement.size(),3);
   for(int ic=0;ic<elasticBody.belement.size();ic++){
     Traction(ic,0) = 0e0;
     Traction(ic,1) = 0e0;
@@ -119,7 +119,7 @@ void MinimumComplianceProblem::femSolidAnalysisClass::calcExternalSurfaceForce()
  * @param [in] u           displacement vector
  * @param [in] relaxation  relaxation parameters
  */
-void MinimumComplianceProblem::femSolidAnalysisClass::corrector_statics(DOUBLEARRAY2D &U, const double *u, const int numOfNode, const double relaxation)
+void MinimumComplianceProblem::femSolidAnalysisClass::corrector_statics(ARRAY2D<double> &U, const double *u, const int numOfNode, const double relaxation)
 {
   #pragma omp parallel for
   for(int i=0;i<numOfNode;i++){

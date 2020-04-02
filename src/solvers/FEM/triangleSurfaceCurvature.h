@@ -38,7 +38,7 @@ class triangleSurfaceCurvature{
 
   //fem.cpp
  public:
-  triangleSurfaceCurvature(DOUBLEARRAY2D &x_input,INTARRAY2D &ie_input,const int numOfNode_input,const int numOfElm_input){
+  triangleSurfaceCurvature(ARRAY2D<double> &x_input,ARRAY2D<int> &ie_input,const int numOfNode_input,const int numOfElm_input){
     numOfNode = numOfNode_input;
     numOfElm = numOfElm_input;
 
@@ -62,14 +62,14 @@ class triangleSurfaceCurvature{
   }
 
   int numOfNode,numOfElm;
-  DOUBLEARRAY2D x;
-  INTARRAY2D ie;
-  DOUBLEARRAY2D normal;
-  DOUBLEARRAY1D meanCurvature;
+  ARRAY2D<double> x;
+  ARRAY2D<int> ie;
+  ARRAY2D<double> normal;
+  ARRAY1D<double> meanCurvature;
 
   void calcSurfaceMeanCurvature();
-  void exportSurfaceNormal(DOUBLEARRAY2D &normal_export);
-  void exportSurfaceMeanCurvature(DOUBLEARRAY1D &meanCurvature_export);
+  void exportSurfaceNormal(ARRAY2D<double> &normal_export);
+  void exportSurfaceMeanCurvature(ARRAY1D<double> &meanCurvature_export);
  private:
 
   void modifyNormalVectorDirection();

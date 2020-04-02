@@ -25,20 +25,20 @@
 class ShapeFunction2D{
  public:
 
-  static void C2D3_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3)
+  static void C2D3_N(ARRAY1D<double> &N,const double &L1,const double &L2,const double &L3)
   {
     N(0) = L1;
     N(1) = L2;
     N(2) = L3;
   }
-  static void C2D4_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
+  static void C2D4_N(ARRAY1D<double> &N,const double &g1,const double &g2)
   {
     N(0) = 2.5e-1 * (1e+0-g1) * (1e+0-g2);
     N(1) = 2.5e-1 * (1e+0+g1) * (1e+0-g2);
     N(2) = 2.5e-1 * (1e+0+g1) * (1e+0+g2);
     N(3) = 2.5e-1 * (1e+0-g1) * (1e+0+g2);
   }
-  static void C2D6_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3)
+  static void C2D6_N(ARRAY1D<double> &N,const double &L1,const double &L2,const double &L3)
   {
     N(0) = L1 * (2e0*L1-1e0);
     N(1) = L2 * (2e0*L2-1e0);
@@ -47,7 +47,7 @@ class ShapeFunction2D{
     N(4) = 4e0*L2*L3;
     N(5) = 4e0*L1*L3;
   }
-  static void C2D8_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
+  static void C2D8_N(ARRAY1D<double> &N,const double &g1,const double &g2)
   {
   N(0) = 2.5e-1 * (1e+0-g1) * (1e+0-g2) * (-1e+0-g1-g2);
   N(1) = 2.5e-1 * (1e+0+g1) * (1e+0-g2) * (-1e+0+g1-g2);
@@ -58,7 +58,7 @@ class ShapeFunction2D{
   N(6) = 5e-1   * (1e+0-g1*g1) * (1e+0+g2);
   N(7) = 5e-1   * (1e+0-g1)    * (1e+0-g2*g2);
   }
-  static void C2D9_N(DOUBLEARRAY1D &N,const double &g1,const double &g2)
+  static void C2D9_N(ARRAY1D<double> &N,const double &g1,const double &g2)
   {
     N(0) =  2.5e-1 * (1e+0-g1) * (1e+0-g2) * g1 * g2;
     N(1) = -2.5e-1 * (1e+0+g1) * (1e+0-g2) * g1 * g2;
@@ -71,7 +71,7 @@ class ShapeFunction2D{
     N(8) =           (1e+0-g1*g1) * (1e+0-g2*g2);
   }
 
-  static void C2D3_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3)
+  static void C2D3_dNdr(ARRAY2D<double> &dNdr,const double &L1,const double &L2,const double &L3)
   {
     dNdr(0,0) = -1e0;
     dNdr(0,1) = -1e0;
@@ -81,7 +81,7 @@ class ShapeFunction2D{
     dNdr(2,1) = 1e0;
   }
 
-  static void C2D4_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2)
+  static void C2D4_dNdr(ARRAY2D<double> &dNdr,const double &g1,const double &g2)
   {
     dNdr(0,0) = -2.5e-1 * (1e+0-g2);
     dNdr(0,1) = -2.5e-1 * (1e+0-g1);
@@ -92,7 +92,7 @@ class ShapeFunction2D{
     dNdr(3,0) = -2.5e-1 * (1e+0+g2);
     dNdr(3,1) =  2.5e-1 * (1e+0-g1);
   }
-  static void C2D6_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3)
+  static void C2D6_dNdr(ARRAY2D<double> &dNdr,const double &L1,const double &L2,const double &L3)
   {
     dNdr(0,0) = -4e0*L1+1e0;
     dNdr(0,1) = -4e0*L1+1e0;
@@ -108,7 +108,7 @@ class ShapeFunction2D{
     dNdr(5,1) = 4e0*(L1-L3);
   }
 
-  static void C2D8_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2)
+  static void C2D8_dNdr(ARRAY2D<double> &dNdr,const double &g1,const double &g2)
   {
     dNdr(0,0) = 2.5e-1 * (1e+0-g2) * (2e+0*g1 +      g2);
     dNdr(0,1) = 2.5e-1 * (1e+0-g1) * (     g1 + 2e+0*g2);
@@ -128,7 +128,7 @@ class ShapeFunction2D{
     dNdr(7,1) = -g2 * (1e+0-g1);
   }
 
-  static void C2D9_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2)
+  static void C2D9_dNdr(ARRAY2D<double> &dNdr,const double &g1,const double &g2)
   {
   dNdr(0,0) = 2.5e-1  * (1e+0-g2) * g2 * (1e+0 - 2e+0*g1);
   dNdr(0,1) = 2.5e-1  * (1e+0-g1) * g1 * (1e+0 - 2e+0*g2);
@@ -149,7 +149,7 @@ class ShapeFunction2D{
   dNdr(8,0) = -2e+0 * g1 * (1e+0-g2*g2);
   dNdr(8,1) = -2e+0 * g2 * (1e+0-g1*g1);
   }
-  static void C2D9_d2Ndr2(DOUBLEARRAY2D &d2Ndr2,const double &g1,const double &g2)
+  static void C2D9_d2Ndr2(ARRAY2D<double> &d2Ndr2,const double &g1,const double &g2)
   {
   d2Ndr2(0,0) = -5e-1   * (1e0-g2) * g2;
   d2Ndr2(0,1) = -5e-1   * (1e0-g1) * g1;
@@ -184,14 +184,14 @@ class ShapeFunction2D{
 
 class ShapeFunction3D{
  public:
-  static void C3D4_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3,const double &L4)
+  static void C3D4_N(ARRAY1D<double> &N,const double &L1,const double &L2,const double &L3,const double &L4)
   {
   N(0)=L1;
   N(1)=L2;
   N(2)=L3;
   N(3)=L4;
   }
-  static void C3D6_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3,const double &g1)
+  static void C3D6_N(ARRAY1D<double> &N,const double &L1,const double &L2,const double &L3,const double &g1)
   {
   N(0) = 5e-1*L1*(1e0-g1);
   N(1) = 5e-1*L2*(1e0-g1);
@@ -200,7 +200,7 @@ class ShapeFunction3D{
   N(4) = 5e-1*L2*(1e0+g1);
   N(5) = 5e-1*L3*(1e0+g1);
   }
-  static void C3D8_N(DOUBLEARRAY1D &N,const double &g1,const double &g2,const double &g3)
+  static void C3D8_N(ARRAY1D<double> &N,const double &g1,const double &g2,const double &g3)
   {
   N(0)= 1.25e-1 * (1e0-g1) * (1e0-g2) * (1e0-g3);
   N(1) = 1.25e-1 * (1e0+g1) * (1e0-g2) * (1e0-g3);
@@ -211,7 +211,7 @@ class ShapeFunction3D{
   N(6) = 1.25e-1 * (1e0+g1) * (1e0+g2) * (1e0+g3);
   N(7) = 1.25e-1 * (1e0-g1) * (1e0+g2) * (1e0+g3);
   }
-  static void C3D10_N(DOUBLEARRAY1D &N,const double &L1,const double &L2,const double &L3,const double &L4)
+  static void C3D10_N(ARRAY1D<double> &N,const double &L1,const double &L2,const double &L3,const double &L4)
   {
   N(0) = L1*(2e0*L1-1e0);
   N(1) = L2*(2e0*L2-1e0);
@@ -224,7 +224,7 @@ class ShapeFunction3D{
   N(8) = 4e0*L3*L4;
   N(9) = 4e0*L4*L2;
   }
-  static void C3D20_N(DOUBLEARRAY1D &N,const double &g1,const double &g2,const double &g3)
+  static void C3D20_N(ARRAY1D<double> &N,const double &g1,const double &g2,const double &g3)
   {
   N(0)  = -1.25e-1 * (1e+0-g1) * (1e+0-g2) * (1e+0-g3) * (2e+0+g1+g2+g3);
   N(1)  = -1.25e-1 * (1e+0+g1) * (1e+0-g2) * (1e+0-g3) * (2e+0-g1+g2+g3);
@@ -248,7 +248,7 @@ class ShapeFunction3D{
   N(19) =  2.5e-1  * (1e+0-g1) * (1e+0-g2) * (1e+0-g3*g3);
   }
 
-  static void C3D27_N(DOUBLEARRAY1D &N,const double &g1,const double &g2,const double &g3)
+  static void C3D27_N(ARRAY1D<double> &N,const double &g1,const double &g2,const double &g3)
   {
   N(0)   = H1(g1) * H1(g2) * H1(g3);
   N(1)   = H2(g1) * H1(g2) * H1(g3);
@@ -279,14 +279,14 @@ class ShapeFunction3D{
   N(26)  = H3(g1) * H3(g2) * H3(g3);
   }
 
-  static void C3D4_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
+  static void C3D4_dNdr(ARRAY2D<double> &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
   {
   dNdr(0,0)=-1e0; dNdr(0,1)=-1e0; dNdr(0,2)=-1e0;
   dNdr(1,0)= 1e0; dNdr(1,1)= 0e0; dNdr(1,2)= 0e0;
   dNdr(2,0)= 0e0; dNdr(2,1)= 1e0; dNdr(2,2)= 0e0;
   dNdr(3,0)= 0e0; dNdr(3,1)= 0e0; dNdr(3,2)= 1e0;
   }
-  static void C3D6_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3,const double &g1)
+  static void C3D6_dNdr(ARRAY2D<double> &dNdr,const double &L1,const double &L2,const double &L3,const double &g1)
   {
   dNdr(0,0) = -5e-1*(1e0-g1);
   dNdr(0,1) = -5e-1*(1e0-g1);
@@ -313,7 +313,7 @@ class ShapeFunction3D{
   dNdr(5,2) = 5e-1*L3;
   }
 
-  static void C3D8_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2,const double &g3)
+  static void C3D8_dNdr(ARRAY2D<double> &dNdr,const double &g1,const double &g2,const double &g3)
   {
   dNdr(0,0) = -1.25e-1 * (1e0-g2) * (1e0-g3);
   dNdr(0,1) = -1.25e-1 * (1e0-g1) * (1e0-g3);
@@ -340,7 +340,7 @@ class ShapeFunction3D{
   dNdr(7,1) =  1.25e-1 * (1e0-g1) * (1e0+g3);
   dNdr(7,2) =  1.25e-1 * (1e0-g1) * (1e0+g2);
   }
-  static void C3D10_dNdr(DOUBLEARRAY2D &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
+  static void C3D10_dNdr(ARRAY2D<double> &dNdr,const double &L1,const double &L2,const double &L3,const double &L4)
   {
   dNdr(0,0) = 4e0*L1-1e0;
   dNdr(0,1) = 0e0;
@@ -384,7 +384,7 @@ class ShapeFunction3D{
 
   }
 
-  static void C3D20_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2,const double &g3)
+  static void C3D20_dNdr(ARRAY2D<double> &dNdr,const double &g1,const double &g2,const double &g3)
   {
   dNdr(0,0) =  1.25e-1 * (1e+0-g2) * (1e+0-g3) * (1e+0 + 2e+0*g1 + g2      + g3);
   dNdr(0,1) =  1.25e-1 * (1e+0-g1) * (1e+0-g3) * (1e+0 + g1      + 2e+0*g2 + g3);
@@ -467,7 +467,7 @@ class ShapeFunction3D{
   dNdr(19,2) =   -5e-1 * g3 * (1e+0-g1) * (1e+0+g2);
 
   }
-  static void C3D27_dNdr(DOUBLEARRAY2D &dNdr,const double &g1,const double &g2,const double &g3)
+  static void C3D27_dNdr(ARRAY2D<double> &dNdr,const double &g1,const double &g2,const double &g3)
   {
   dNdr(0,0) = dH1(g1) * H1(g2)  * H1(g3);
   dNdr(0,1) = H1(g1)  * dH1(g2) * H1(g3);

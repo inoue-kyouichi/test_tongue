@@ -12,7 +12,7 @@
  */
 void triangleSurfaceCurvature::modifyNormalVectorDirection()
 {
-  auto calcTriangleNormal=[](DOUBLEARRAY2D &x,const int i0,const int i1,const int i2,double (&normal)[3]){
+  auto calcTriangleNormal=[](ARRAY2D<double> &x,const int i0,const int i1,const int i2,double (&normal)[3]){
     double x1[3],x2[3],area;
     for(int j=0;j<3;j++){
       x1[j] = x(i1,j)-x(i0,j);
@@ -58,7 +58,7 @@ void triangleSurfaceCurvature::modifyNormalVectorDirection()
  */
 void triangleSurfaceCurvature::calcSurfaceMeanCurvature()
 {
-  auto directionVector=[](DOUBLEARRAY2D &x,const int i1,const int i2,double (&x1)[3]){
+  auto directionVector=[](ARRAY2D<double> &x,const int i1,const int i2,double (&x1)[3]){
     for(int j=0;j<3;j++) x1[j] = x(i2,j)-x(i1,j);
   };
 
@@ -192,7 +192,7 @@ double triangleSurfaceCurvature::cot(const double (&x1)[3],const double (&x2)[3]
 /**
  * @brief export surface normal
  */
-void triangleSurfaceCurvature::exportSurfaceNormal(DOUBLEARRAY2D &normal_export)
+void triangleSurfaceCurvature::exportSurfaceNormal(ARRAY2D<double> &normal_export)
 {
   normal_export.allocate(numOfNode,3);
 
@@ -205,7 +205,7 @@ void triangleSurfaceCurvature::exportSurfaceNormal(DOUBLEARRAY2D &normal_export)
 /**
  * @brief export surface mean curvature
  */
-void triangleSurfaceCurvature::exportSurfaceMeanCurvature(DOUBLEARRAY1D &meanCurvature_export)
+void triangleSurfaceCurvature::exportSurfaceMeanCurvature(ARRAY1D<double> &meanCurvature_export)
 {
   meanCurvature_export.allocate(numOfNode);
 

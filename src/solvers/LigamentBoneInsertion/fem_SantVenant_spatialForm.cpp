@@ -15,13 +15,13 @@ using namespace std;
  * @param [in] U_tmp            displacement vector
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void InsertionSite::calcStressTensor_SantVenant_element_spatialForm(const int ic,DOUBLEARRAY2D &U_tmp,const bool option)
+void InsertionSite::calcStressTensor_SantVenant_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option)
 {
   int numOfNodeInElm=element[ic].node.size();
-  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
-  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
+  ARRAY2D<double> x_current(numOfNodeInElm,3);
+  ARRAY2D<double> x_ref(numOfNodeInElm,3);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
+  ARRAY2D<double> dNdx(numOfNodeInElm,3);
 
   for(int p=0;p<numOfNodeInElm;p++){
     for(int i=0;i<3;i++){
@@ -78,8 +78,8 @@ void InsertionSite::calcStressTensor_SantVenant_element_spatialForm(const int ic
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double InsertionSite::SantVenant_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_current,DOUBLEARRAY2D &x_ref,
-DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option)
+double InsertionSite::SantVenant_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,
+ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option)
 {
   double C4[3][3][3][3],c4[3][3][3][3];
   double YoungModulus = 1e3; //MPa

@@ -45,7 +45,7 @@ class femSolidAnalysisClass{
 
   bool NRscheme();
   void calcExternalSurfaceForce();
-  void corrector_statics(DOUBLEARRAY2D &U, const double *u, const int numOfNode, const double relaxation);
+  void corrector_statics(ARRAY2D<double> &U, const double *u, const int numOfNode, const double relaxation);
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);
 };
@@ -70,7 +70,7 @@ class minimumComplianceProblem{
   // int Restart;
   // double relaxation;
 
-  DOUBLEARRAY2D adjointV;
+  ARRAY2D<double> adjointV;
 
 //   void femSolidAnalysis();
 //   void NRscheme();

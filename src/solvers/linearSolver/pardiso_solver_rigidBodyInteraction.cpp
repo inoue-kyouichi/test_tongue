@@ -36,7 +36,7 @@ void PARDISO_solver::initialize(const int &DOF,const int &DOF2)
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNode,ARRAY1D<int> &iCP,ARRAY1D<int> &CP,const int &numOfCP,const int &dim)
 {
   ptr = (MKL_INT *)malloc((numOfNode*dim+numOfCP*dim+6+1)*sizeof(MKL_INT));
 
@@ -63,7 +63,7 @@ void PARDISO_solver::CSR_initialize(const VECTOR2D<int> &inb,const int &numOfNod
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numOfNode,ARRAY1D<int> &iCP,const int &numOfCP,const int &dim)
 {
   nnz = 0;
 
@@ -103,7 +103,7 @@ void PARDISO_solver::CSR_ptr_initialize(const VECTOR2D<int> &inb,const int &numO
  * @param [in] numOfNode    number of nodes
  * @param [in] dim          total DOF
  */
-void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,INTARRAY1D &iCP,INTARRAY1D &CP,const int &numOfCP,const int &dim)
+void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &numOfNode,ARRAY1D<int> &iCP,ARRAY1D<int> &CP,const int &numOfCP,const int &dim)
 {
   int tmp = 0;
 
@@ -172,7 +172,7 @@ void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &nu
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value_rigidBodyInteraction(const int &numOfNode,INTARRAY1D &iCP,DOUBLEARRAY3D &Rb,const double (&Kqq)[3][3],const int numOfCP)
+void PARDISO_solver::set_CSR_value_rigidBodyInteraction(const int &numOfNode,ARRAY1D<int> &iCP,ARRAY3D<double> &Rb,const double (&Kqq)[3][3],const int numOfCP)
 {
   int tmp1,tmp2,tmp3;
 

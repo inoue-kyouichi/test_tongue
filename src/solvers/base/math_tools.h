@@ -25,8 +25,8 @@ class mathTool {
     mathTool(){};
     ~mathTool(){};
     static double rnd();
-    static double vectorNorm(const int &nump,DOUBLEARRAY1D &x);
-    static double innerProduct(const int &nump,DOUBLEARRAY1D &x,DOUBLEARRAY1D &y);
+    static double vectorNorm(const int &nump,ARRAY1D<double> &x);
+    static double innerProduct(const int &nump,ARRAY1D<double> &x,ARRAY1D<double> &y);
     static void crossProduct(const double (&a)[3],const double (&b)[3],double (&c)[3],double &dc);
     static void calcInverseMatrix_3x3(double (&inv_a)[3][3],const double (&a)[3][3]);
     static double calcDeterminant_3x3(const double (&a)[3][3]);

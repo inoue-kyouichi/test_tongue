@@ -19,8 +19,8 @@
 #include "triangleSurfaceCurvature.h"
 #include "glog/logging.h"
 
-void read_plyFile(const std::string &file,DOUBLEARRAY2D &x,INTARRAY2D &ie,int &numOfNode,int &numOfElm);
-void export_vtu(DOUBLEARRAY2D &x,INTARRAY2D &ie,const int &numOfNode,const int &numOfElm,DOUBLEARRAY2D &normal,DOUBLEARRAY1D &meanCurvature,const std::string &file);
+void read_plyFile(const std::string &file,ARRAY2D<double> &x,ARRAY2D<int> &ie,int &numOfNode,int &numOfElm);
+void export_vtu(ARRAY2D<double> &x,ARRAY2D<int> &ie,const int &numOfNode,const int &numOfElm,ARRAY2D<double> &normal,ARRAY1D<double> &meanCurvature,const std::string &file);
 
 using namespace std;
 
@@ -30,10 +30,10 @@ int main(int argc,char *argv[])
   google::InstallFailureSignalHandler();
 
   int numOfNode,numOfElm;
-  DOUBLEARRAY2D x;
-  INTARRAY2D ie;
-  DOUBLEARRAY2D normal;
-  DOUBLEARRAY1D meanCurvature;
+  ARRAY2D<double> x;
+  ARRAY2D<int> ie;
+  ARRAY2D<double> normal;
+  ARRAY1D<double> meanCurvature;
 
   //read triangle surface
   if(argc!=2){
@@ -61,7 +61,7 @@ int main(int argc,char *argv[])
 /**
  * @brief read ply file
  */
-void read_plyFile(const std::string &file,DOUBLEARRAY2D &x,INTARRAY2D &ie,int &numOfNode,int &numOfElm)
+void read_plyFile(const std::string &file,ARRAY2D<double> &x,ARRAY2D<int> &ie,int &numOfNode,int &numOfElm)
 {
   int i,j,ret,dummy;
   char tmp[100],tmp2[100];
@@ -104,7 +104,7 @@ void read_plyFile(const std::string &file,DOUBLEARRAY2D &x,INTARRAY2D &ie,int &n
 /**
  * @brief export surfaces with normal & curvature
  */
-void export_vtu(DOUBLEARRAY2D &x,INTARRAY2D &ie,const int &numOfNode,const int &numOfElm,DOUBLEARRAY2D &normal,DOUBLEARRAY1D &meanCurvature,const std::string &file)
+void export_vtu(ARRAY2D<double> &x,ARRAY2D<int> &ie,const int &numOfNode,const int &numOfElm,ARRAY2D<double> &normal,ARRAY1D<double> &meanCurvature,const std::string &file)
 {
   FILE *fp;
   if ((fp = fopen(file.c_str(), "w")) == NULL) {

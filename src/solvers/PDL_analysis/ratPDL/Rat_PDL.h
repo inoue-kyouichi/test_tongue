@@ -34,8 +34,8 @@ class Rat_PeriodontalLigament : public Fem{
   void inputMaterialInfo(TextParser &tp);
 
  private:
-  double LinearElastic_inGaussIntegral(DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
-  double postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],DOUBLEARRAY2D &u,DOUBLEARRAY2D &dNdr,DOUBLEARRAY2D &x_ref,DOUBLEARRAY2D &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
+  double LinearElastic_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
+  double postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],ARRAY2D<double> &u,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option);
 
 };
 

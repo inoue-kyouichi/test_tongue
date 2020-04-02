@@ -29,7 +29,7 @@ double mathTool::rnd()
 /**
  * @brief calc norm of vector
  */
-double mathTool::vectorNorm(const int &nump,DOUBLEARRAY1D &x)
+double mathTool::vectorNorm(const int &nump,ARRAY1D<double> &x)
 {
   double norm=0e0;
 
@@ -44,7 +44,7 @@ double mathTool::vectorNorm(const int &nump,DOUBLEARRAY1D &x)
 /**
  * @brief calc inner product
  */
-double mathTool::innerProduct(const int &nump,DOUBLEARRAY1D &x,DOUBLEARRAY1D &y)
+double mathTool::innerProduct(const int &nump,ARRAY1D<double> &x,ARRAY1D<double> &y)
 {
   double dot_p=0e0;
 

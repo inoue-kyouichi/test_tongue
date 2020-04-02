@@ -111,7 +111,7 @@ void PARDISO_solver::CSR_index_initialize(const VECTOR2D<int> &inb,const int &nu
  * @param [in] numOfNode   number of nodes
  * @param [in] ibd         dirichlet boundary mask function
  */
-void PARDISO_solver::set_CSR_dirichlet_boundary_condition3D(const int &numOfNode,INTARRAY2D &ibd)
+void PARDISO_solver::set_CSR_dirichlet_boundary_condition3D(const int &numOfNode,ARRAY2D<int> &ibd)
 {
 
   #pragma omp parallel for
@@ -148,7 +148,7 @@ void PARDISO_solver::set_CSR_dirichlet_boundary_condition3D(const int &numOfNode
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value1D(std::vector<DOUBLEARRAY2D> &K,const std::vector<ElementType> &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value1D(std::vector<ARRAY2D<double>> &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -187,7 +187,7 @@ void PARDISO_solver::set_CSR_value1D(std::vector<DOUBLEARRAY2D> &K,const std::ve
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value2D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value2D(std::vector<ARRAY4D<double>> &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;
@@ -234,7 +234,7 @@ void PARDISO_solver::set_CSR_value2D(std::vector<DOUBLEARRAY4D> &K,const std::ve
  * @param [in] numOfNodeInElm nubmer of node in each elements
  * @param [in] inb nodes around each node
  */
-void PARDISO_solver::set_CSR_value3D(std::vector<DOUBLEARRAY4D> &K,const std::vector<ElementType> &element,const int &numOfNode,
+void PARDISO_solver::set_CSR_value3D(std::vector<ARRAY4D<double>> &K,const std::vector<ElementType> &element,const int &numOfNode,
                                const int &numOfElm,const VECTOR2D<int> &inb)
 {
   int tmp1,tmp2,tmp3;

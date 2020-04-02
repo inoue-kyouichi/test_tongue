@@ -64,8 +64,8 @@ void PeriodontalLigament::calc_normal_quad(double (&normal)[3],double (&X)[4][3]
 {
   double dXdr1[3],dXdr2[3],dXdr3[3],Jacobian,normalVector[3];
   double tmp;
-  DOUBLEARRAY2D dNdr(4,2);
-  DOUBLEARRAY2D dNdX(4,3);
+  ARRAY2D<double> dNdr(4,2);
+  ARRAY2D<double> dNdX(4,3);
 
   Gauss g1(2);
 

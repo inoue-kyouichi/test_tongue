@@ -108,8 +108,8 @@ void Fem::calc_MassMatrix()
   int numOfNodeInElm;
   double detJ,dXdr[3][3];
 
-  DOUBLEARRAY1D N;
-  DOUBLEARRAY2D dNdr,X;
+  ARRAY1D<double> N;
+  ARRAY2D<double> dNdr,X;
 
   for(int ic=0;ic<numOfElm;ic++){
 
@@ -173,15 +173,15 @@ void Fem::calc_MassMatrix()
  * @param [in]  numOfGaussPoint number of gauss point set in each element
  * @param [in]  option true:current configuration, false:reference configuration
  */
-void Fem::calcVolume_hexa(const int &ic,DOUBLEARRAY1D &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
+void Fem::calcVolume_hexa(const int &ic,ARRAY1D<double> &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option)
 {
   double detJ,volume=0e0,J;
   double dXdr[3][3],dxdr[3][3],drdX[3][3],drdx[3][3];
 
-  DOUBLEARRAY2D x_current(numOfNodeInElm,3);
-  DOUBLEARRAY2D x_ref(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdr(numOfNodeInElm,3);
-  DOUBLEARRAY2D dNdx(numOfNodeInElm,3);
+  ARRAY2D<double> x_current(numOfNodeInElm,3);
+  ARRAY2D<double> x_ref(numOfNodeInElm,3);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
+  ARRAY2D<double> dNdx(numOfNodeInElm,3);
 
   //------two point---------
   Gauss gauss(numOfGaussPoint);

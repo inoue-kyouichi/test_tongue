@@ -17,7 +17,7 @@ using namespace std;
 /**
  * @brief normalize vectors
  */
-void Fem::normalize(DOUBLEARRAY2D &AEigen,DOUBLEARRAY3D &AEigenVector_Ave,const int ic)
+void Fem::normalize(ARRAY2D<double> &AEigen,ARRAY3D<double> &AEigenVector_Ave,const int ic)
 {
   double tmp=0e0;
   for(int i=0;i<3;i++){
