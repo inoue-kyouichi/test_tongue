@@ -14,7 +14,7 @@
 include ../../make_setting.mk
 
 TARGET = libLigamentBoneInteraction.a
-TARGET_DIR = ../../lib
+TARGET_DIR = ../lib
 
 CXXSRCS = $(wildcard *.cpp)
 

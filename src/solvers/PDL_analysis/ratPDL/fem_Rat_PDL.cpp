@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "Rat_PDL.h"
+#include "PDL_analysis.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ using namespace std;
  * @param [in] U_tmp            displacement vector
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void Rat_PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
+void ratPDL::PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
   double young = 66.7e-3; //(MPa)
   double poisson = 0.49e0;
@@ -89,7 +89,7 @@ void Rat_PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double Rat_PeriodontalLigament::LinearElastic_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
+double ratPDL::PeriodontalLigament::LinearElastic_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
 const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
@@ -133,7 +133,7 @@ const int numOfNodeInElm,const double weight,const int ic,const double lambda,co
 /**
  * @brief domain information from tp file
  */
-void Rat_PeriodontalLigament::inputMaterialInfo(TextParser &tp)
+void ratPDL::PeriodontalLigament::inputMaterialInfo(TextParser &tp)
 {
   string str,base_label,label,inputDir;
 

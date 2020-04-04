@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "PDL.h"
+#include "PDL_analysis.h"
 
 #include <Eigen/Core>
 #include <Eigen/Eigen>
@@ -22,7 +22,7 @@ using namespace std;
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,ARRAY2D<double> &U_tmp)
+void humanPDL::PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,ARRAY2D<double> &U_tmp)
 {
   const int numOfNodeInElm = element[ic].node.size();
   double volume=0e0;
@@ -101,7 +101,7 @@ void PeriodontalLigament::calcStressTensor_PDL_element_2018(const int &ic,ARRAY2
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-double PeriodontalLigament::calcI4bar(double (&F)[3][3],ARRAY2D<double> &dNdr,ARRAY2D<double> &dNdx,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const int ic)
+double humanPDL::PeriodontalLigament::calcI4bar(double (&F)[3][3],ARRAY2D<double> &dNdr,ARRAY2D<double> &dNdx,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const int ic)
 {
   double dxdr[3][3],dXdr[3][3],drdX[3][3];
 
@@ -158,7 +158,7 @@ double PeriodontalLigament::calcI4bar(double (&F)[3][3],ARRAY2D<double> &dNdr,AR
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,ARRAY2D<double> &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
+void humanPDL::PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,ARRAY2D<double> &U_tmp,const int &numOfNodeInElm,const int &numOfGaussPoint)
 {
   double stress[3][3];
 
@@ -253,7 +253,7 @@ void PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,ARRAY2D<dou
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void PeriodontalLigament::summation_postProcess(double &averageLambda,const double (&stress)[3][3],const double (&F)[3][3],const double Ic4bar,const int ic)
+void humanPDL::PeriodontalLigament::summation_postProcess(double &averageLambda,const double (&stress)[3][3],const double (&F)[3][3],const double Ic4bar,const int ic)
 {
   double sigmaEigen[3],sigmaEigenVector[3][3];
   calcEigen(stress,sigmaEigen,sigmaEigenVector);
@@ -289,7 +289,7 @@ void PeriodontalLigament::summation_postProcess(double &averageLambda,const doub
  * @detail
    PDL model and parameters: Ortun-Terrazas et al., J. Mech. Behavior Biomed. Mat., 2018
  */
-void PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(const int &ic,ARRAY2D<double> &U_tmp,
+void humanPDL::PeriodontalLigament::calcStressTensor_PDL_element_spatialForm_2018_inGaussIntegral(const int &ic,ARRAY2D<double> &U_tmp,
 const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,ARRAY2D<double> &dNdx,const double weight,double (&stress)[3][3],const bool mainLoop)
 {
   double detJ,volume=0e0,J;
@@ -529,7 +529,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
    PDL model and parameters: Bergomi et al., J. Biomech., 2011
    W=2mu/alpha*[lambda_1^alpha+lambda_2^alpha+lambda_3^alpha-3+1/beta*(J^(alpha*beta)-1)]
  */
-void PeriodontalLigament::calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(const int &ic,ARRAY2D<double> &U_tmp,
+void humanPDL::PeriodontalLigament::calcStressTensor_hyperFoam_element_spatialForm_inGaussIntegral(const int &ic,ARRAY2D<double> &U_tmp,
 const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,ARRAY2D<double> &dNdx,const double weight,double (&stress)[3][3],const bool mainLoop)
 {
   double detJ,volume=0e0,J;
@@ -709,7 +709,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
  * @param [out] stretch direction     associating direction vector
  * @param [in]  C     right Cauchy-Green deformation tensor
  */
-void PeriodontalLigament::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
+void humanPDL::PeriodontalLigament::calcLambda(double (&stretch)[3],double (&stretchDirection)[3][3],const double (&C)[3][3])
 {
   Matrix3d M;
   for(int i=0;i<3;i++){

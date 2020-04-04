@@ -15,8 +15,8 @@
 all:
 	cd src && make -f Makefile_hand.mk
 
-utilities:
-	cd src && make -f Makefile_hand.mk utilities
+test:
+	cd src && make -f Makefile_hand.mk test
 
 install:
 	cd src && make -f Makefile_hand.mk install

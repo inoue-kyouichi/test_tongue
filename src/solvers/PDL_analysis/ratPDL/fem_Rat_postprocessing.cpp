@@ -3,7 +3,7 @@
  * @brief Fem class
  * @author T. Otani
  */
-#include "Rat_PDL.h"
+#include "PDL_analysis.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -23,7 +23,7 @@ using namespace Eigen;
  * @param [in] U_tmp            displacement vector
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void Rat_PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(const int ic,const bool option)
+void ratPDL::PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
   double young = 66.7e-3; //(MPa)
   double poisson = 0.49e0;
@@ -118,7 +118,7 @@ void Rat_PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(cons
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-double Rat_PeriodontalLigament::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],ARRAY2D<double> &u,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
+double ratPDL::PeriodontalLigament::postProcess_LinearElastic_inGaussIntegral(double (&sigmaEigen)[3],double (&sigmaEigenVector)[3][3],ARRAY2D<double> &u,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const double lambda,const double mu,const bool option)
 {
   double detJ,volume,J;
   double dXdr[3][3],C4[3][3][3][3];

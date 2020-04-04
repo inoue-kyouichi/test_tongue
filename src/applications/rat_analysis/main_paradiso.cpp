@@ -16,7 +16,7 @@
  * @detail Fem solid analysis with displacement control.
  */
 
-#include "rigidElasticInteraction.h"
+#include "PDL_analysis.h"
 #include "glog/logging.h"
 
 using namespace std;
@@ -26,7 +26,7 @@ int main(int argc,char *argv[])
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
-  ratAnalysis::RigidElasticInteraction rigidBodyInteraction;
+  ratPDL::RigidElasticInteraction rigidBodyInteraction;
 
   if(argc!=2){
     cout << "Invalid input" << endl;

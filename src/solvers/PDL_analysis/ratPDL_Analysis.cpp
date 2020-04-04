@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "rigidElasticInteraction.h"
+#include "PDL_analysis.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ using namespace std;
 /**
  * @brief rigid body-elastic body interaction problem
  */
-void ratAnalysis::RigidElasticInteraction::mainLoop()
+void ratPDL::RigidElasticInteraction::RigidElasticInteraction::mainLoop()
 {
   int output_iter=1;
   string output;
@@ -86,7 +86,7 @@ void ratAnalysis::RigidElasticInteraction::mainLoop()
 /**
  * @brief fem solid analysis routine
  */
-int ratAnalysis::RigidElasticInteraction::NRscheme()
+int ratPDL::RigidElasticInteraction::NRscheme()
 {
   double residual,residual0,norm,norm0;
   string output;
@@ -174,7 +174,7 @@ int ratAnalysis::RigidElasticInteraction::NRscheme()
  * @brief calc b0
  * @param [in] RBdy          rigid body class
  */
-void ratAnalysis::RigidElasticInteraction::initialize_rigidBodyInteraction()
+void ratPDL::RigidElasticInteraction::initialize_rigidBodyInteraction()
 {
   ElasticBody.initialize(tp);
   ElasticBody.inputMaterialInfo(tp);
@@ -220,7 +220,7 @@ void ratAnalysis::RigidElasticInteraction::initialize_rigidBodyInteraction()
 /**
  * @brief domain information from tp file
  */
-void ratAnalysis::RigidElasticInteraction::inputRigidBodyInterface()
+void ratPDL::RigidElasticInteraction::inputRigidBodyInterface()
 {
   string str,base_label,label,inputDir;
 
@@ -278,7 +278,7 @@ void ratAnalysis::RigidElasticInteraction::inputRigidBodyInterface()
 /**
  * @brief solver information from TP file
  */
-void ratAnalysis::RigidElasticInteraction::inputSolverInfo(TextParser &tp)
+void ratPDL::RigidElasticInteraction::inputSolverInfo(TextParser &tp)
 {
   string str,base_label,label;
   int tmp;
@@ -333,7 +333,7 @@ void ratAnalysis::RigidElasticInteraction::inputSolverInfo(TextParser &tp)
 /**
  * @brief output information from TP file
  */
-void ratAnalysis::RigidElasticInteraction::inputOutputInfo(TextParser &tp)
+void ratPDL::RigidElasticInteraction::inputOutputInfo(TextParser &tp)
 {
   string str,base_label,label;
 
@@ -355,7 +355,7 @@ void ratAnalysis::RigidElasticInteraction::inputOutputInfo(TextParser &tp)
 /**
  * @brief assembly right-hand side
  */
-void ratAnalysis::RigidElasticInteraction::set_rhs_statics()
+void ratPDL::RigidElasticInteraction::set_rhs_statics()
 {
  // #pragma omp parallel for
   for(int ic=0;ic<ElasticBody.numOfNode;ic++){

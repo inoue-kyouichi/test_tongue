@@ -188,9 +188,7 @@ endif
 
 UDEF_INC_PATH=-I. \
                                 -I../../solvers/shapeOptimization/minimumComplianceProblem \
-                                -I../../solvers/PDL_analysis/PDL_TOOTH_interaction \
-                                -I../../solvers/PDL_analysis/humanPDL \
-                                -I../../solvers/PDL_analysis/ratPDL \
+                                -I../../solvers/PDL_analysis \
                                 -I../../solvers/FEM \
                                 -I../../solvers/linearSolver \
                                 -I../../solvers/RBD \
@@ -199,8 +197,6 @@ UDEF_INC_PATH=-I. \
 UDEF_LIB_PATH= \
                                   -L../../solvers/lib -lMinimumCompliance \
                                   -L../../solvers/lib -lInteraction \
-                                  -L../../solvers/lib -lPDL_human \
-                                  -L../../solvers/lib -lPDL_rat \
                                   -L../../solvers/lib -lFEM \
                                   -L../../solvers/lib -lRBD \
                                   -L../../solvers/lib -lLIS \

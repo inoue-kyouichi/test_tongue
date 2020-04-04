@@ -4,7 +4,7 @@
  * @author T. Otani
  */
 
-#include "PDL.h"
+#include "PDL_analysis.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ using namespace std;
 /**
  * @brief calc stress tensor
  */
-void PeriodontalLigament::calcStressTensor()
+void humanPDL::PeriodontalLigament::calcStressTensor()
 {
   stress_tensor_initialize();
 
@@ -42,7 +42,7 @@ void PeriodontalLigament::calcStressTensor()
  * @brief fiber information from TP file
  * @TODO linear hexa element only
  */
-void PeriodontalLigament::setFiberDirection()
+void humanPDL::PeriodontalLigament::setFiberDirection()
 {
   double X_elm[4][3],normal[3];
   for(int ic=0;ic<numOfElm;ic++){
@@ -60,7 +60,7 @@ void PeriodontalLigament::setFiberDirection()
  * @brief fiber information from TP file
  * @TODO linear hexa element only
  */
-void PeriodontalLigament::calc_normal_quad(double (&normal)[3],double (&X)[4][3])
+void humanPDL::PeriodontalLigament::calc_normal_quad(double (&normal)[3],double (&X)[4][3])
 {
   double dXdr1[3],dXdr2[3],dXdr3[3],Jacobian,normalVector[3];
   double tmp;
@@ -99,7 +99,7 @@ void PeriodontalLigament::calc_normal_quad(double (&normal)[3],double (&X)[4][3]
 /**
  * @brief fiber information from TP file
  */
-void PeriodontalLigament::setFiberDirection_KogaModel(TextParser &tp)
+void humanPDL::PeriodontalLigament::setFiberDirection_KogaModel(TextParser &tp)
 {
   string str,base_label,label,inputDir;
   double thetaMax,horizontalFiberPosition;
@@ -162,7 +162,7 @@ void PeriodontalLigament::setFiberDirection_KogaModel(TextParser &tp)
 /**
  * @brief arcLength
  */
-double PeriodontalLigament::arcLength(const double xMin,const double xMax)
+double humanPDL::PeriodontalLigament::arcLength(const double xMin,const double xMax)
 {
   double s = (xMax*sqrt(4e6*xMax*xMax+1e0)/2e0+asinh(2e3*xMax)/4e3)-(xMin*sqrt(4e6*xMin*xMin+1e0)/2e0+asinh(2e3*xMin)/4e3);
   return s;
@@ -172,7 +172,7 @@ double PeriodontalLigament::arcLength(const double xMin,const double xMax)
 /**
  * @brief fiber information from TP file
  */
-void PeriodontalLigament::inputFiberInfo(TextParser &tp)
+void humanPDL::PeriodontalLigament::inputFiberInfo(TextParser &tp)
 {
     string str, base_label, label, inputDir;
 
@@ -208,7 +208,7 @@ void PeriodontalLigament::inputFiberInfo(TextParser &tp)
     fclose(fp);
 }
 
-void PeriodontalLigament::allocatePDLvariables()
+void humanPDL::PeriodontalLigament::allocatePDLvariables()
 {
   lambda_ave.allocate(numOfElm,3);
   fiberDirection_elm.allocate(numOfElm,3); //gauss point

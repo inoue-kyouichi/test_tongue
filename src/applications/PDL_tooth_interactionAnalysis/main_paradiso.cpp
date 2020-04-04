@@ -16,7 +16,7 @@
  * @detail Fem solid analysis with displacement control.
  */
 
-#include "rigidElasticInteraction.h"
+#include "PDL_analysis.h"
 #include "glog/logging.h"
 
 using namespace std;
