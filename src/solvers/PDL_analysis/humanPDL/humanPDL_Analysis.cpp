@@ -78,8 +78,8 @@ void humanPDL::RigidElasticInteraction::mainLoop()
     // fclose(fp);
 
     output = outputDir + "/PDL_"+to_string(dataNumber)+"_"+to_string(loop)+".vtu";
-    fileIO::export_vtu_Mises(ElasticBody.x,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.U,ElasticBody.Mises,output);
-    // fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,sigmaEigen_Ave,sigmaEigenVector_Ave,output);
+    // ElasticBody.export_vtu_Mises(output);
+    ElasticBody.export_vtu(output);
   }
 }
 
@@ -366,3 +366,5 @@ void humanPDL::RigidElasticInteraction::set_rhs_statics()
     }
   }
 }
+
+

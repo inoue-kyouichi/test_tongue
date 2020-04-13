@@ -1,6 +1,6 @@
 ##################################################################################
 #
-# BDIM library
+# solidFEM library
 
 # Copyright (c) 2019- Mechanical and Bioengineering Systems Lab.,
 #                     Department of Mechanical Science and Bioengineering,
@@ -72,7 +72,7 @@ ifeq ($(ARCH),test)
   #CXX         = mpicxx
   #CFLAGS      = -O3
   #CXXFLAGS    = -O3 -qopt-report=5 $(OMP_FLAGS)
-  CXXFLAGS    = -Wall -Wextra -O3 $(OMP_FLAGS) -std=c++11 -MMD -MP -mkl
+  CXXFLAGS    = -Wall -Wdeprecated -O3 $(OMP_FLAGS) -std=c++11 -mkl #-MMD -MP
   #FC          = ifort
   #FCFLAGS     = -O3
   #F90         = mpif90
