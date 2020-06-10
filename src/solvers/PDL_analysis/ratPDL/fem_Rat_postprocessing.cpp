@@ -93,7 +93,7 @@ void ratPDL::PeriodontalLigament::postProcess_LinearElastic_element_spatialForm(
       }
       for(int i=0;i<3;i++) sigmaEigen_Ave(ic,i)/=4e0;
       Mises(ic)=sqrt(5e-1*(pow(sigmaEigen_Ave(ic,0)-sigmaEigen_Ave(ic,1),2e0)+pow(sigmaEigen_Ave(ic,1)-sigmaEigen_Ave(ic,2),2e0)+pow(sigmaEigen_Ave(ic,2)-sigmaEigen_Ave(ic,0),2e0)));
-      normalize(sigmaEigen_Ave,sigmaEigenVector_Ave,ic);
+      normalize(sigmaEigenVector_Ave,ic);
       break;
     case VTK_QUADRATIC_HEXAHEDRON:
       break;

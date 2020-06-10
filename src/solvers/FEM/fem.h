@@ -110,7 +110,7 @@ class Fem : public Domain{
   ARRAY3D<double> AEigenVector_Ave,sigmaEigenVector_Ave;
 
   void calcEigen(const double (&A)[3][3],double (&AEigen)[3],double (&AEigenVector)[3][3]);
-  void normalize(ARRAY2D<double> &AEigen,ARRAY3D<double> &AEigenVector_Ave,const int ic);
+  void normalize(ARRAY3D<double> &AEigenVector_Ave,const int ic);
 
   //fem_boundary.cpp
  public:

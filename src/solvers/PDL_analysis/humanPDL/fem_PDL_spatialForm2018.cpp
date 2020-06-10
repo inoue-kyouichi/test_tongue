@@ -234,12 +234,35 @@ void humanPDL::PeriodontalLigament::postProcess_PDL_element_2018(const int &ic,A
     exit(1);
   }
 
+  double lambda_direction[3];
+
   tmp=sqrt(lambda_ave(ic,0)*lambda_ave(ic,0)+lambda_ave(ic,1)*lambda_ave(ic,1)+lambda_ave(ic,2)*lambda_ave(ic,2));
   for(int j=0;j<3;j++) lambda_ave(ic,j)/=tmp;
+  for(int j=0;j<3;j++) lambda_direction[j] = lambda_ave(ic,j);
   for(int j=0;j<3;j++) lambda_ave(ic,j)*=averageLambda/8e0;
 
+  double force[3];
+  for(int i=0;i<3;i++){
+    force[i] = 0e0;
+    for(int j=0;j<3;j++){
+      force[i] += stress[i][j] * lambda_direction[j];
+    }
+  }
+
+  fibreStress(ic) = sqrt(force[0]*force[0]+force[1]*force[1]+force[2]*force[2]);
+
+
   for(int j=0;j<3;j++) sigmaEigen_Ave(ic,j)/=8e0;
-  normalize(sigmaEigen_Ave,sigmaEigenVector_Ave,ic);
+  normalize(sigmaEigenVector_Ave,ic);
+
+  double stress1st_direction[3];
+  for(int j=0;j<3;j++) stress1st_direction[j] = sigmaEigenVector_Ave(ic,0,j);
+  
+  double angle=0e0;
+  for(int j=0;j<3;j++ ) angle += stress1st_direction[j] * lambda_direction[j];
+  angle = acos(fabs(angle))* 180e0/PI;
+  angleVariation(ic) = angle;
+
 }
 
 // #################################################################

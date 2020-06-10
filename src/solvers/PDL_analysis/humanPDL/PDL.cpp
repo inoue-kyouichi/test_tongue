@@ -211,7 +211,9 @@ void humanPDL::PeriodontalLigament::inputFiberInfo(TextParser &tp)
 void humanPDL::PeriodontalLigament::allocatePDLvariables()
 {
   lambda_ave.allocate(numOfElm,3);
+  fibreStress.allocate(numOfElm);
   fiberDirection_elm.allocate(numOfElm,3); //gauss point
+  angleVariation.allocate(numOfElm);
 }
 
 // #################################################################
@@ -293,6 +295,16 @@ void humanPDL::PeriodontalLigament::export_vtu(const string &file)
                   +pow(sigmaEigen_Ave(i,2)-sigmaEigen_Ave(i,0),2e0);
     vonMisesStress=sqrt(5e-1*vonMisesStress);
     fprintf(fp,"%e\n",vonMisesStress);
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"fibreStress\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%e\n",fibreStress(i));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"angleVariation\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%e\n",angleVariation(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");

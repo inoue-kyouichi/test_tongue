@@ -17,7 +17,7 @@ using namespace std;
 /**
  * @brief normalize vectors
  */
-void Fem::normalize(ARRAY2D<double> &AEigen,ARRAY3D<double> &AEigenVector_Ave,const int ic)
+void Fem::normalize(ARRAY3D<double> &AEigenVector_Ave,const int ic)
 {
   double tmp=0e0;
   for(int i=0;i<3;i++){
@@ -26,7 +26,7 @@ void Fem::normalize(ARRAY2D<double> &AEigen,ARRAY3D<double> &AEigenVector_Ave,co
             +AEigenVector_Ave(ic,i,2)*AEigenVector_Ave(ic,i,2);
     if(tmp<1e-15) tmp=1e0;
     tmp=sqrt(tmp);
-    for(int j=0;j<3;j++) AEigenVector_Ave(ic,i,j)=AEigenVector_Ave(ic,i,j)/tmp*AEigen(ic,i);
+    for(int j=0;j<3;j++) AEigenVector_Ave(ic,i,j)=AEigenVector_Ave(ic,i,j)/tmp;
   }
 }
 // #################################################################

@@ -54,6 +54,8 @@ class PeriodontalLigament:public Fem{
   double bulkModulusRatio;
   ARRAY3D<double> fiberDirection;
   ARRAY2D<double> lambda_ave;
+  ARRAY1D<double> fibreStress;
+  ARRAY1D<double> angleVariation;
 
   ARRAY2D<double> fiberDirection_elm;
 

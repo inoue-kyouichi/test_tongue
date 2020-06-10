@@ -80,6 +80,7 @@ ifeq ($(ARCH),test)
   #F90FLAGS    = -O3 -Warn unused  -fpp  $(OMP_FLAGS) -traceback -CB -fpe0
   #F90FLAGS    = -O3 -Warn unused -fpp   -traceback -CB -fpe0
   LDFLAGS     = 
+
   #TEXTPARSER
   TXTP    = $(LIBDIR)/TextParser-1.8.5
   LDFLAGS  += -L$(TXTP)/lib -lTP
