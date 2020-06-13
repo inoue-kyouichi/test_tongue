@@ -154,6 +154,7 @@ void humanPDL::PeriodontalLigament::setFiberDirection_KogaModel(TextParser &tp)
       for(int j=0;j<3;j++) direction[i] += R[i][j] * normal[j];
     }
 
+    fibreAngle(ic) = angle * 180e0 / PI;
     for(int j=0;j<3;j++) fiberDirection_elm(ic,j)=direction[j];
   }
 }
@@ -214,6 +215,7 @@ void humanPDL::PeriodontalLigament::allocatePDLvariables()
   fibreStress.allocate(numOfElm);
   fiberDirection_elm.allocate(numOfElm,3); //gauss point
   angleVariation.allocate(numOfElm);
+  fibreAngle.allocate(numOfElm);
 }
 
 // #################################################################
@@ -376,6 +378,81 @@ void humanPDL::PeriodontalLigament::export_vtu_Mises(const string &file)
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
+  fprintf(fp,"</Piece>");
+  fprintf(fp,"</UnstructuredGrid>");
+  fprintf(fp,"</VTKFile>");
+  fclose(fp);
+}
+
+// #################################################################
+/**
+ * @brief calc boundary conditions
+ * @param [in] stress
+ */
+void humanPDL::PeriodontalLigament::export_vtu_boundary(const string &file)
+{
+  FILE *fp;
+  if ((fp = fopen(file.c_str(), "w")) == NULL) {
+    cout << file << " open error" << endl;
+    exit(1);
+  }
+
+  fprintf(fp,"<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
+  fprintf(fp,"<UnstructuredGrid>\n");
+  fprintf(fp,"<Piece NumberOfPoints= \"%d\" NumberOfCells= \"%d\" >\n",numOfNode,numOfElm);
+  fprintf(fp,"<Points>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Points>\n");
+  fprintf(fp,"<Cells>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    for(int j=0;j<element[i].node.size();j++) fprintf(fp,"%d ",element[i].node[j]);
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n");
+  int num=0;
+  for(int i=0;i<numOfElm;i++){
+    num += element[i].node.size();
+    fprintf(fp,"%d\n",num);
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++) fprintf(fp,"%d\n",element[i].meshType);
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Cells>\n");
+
+  fprintf(fp,"<PointData>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"bd\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%e %e %e\n",bd(i,0),bd(i,1),bd(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"ibd\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%d %d %d\n",ibd(i,0),ibd(i,1),ibd(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</PointData>\n");
+  fprintf(fp,"<CellData>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"fiberDirection\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%e %e %e\n",fiberDirection_elm(i,0),fiberDirection_elm(i,1),fiberDirection_elm(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"fiberAngle\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<numOfElm;i++){
+    fprintf(fp,"%e\n",fibreAngle(i));
+  }
+  fprintf(fp,"</DataArray>\n");
+
+  fprintf(fp,"</CellData>\n");
+
   fprintf(fp,"</Piece>");
   fprintf(fp,"</UnstructuredGrid>");
   fprintf(fp,"</VTKFile>");

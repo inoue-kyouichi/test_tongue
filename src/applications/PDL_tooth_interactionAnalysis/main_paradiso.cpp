@@ -45,6 +45,7 @@ int main(int argc,char *argv[])
   rigidBodyInteraction.initialize_rigidBodyInteraction();
   cout << "---------preprocess completed----------" << endl << endl;
 
+
   cout << "---------main loop start----------" << endl;
   rigidBodyInteraction.mainLoop();
 

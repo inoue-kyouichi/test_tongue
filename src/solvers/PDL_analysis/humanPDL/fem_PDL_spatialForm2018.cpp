@@ -575,7 +575,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
   detJ = mathTool::calcDeterminant_3x3(dxdr);
-  // volume += detJ * gauss.weight[i1] * gauss.weight[i2] * gauss.weight[i3];
+  // volume += detJ * weight;
 
   FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
   mathTool::calcInverseMatrix_3x3(drdX,dXdr);

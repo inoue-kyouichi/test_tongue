@@ -56,6 +56,7 @@ class PeriodontalLigament:public Fem{
   ARRAY2D<double> lambda_ave;
   ARRAY1D<double> fibreStress;
   ARRAY1D<double> angleVariation;
+  ARRAY1D<double> fibreAngle;
 
   ARRAY2D<double> fiberDirection_elm;
 
@@ -71,6 +72,7 @@ class PeriodontalLigament:public Fem{
 
   void export_vtu(const std::string &file);
   void export_vtu_Mises(const std::string &file);
+  void export_vtu_boundary(const std::string &file);
   // void postProcess_PDL_element_spatialForm_hexa_SRI(const int &ic,ARRAY2D<double> &U_tmp,
   // const int &numOfNodeInElm,const int &numOfGaussPoint);
 

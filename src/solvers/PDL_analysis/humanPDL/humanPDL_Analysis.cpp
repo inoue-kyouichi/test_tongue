@@ -207,12 +207,18 @@ void humanPDL::RigidElasticInteraction::initialize_rigidBodyInteraction()
       if(ElasticBody.ibd(i,0)==0 && iCP(i)!=-1) cout << i << endl;
   }
 
+  ARRAY1D<double> elementVolume(ElasticBody.numOfElm);
+  for(int ic=0;ic<ElasticBody.numOfElm;ic++){
+    ElasticBody.calcVolume_hexa(ic,elementVolume,8,2,false);
+    cout << elementVolume(ic) << endl;
+  }
+
   //CSR setting
   PARDISO.initialize(3*ElasticBody.numOfNode,3*numOfCP);
   PARDISO.CSR_initialize(ElasticBody.inb,ElasticBody.numOfNode,iCP,CP,numOfCP,3);
 
   string output = outputDir + "/" + fileName + "_boundary" + ".vtu";
-  fileIO::export_vtu_boundary(ElasticBody.x,ElasticBody.element,ElasticBody.numOfNode,ElasticBody.numOfElm,ElasticBody.ibd,ElasticBody.bd,ElasticBody.fiberDirection_elm,output);
+  ElasticBody.export_vtu_boundary(output);
   output = outputDir + "/start.ply";
   RBdy.exportPLY(output);
 }
@@ -366,5 +372,3 @@ void humanPDL::RigidElasticInteraction::set_rhs_statics()
     }
   }
 }
-
-
