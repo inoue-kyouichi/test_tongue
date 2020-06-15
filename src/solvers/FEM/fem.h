@@ -76,7 +76,7 @@ class Fem : public Domain{
   void rotationalDirichlet(const int loop);
   void set_rhs_statics();
   void calc_MassMatrix();
-  void corrector_statistics(const double *u,const double relaxation);
+  void corrector_statics(const double *u,const double relaxation);
   void calcVolume_hexa(const int &ic,ARRAY1D<double> &elementVolume,const int &numOfNodeInElm,const int &numOfGaussPoint,const bool option);
 
   void stress_tensor_initialize();
@@ -95,9 +95,9 @@ class Fem : public Domain{
   //fem_preprocessing.cpp
  public:
   void initialize(TextParser &tp);
+  void inputDomainInfo(TextParser &tp);
   void allocate();
  private:
-  void inputDomainInfo(TextParser &tp);
   void inputDirichletBoundaryInfo(TextParser &tp);
   void inputNeumannBoundaryInfo(TextParser &tp);
   void inputFiberInfo(TextParser &tp);

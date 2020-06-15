@@ -188,6 +188,7 @@ endif
 
 
 UDEF_INC_PATH=-I. \
+                                -I../../solvers/eyeMech \
                                 -I../../solvers/shapeOptimization/minimumComplianceProblem \
                                 -I../../solvers/PDL_analysis \
                                 -I../../solvers/FEM \
@@ -197,6 +198,7 @@ UDEF_INC_PATH=-I. \
 
 UDEF_LIB_PATH= \
                                   -L../../solvers/lib -lMinimumCompliance \
+                                  -L../../solvers/lib -leyeMech \
                                   -L../../solvers/lib -lInteraction \
                                   -L../../solvers/lib -lFEM \
                                   -L../../solvers/lib -lRBD \

@@ -90,7 +90,7 @@ void Fem::stress_tensor_initialize()
  * @param [in] u          displacement vector
  * @param [in] relaxation  relaxation parameters
  */
-void Fem::corrector_statistics(const double *u,const double relaxation)
+void Fem::corrector_statics(const double *u,const double relaxation)
 {
   #pragma omp parallel for
   for(int i=0;i<numOfNode;i++){

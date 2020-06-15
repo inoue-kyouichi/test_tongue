@@ -16,7 +16,7 @@
  * @detail Fem solid analysis with displacement control.
  */
 
-#include "PDL_analysis.h"
+#include "eye_mechanics.h"
 #include "glog/logging.h"
 
 using namespace std;
@@ -26,7 +26,7 @@ int main(int argc,char *argv[])
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
-  humanPDL::RigidElasticInteraction rigidBodyInteraction;
+  EYE_Mechanics::EyeMech Eye;
 
   if(argc!=2){
     cout << "Invalid input" << endl;
@@ -36,20 +36,17 @@ int main(int argc,char *argv[])
   //read tp file
   std::string input_file = argv[1];
   int ierror;
-  if ((ierror = rigidBodyInteraction.tp.read(input_file)) != TP_NO_ERROR) {
+  if ((ierror = Eye.tp.read(input_file)) != TP_NO_ERROR) {
     printf("\tError at reading '%s' file\n", input_file.c_str());
     return 1;
   }
 
   cout << "---------preprocess start----------" << endl;
-  rigidBodyInteraction.initialize_rigidBodyInteraction();
+  Eye.preprocess();
   cout << "---------preprocess completed----------" << endl << endl;
 
-
-  exit(1);
-
   cout << "---------main loop start----------" << endl;
-  rigidBodyInteraction.mainLoop();
+  Eye.femSolidAnalysis();
 
   return 0;
 }
