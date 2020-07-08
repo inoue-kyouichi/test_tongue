@@ -6,7 +6,7 @@ using namespace std;
  * @brief calc prediction matrix
  * @param [in] ic element number
  */
-void SignedDistanceFunction::calcEikonalEquation()
+double SignedDistanceFunction::calcEikonalEquation()
 {
   VECTOR1D<ARRAY2D<double>> LHS,RHS;
   LHS.resize(FEM.numOfElm);
@@ -54,10 +54,75 @@ void SignedDistanceFunction::calcEikonalEquation()
     }
   }
 
-  #pragma omp parallel for
+  for(int ic=0;ic<FEM.numOfElm;ic++){
+    calcSourceTerm(b,ic);
+  }
+
+  double residual=0e0;
+
+  #pragma omp parallel for reduction(max:residual)
   for(int ic=0;ic<FEM.numOfNode;ic++){
     if(mask(ic)==0) continue;
+    double tmp = fabs(b(ic)/A(ic)-SDF(ic));
+    if(tmp>residual) residual = tmp;
     SDF(ic) = b(ic)/A(ic);
+  }
+
+  return residual;
+}
+
+// #################################################################
+/**
+ * @brief calc prediction matrix
+ * @param [in] ic element number
+ */
+void SignedDistanceFunction::calcSourceTerm(ARRAY1D<double> &b,const int ic)
+{
+  int numOfNodeInElm = FEM.element[ic].node.size();
+
+  ARRAY1D<int> e(numOfNodeInElm);
+  for(int i=0;i<numOfNodeInElm;i++) e(i) = FEM.element[ic].node[i];
+
+  ARRAY2D<double> x_current(numOfNodeInElm,3);
+  ARRAY1D<double> N(numOfNodeInElm);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
+  ARRAY2D<double> dNdx(numOfNodeInElm,3);
+
+  for(int i=0;i<numOfNodeInElm;i++){
+    for(int j=0;j<3;j++){
+      x_current(i,j) = FEM.x(FEM.element[ic].node[i],j);
+    }
+  }
+
+  GaussTetra gTet(1);
+  ShapeFunction3D::C3D4_N(N,gTet.point[0][0],gTet.point[0][1],gTet.point[0][2],gTet.point[0][3]);
+  ShapeFunction3D::C3D4_dNdr(dNdr,gTet.point[0][0],gTet.point[0][1],gTet.point[0][2],gTet.point[0][3]);
+
+  double dxdr[3][3],drdx[3][3];
+
+  FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
+  FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);
+  double detJ = mathTool::calcDeterminant_3x3(dxdr);
+
+  for(int i=0;i<numOfNodeInElm;i++){
+      b(FEM.element[ic].node[i]) += N(i) * detJ * gTet.weight[0]/6e0; //Galerking term
+  }
+
+
+  double advel[3]={0e0,0e0,0e0};
+  for(int i=0;i<numOfNodeInElm;i++){
+    for(int j=0;j<3;j++) advel[j] += dNdx(i,j)*SDF(e(i));
+  }
+
+  double dadv = sqrt(advel[0]*advel[0]+advel[1]*advel[1]+advel[2]*advel[2]);
+  for(int j=0;j<3;j++) advel[j] /= (dadv+1e-10);
+
+  double tau = SUPG_stabilizationParameter(dxdr,advel,FEM.element[ic].meshType);
+
+  for(int i=0;i<numOfNodeInElm;i++){
+    for(int j=0;j<3;j++){
+      b(FEM.element[ic].node[i]) += tau*advel[j]*dNdx(i,j) * gTet.weight[0]/6e0;   //SUPG term
+    }
   }
 
 }

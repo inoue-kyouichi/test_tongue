@@ -18,6 +18,8 @@
  * @author T. Otani
  */
 
+// Nagrath et al., Compt. Methods Appl. Mech. Engrg., 194 (2005), 4565-4587
+
 #include "FEM.h"
 
 class SignedDistanceFunction{
@@ -39,12 +41,13 @@ class SignedDistanceFunction{
   ARRAY1D<int> mask;
   double dt;
   double calcSDFofUnknownNode(const int elm,int &unknown);
-  void calcEikonalEquation();
+  double calcEikonalEquation();
   void calcPredictionMatrix(VECTOR1D<ARRAY2D<double>> &LHS,VECTOR1D<ARRAY2D<double>> &RHS,const int ic);
   void Prediction_Galerkin_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &LHS,VECTOR1D<ARRAY2D<double>> &RHS,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic);
   void Prediction_SUPG_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &LHS,VECTOR1D<ARRAY2D<double>> &RHS,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic);
   double SUPG_stabilizationParameter(const double (&dxdr)[3][3],const double (&advel)[3],VTKCellType &CellType);
 
+  void calcSourceTerm(ARRAY1D<double> &b,const int ic);
   void calc_dt();
 };
 

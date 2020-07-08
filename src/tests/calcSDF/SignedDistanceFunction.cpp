@@ -35,11 +35,20 @@ void SignedDistanceFunction::calcSDF()
   }
 
   calc_dt();
+  
+  FILE *fp;
+  if ((fp = fopen("test.log", "w")) == NULL) {
+    exit(1); 
+  }
 
   do{
-    calcEikonalEquation();
+    double residual = calcEikonalEquation();
+    printf("loop=%d residual = %e\n",loop,residual);
+    fprintf(fp,"%d %e\n",loop,residual);
     loop++;
-  }while(loop!=1000);
+  }while(loop!=10000);
+
+  fclose(fp);
 
   // do{
   //   int elm = elementToSolve[number];
