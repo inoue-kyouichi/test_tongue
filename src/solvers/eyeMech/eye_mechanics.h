@@ -49,7 +49,7 @@ class EyeMech : public Fem {
  public: 
   double boundaryPressure;
   ARRAY2D<double> boundaryForce;
-  VECTOR1D<ARRAY4D<double>> pressureStiffness;
+  std::vector<ARRAY4D<double>> pressureStiffnessMatrix;
 
   void preprocess();
   void femSolidAnalysis();

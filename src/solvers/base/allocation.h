@@ -215,299 +215,299 @@ private:
 };
 
 
-class INTARRAY1D
-{
-public:
-    INTARRAY1D()
-    {
-        data=new int[1];
-    }
-    INTARRAY1D(const int X)
-    {
-        nx = X;
-        data = new int[nx];
-    }
-    ~INTARRAY1D()
-    {
-        delete[] data;
-    }
-    int &operator()(const int i)
-    {
-        return data[i];
-    }
-    void allocate(const int X)
-    {
-        delete[] data;
-        nx = X;
-        data = new int[nx];
-    }
-private:
-    int *data;
-    int nx;
-};
+// class INTARRAY1D
+// {
+// public:
+//     INTARRAY1D()
+//     {
+//         data=new int[1];
+//     }
+//     INTARRAY1D(const int X)
+//     {
+//         nx = X;
+//         data = new int[nx];
+//     }
+//     ~INTARRAY1D()
+//     {
+//         delete[] data;
+//     }
+//     int &operator()(const int i)
+//     {
+//         return data[i];
+//     }
+//     void allocate(const int X)
+//     {
+//         delete[] data;
+//         nx = X;
+//         data = new int[nx];
+//     }
+// private:
+//     int *data;
+//     int nx;
+// };
 
-class INTARRAY2D
-{
-public:
-    INTARRAY2D()
-    {
-        data=new int[1];
-    }
-    INTARRAY2D(const int X, const int Y)
-    {
-        nx = X;
-        ny = Y;
-        data = new int[nx*ny];
-    }
-    ~INTARRAY2D()
-    {
-        delete[] data;
-    }
-    int &operator()(const int i, const int j)
-    {
-        return data[i*ny+j];
-    }
-    void allocate(const int X, const int Y)
-    {
-        delete[] data;
-        nx = X;
-        ny = Y;
-        data = new int[nx*ny];
-    }
-    void importData(const std::string &file);
-    void exportData(const std::string &file);
+// class INTARRAY2D
+// {
+// public:
+//     INTARRAY2D()
+//     {
+//         data=new int[1];
+//     }
+//     INTARRAY2D(const int X, const int Y)
+//     {
+//         nx = X;
+//         ny = Y;
+//         data = new int[nx*ny];
+//     }
+//     ~INTARRAY2D()
+//     {
+//         delete[] data;
+//     }
+//     int &operator()(const int i, const int j)
+//     {
+//         return data[i*ny+j];
+//     }
+//     void allocate(const int X, const int Y)
+//     {
+//         delete[] data;
+//         nx = X;
+//         ny = Y;
+//         data = new int[nx*ny];
+//     }
+//     void importData(const std::string &file);
+//     void exportData(const std::string &file);
 
-private:
-    int *data;
-    int nx;
-    int ny;
-};
+// private:
+//     int *data;
+//     int nx;
+//     int ny;
+// };
 
-class INTARRAY3D
-{
-public:
-    INTARRAY3D()
-    {
-        data = new int[1];
-    }
-    INTARRAY3D(const int X, const int Y, const int Z)
-    {
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new int[nx*ny*nz];
-    }
-    ~INTARRAY3D()
-    {
-        delete[] data;
-    }
-    int &operator()(const int i, const int j, const int k)
-    {
-        return data[i*ny*nz+j*nz+k];
-    }
-    void allocate(const int X, const int Y, const int Z)
-    {
-        delete[] data;
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new int[nx*ny*nz];
-    }
-private:
-    int *data;
-    int nx;
-    int ny;
-    int nz;
-};
+// class INTARRAY3D
+// {
+// public:
+//     INTARRAY3D()
+//     {
+//         data = new int[1];
+//     }
+//     INTARRAY3D(const int X, const int Y, const int Z)
+//     {
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new int[nx*ny*nz];
+//     }
+//     ~INTARRAY3D()
+//     {
+//         delete[] data;
+//     }
+//     int &operator()(const int i, const int j, const int k)
+//     {
+//         return data[i*ny*nz+j*nz+k];
+//     }
+//     void allocate(const int X, const int Y, const int Z)
+//     {
+//         delete[] data;
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new int[nx*ny*nz];
+//     }
+// private:
+//     int *data;
+//     int nx;
+//     int ny;
+//     int nz;
+// };
 
-class DOUBLEARRAY1D
-{
-public:
-    DOUBLEARRAY1D()
-    {
-        data = new double[1];
-    }
-    DOUBLEARRAY1D(const int X)
-    {
-        nx = X;
-        data = new double[nx];
-    }
-    ~DOUBLEARRAY1D()
-    {
-        delete[] data;
-    }
-    double &operator()(const int i)
-    {
-        return data[i];
-    }
-    void allocate(const int X)
-    {
-        delete[] data;
-        nx = X;
-        data = new double[nx];
-    }
+// class DOUBLEARRAY1D
+// {
+// public:
+//     DOUBLEARRAY1D()
+//     {
+//         data = new double[1];
+//     }
+//     DOUBLEARRAY1D(const int X)
+//     {
+//         nx = X;
+//         data = new double[nx];
+//     }
+//     ~DOUBLEARRAY1D()
+//     {
+//         delete[] data;
+//     }
+//     double &operator()(const int i)
+//     {
+//         return data[i];
+//     }
+//     void allocate(const int X)
+//     {
+//         delete[] data;
+//         nx = X;
+//         data = new double[nx];
+//     }
 
-private:
-    double *data;
-    int nx;
-};
+// private:
+//     double *data;
+//     int nx;
+// };
 
-class DOUBLEARRAY2D
-{
-public:
-    DOUBLEARRAY2D()
-    {
-        data = new double[1];
-    }
-    DOUBLEARRAY2D(const int X, const int Y)
-    {
-        nx = X;
-        ny = Y;
-        data = new double[nx*ny];
-    }
-    ~DOUBLEARRAY2D()
-    {
-        delete[] data;
-    }
-    double &operator()(const int i, const int j)
-    {
-        return data[i*ny+j];
-    }
-    void allocate(const int X, const int Y)
-    {
-        delete[] data;
-        nx = X;
-        ny = Y;
-        data = new double[nx*ny];
-    }
-private:
-    double *data;
-    int nx;
-    int ny;
-};
+// class DOUBLEARRAY2D
+// {
+// public:
+//     DOUBLEARRAY2D()
+//     {
+//         data = new double[1];
+//     }
+//     DOUBLEARRAY2D(const int X, const int Y)
+//     {
+//         nx = X;
+//         ny = Y;
+//         data = new double[nx*ny];
+//     }
+//     ~DOUBLEARRAY2D()
+//     {
+//         delete[] data;
+//     }
+//     double &operator()(const int i, const int j)
+//     {
+//         return data[i*ny+j];
+//     }
+//     void allocate(const int X, const int Y)
+//     {
+//         delete[] data;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nx*ny];
+//     }
+// private:
+//     double *data;
+//     int nx;
+//     int ny;
+// };
 
-class DOUBLEARRAY3D
-{
-public:
-    DOUBLEARRAY3D()
-    {
-        data = new double[1];
-    }
-    DOUBLEARRAY3D(const int X, const int Y, const int Z)
-    {
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new double[nx*ny*nz];
-    }
-    ~DOUBLEARRAY3D()
-    {
-        delete[] data;
-    }
-    double &operator()(const int i, const int j, const int k)
-    {
-        return data[i*ny*nz+j*nz+k];
-    }
-    void allocate(const int X, const int Y, const int Z)
-    {
-        delete[] data;
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new double[nx*ny*nz];
-    }
+// class DOUBLEARRAY3D
+// {
+// public:
+//     DOUBLEARRAY3D()
+//     {
+//         data = new double[1];
+//     }
+//     DOUBLEARRAY3D(const int X, const int Y, const int Z)
+//     {
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nx*ny*nz];
+//     }
+//     ~DOUBLEARRAY3D()
+//     {
+//         delete[] data;
+//     }
+//     double &operator()(const int i, const int j, const int k)
+//     {
+//         return data[i*ny*nz+j*nz+k];
+//     }
+//     void allocate(const int X, const int Y, const int Z)
+//     {
+//         delete[] data;
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nx*ny*nz];
+//     }
 
-private:
-    double *data;
-    int nx;
-    int ny;
-    int nz;
-};
+// private:
+//     double *data;
+//     int nx;
+//     int ny;
+//     int nz;
+// };
 
-class DOUBLEARRAY4D
-{
-public:
-    DOUBLEARRAY4D()
-    {
-        data = new double[1];
-    }
-    DOUBLEARRAY4D(const int H, const int X, const int Y, const int Z)
-    {
-        nh = H;
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new double[nx*ny*nz*nh];
-    }
-    ~DOUBLEARRAY4D()
-    {
-        delete[] data;
-    }
-    double &operator()(const int h,const int i, const int j, const int k)
-    {
-        return data[h*nx*ny*nz+i*ny*nz+j*nz+k];
-    }
-    void allocate(const int H, const int X, const int Y, const int Z)
-    {
-        delete[] data;
-        nh = H;
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new double[nh*nx*ny*nz];
-    }
+// class DOUBLEARRAY4D
+// {
+// public:
+//     DOUBLEARRAY4D()
+//     {
+//         data = new double[1];
+//     }
+//     DOUBLEARRAY4D(const int H, const int X, const int Y, const int Z)
+//     {
+//         nh = H;
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nx*ny*nz*nh];
+//     }
+//     ~DOUBLEARRAY4D()
+//     {
+//         delete[] data;
+//     }
+//     double &operator()(const int h,const int i, const int j, const int k)
+//     {
+//         return data[h*nx*ny*nz+i*ny*nz+j*nz+k];
+//     }
+//     void allocate(const int H, const int X, const int Y, const int Z)
+//     {
+//         delete[] data;
+//         nh = H;
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nh*nx*ny*nz];
+//     }
 
-private:
-    double *data;
-    int nx;
-    int ny;
-    int nz;
-    int nh;
-};
+// private:
+//     double *data;
+//     int nx;
+//     int ny;
+//     int nz;
+//     int nh;
+// };
 
-class DOUBLEARRAY5D
-{
-public:
-    DOUBLEARRAY5D()
-    {
-        data = new double[1];
-    }
-    DOUBLEARRAY5D(const int L,const int H, const int X, const int Y, const int Z)
-    {
-        nl = L;
-        nh = H;
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new double[nl*nx*ny*nz*nh];
-    }
-    ~DOUBLEARRAY5D()
-    {
-        delete[] data;
-    }
-    double &operator()(const int l,const int h,const int i, const int j, const int k)
-    {
-        return data[l*nh*nx*ny*nz+h*nx*ny*nz+i*ny*nz+j*nz+k];
-    }
-    void allocate(const int L,const int H, const int X, const int Y, const int Z)
-    {
-        delete[] data;
-        nl = L;
-        nh = H;
-        nz = Z;
-        nx = X;
-        ny = Y;
-        data = new double[nl*nh*nx*ny*nz];
-    }
+// class DOUBLEARRAY5D
+// {
+// public:
+//     DOUBLEARRAY5D()
+//     {
+//         data = new double[1];
+//     }
+//     DOUBLEARRAY5D(const int L,const int H, const int X, const int Y, const int Z)
+//     {
+//         nl = L;
+//         nh = H;
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nl*nx*ny*nz*nh];
+//     }
+//     ~DOUBLEARRAY5D()
+//     {
+//         delete[] data;
+//     }
+//     double &operator()(const int l,const int h,const int i, const int j, const int k)
+//     {
+//         return data[l*nh*nx*ny*nz+h*nx*ny*nz+i*ny*nz+j*nz+k];
+//     }
+//     void allocate(const int L,const int H, const int X, const int Y, const int Z)
+//     {
+//         delete[] data;
+//         nl = L;
+//         nh = H;
+//         nz = Z;
+//         nx = X;
+//         ny = Y;
+//         data = new double[nl*nh*nx*ny*nz];
+//     }
 
-private:
-    double *data;
-    int nx;
-    int ny;
-    int nz;
-    int nh;
-    int nl;
-};
+// private:
+//     double *data;
+//     int nx;
+//     int ny;
+//     int nz;
+//     int nh;
+//     int nl;
+// };
 
 
 #endif // _ALLOCATION_H_

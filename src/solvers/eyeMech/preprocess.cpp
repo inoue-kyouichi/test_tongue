@@ -30,6 +30,11 @@ void EYE_Mechanics::EyeMech::preprocess()
 
   mkdir(outputDir.c_str(),S_IRWXU | S_IRWXG | S_IRWXO);
 
+  // pressureStiffnessMatrix.resize(numOfBoundaryElm);
+  // for(int ic=0;ic<numOfBoundaryElm;ic++){
+  //   pressureStiffness[ic].allocate(boundaryElement[ic].node.size(),boundaryElement[ic].node.size(),3,3);
+  // }
+
   //CSR setting
   PARDISO.initialize(3*numOfNode);
   PARDISO.CSR_initialize(inb,numOfNode,3);

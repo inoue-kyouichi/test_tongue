@@ -13,10 +13,13 @@
 .PHONY: depend clean all
 
 all:
+	(cd calcSDF; make -f Makefile.mk)
 	(cd calcSurfaceCurvature; make -f Makefile.mk)
 
 clean:
+	(cd calcSDF; make -f Makefile.mk clean)
 	(cd calcSurfaceCurvature; make -f Makefile.mk clean)
 
 depend:
+	(cd calcSDF; make -f Makefile.mk depend)
 	(cd calcSurfaceCurvature; make -f Makefile.mk depend)
