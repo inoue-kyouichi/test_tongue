@@ -121,8 +121,9 @@ void SignedDistanceFunction::calcSourceTerm(ARRAY1D<double> &b,const int ic)
 
   for(int i=0;i<numOfNodeInElm;i++){
     for(int j=0;j<3;j++){
-      b(FEM.element[ic].node[i]) += tau*advel[j]*dNdx(i,j) * gTet.weight[0]/6e0;   //SUPG term
+      // b(FEM.element[ic].node[i]) += tau*advel[j]*dNdx(i,j) * gTet.weight[0]/6e0;   //SUPG term
     }
+    if(b(FEM.element[ic].node[i])<0e0) printf("%e %e %e %e\n",b(FEM.element[ic].node[i]),advel[0],advel[1],advel[2]);
   }
 
 }

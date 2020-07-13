@@ -35,7 +35,8 @@ void SignedDistanceFunction::calcSDF()
   }
 
   calc_dt();
-  
+  cout << dt << endl;
+
   FILE *fp;
   if ((fp = fopen("test.log", "w")) == NULL) {
     exit(1); 
@@ -50,30 +51,18 @@ void SignedDistanceFunction::calcSDF()
 
   fclose(fp);
 
-  // do{
-  //   int elm = elementToSolve[number];
-  //   double sdf = calcSDFofUnknownNode(elm,unknown);
-  //   if(sdf==-1){
-  //     cout << "test" << endl;
-  //     number++;
-  //     continue;
-  //   }
-
-  //   //if calclation works well,
-  //   SDF(unknown) = sdf;
-  //   for(int i=0;i<elementsPerNodes[unknown].size();i++){
-  //     knownNodes[elementsPerNodes[unknown][i]].push_back(unknown);
-  //   }
-
-  //   elementToSolve.clear();
-  //   for(int ic=0;ic<FEM.numOfElm;ic++){
-  //     if(knownNodes[ic].size()==3) elementToSolve.push_back(ic);
-  //   }
-  //   number = 0;
-  //   loop++;
-  //   cout << loop <<  " " <<  elementToSolve.size()<< endl;
-  //   if(loop>FEM.numOfElm) break;
-  // }while(elementToSolve.size()!=0);
+  if ((fp = fopen("sdf.dat", "w")) == NULL) {
+    exit(1); 
+  }
+  for(int ic=0;ic<FEM.numOfElm;ic++){
+    double sdf = 0e0;
+    for(int i=0;i<FEM.element[ic].node.size();i++){
+      sdf += SDF(FEM.element[ic].node[i]);
+    }
+    sdf /= FEM.element[ic].node.size();
+    fprintf(fp,"%e\n",sdf);
+  }
+  fclose(fp);
 
 }
 
@@ -305,6 +294,12 @@ void SignedDistanceFunction::exportVTU(std::string file)
   fprintf(fp,"<DataArray type=\"Float64\" Name=\"SDF\" NumberOfComponents=\"1\" format=\"ascii\">\n");
   for(int i=0;i<FEM.numOfNode;i++){
     fprintf(fp,"%e\n",SDF(i));
+  }
+  fprintf(fp,"</DataArray>\n");
+
+  fprintf(fp,"<DataArray type=\"UInt32\" Name=\"mask\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<FEM.numOfNode;i++){
+    fprintf(fp,"%d\n",mask(i));
   }
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
