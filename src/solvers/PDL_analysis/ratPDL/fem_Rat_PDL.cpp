@@ -17,12 +17,12 @@ using namespace std;
  */
 void ratPDL::PeriodontalLigament::calcStressTensor_LinearElastic_element_spatialForm(const int ic,const bool option)
 {
-  double young = 66.7e-3; //(MPa)
+  double young = 66.7e0; //(MPa)
   double poisson = 0.49e0;
   double PDL_lambda = young * poisson / ((1e0+poisson) * (1e0-2e0*poisson));
   double PDL_mu = 5e-1 * young / (1e0+poisson);
 
-  young = 2.1e-3; //(MPa)
+  young = 2.1e0; //(MPa)
   poisson = 0.45e0;
   double PULP_lambda = young * poisson / ((1e0+poisson) * (1e0-2e0*poisson));
   double PULP_mu = 5e-1 * young / (1e0+poisson);
