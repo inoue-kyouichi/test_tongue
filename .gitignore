@@ -1,9 +1,6 @@
-bin
 *.vtu
-*.o
-*.d
-*.a
-lib
 !PDL
-humanPDL
-ratPDL
+build
+*.mk
+archive
+ex_*

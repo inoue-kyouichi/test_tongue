@@ -1,0 +1,35 @@
+###################################################################################
+#
+# Coherent point drift
+#
+# Copyright (c) 2020 Biomechanics Lab.,
+#                    Department of Mechanical Science and Bioengineering,
+#                    Graduate School of Engineering Science,
+#                    Osaka University.
+# All rights reserved.
+#
+###################################################################################
+
+set(compile_options_tmp ${base_compile_options})
+string(REPLACE " " ";" compile_options_tmp ${compile_options_tmp})
+
+set(LIBNAME "humanPDL")
+
+add_library(${LIBNAME} STATIC)
+target_sources(${LIBNAME}
+  PRIVATE
+    fem_PDL_spatialForm2018.cpp
+    humanPDL_Analysis.cpp
+    PDL.cpp
+    ../rigidBodyInteraction_base.cpp
+)
+
+target_include_directories(${LIBNAME} PUBLIC
+  ${PROJECT_SOURCE_DIR}/src/solvers/base
+  ${PROJECT_SOURCE_DIR}/src/solvers/RBD
+  ${PROJECT_SOURCE_DIR}/src/solvers/FEM
+  ${PROJECT_SOURCE_DIR}/src/solvers/linearSolver
+  ${PROJECT_SOURCE_DIR}/src/solvers/PDL_analysis
+)
+
+target_compile_options(${LIBNAME} PUBLIC ${compile_options_tmp})
