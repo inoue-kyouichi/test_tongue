@@ -18,20 +18,24 @@ endif()
 
 string(REPLACE " " ";" compile_options_tmp ${compile_options_tmp})
 
-set(main_target "test_makeInterface")
+set(main_target "eyeMechAnalysis")
 
 add_executable(${main_target} ${main_src})
 target_sources(${main_target}
   PRIVATE
-    main.cpp
+    main_pardiso.cpp
+    eyeMech.cpp
+    eyeMech_boundaryPressure.cpp
+    fem_NeoHookean_spatialForm.cpp
+    fem_SantVenant_spatialForm.cpp
+    preprocess.cpp
 )
 target_compile_options(${main_target} PUBLIC ${compile_options_tmp})
 
 target_link_libraries(${main_target} PRIVATE
-  FEM
-  RBD
-  LS
   Base
+  FEM
+  LS
   ${GLOG_LIBRARY}
   ${TP_LIBRARY}
   ${MKL_LIBRARIES}
@@ -39,7 +43,7 @@ target_link_libraries(${main_target} PRIVATE
 
 target_include_directories(${main_target} PRIVATE
   ${PROJECT_SOURCE_DIR}/src/lib/FEM
-  ${PROJECT_SOURCE_DIR}/src/lib/RBD
+  ${PROJECT_SOURCE_DIR}/src/lib/linearSolver
 )
 
 install(TARGETS ${main_target} DESTINATION ${CMAKE_INSTALL_PREFIX})

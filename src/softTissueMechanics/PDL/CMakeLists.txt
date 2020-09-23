@@ -11,6 +11,5 @@
 ###################################################################################
 
 add_subdirectory(lib)
-add_subdirectory(softTissueMechanics)
-add_subdirectory(shapeAndTopologyOptimization)
-add_subdirectory(tests)
+add_subdirectory(PDL_human)
+add_subdirectory(PDL_rat)

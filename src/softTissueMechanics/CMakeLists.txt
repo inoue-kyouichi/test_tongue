@@ -10,7 +10,6 @@
 #
 ###################################################################################
 
-add_subdirectory(lib)
-add_subdirectory(softTissueMechanics)
-add_subdirectory(shapeAndTopologyOptimization)
-add_subdirectory(tests)
+add_subdirectory(ONH_Mech)
+# add_subdirectory(ligament_bone_insertionAnalysis)
+add_subdirectory(PDL)

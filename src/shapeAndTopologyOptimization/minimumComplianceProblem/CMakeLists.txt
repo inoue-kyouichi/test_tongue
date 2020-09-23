@@ -18,18 +18,18 @@ endif()
 
 string(REPLACE " " ";" compile_options_tmp ${compile_options_tmp})
 
-set(main_target "test_makeInterface")
+set(main_target "minimumComplianceProblem")
 
 add_executable(${main_target} ${main_src})
 target_sources(${main_target}
   PRIVATE
-    main.cpp
+    main_pardiso.cpp
 )
 target_compile_options(${main_target} PUBLIC ${compile_options_tmp})
 
 target_link_libraries(${main_target} PRIVATE
+  MinimumCompliance
   FEM
-  RBD
   LS
   Base
   ${GLOG_LIBRARY}
@@ -39,7 +39,7 @@ target_link_libraries(${main_target} PRIVATE
 
 target_include_directories(${main_target} PRIVATE
   ${PROJECT_SOURCE_DIR}/src/lib/FEM
-  ${PROJECT_SOURCE_DIR}/src/lib/RBD
+  ${PROJECT_SOURCE_DIR}/src/shapeAndTopologyOptimization/shapeOptimization/minimumComplianceProblem
 )
 
 install(TARGETS ${main_target} DESTINATION ${CMAKE_INSTALL_PREFIX})

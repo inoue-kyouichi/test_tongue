@@ -39,7 +39,7 @@ target_link_libraries(${main_target} PRIVATE
 )
 
 target_include_directories(${main_target} PRIVATE
-  ${PROJECT_SOURCE_DIR}/src/solvers/FEM
+  ${PROJECT_SOURCE_DIR}/src/lib/FEM
 )
 
 install(TARGETS ${main_target} DESTINATION ${CMAKE_INSTALL_PREFIX})
