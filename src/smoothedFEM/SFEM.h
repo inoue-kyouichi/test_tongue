@@ -47,18 +47,25 @@ class SFEM : public Fem {
 
   void preprocess();
   void femSolidAnalysis();
+  void femSolidAnalysis_linear();
+
   void calcStressTensor();
 
  private:
   bool NRscheme();
   void set_rhs_statics();
+
+  void calcStressTensor_linearElasticMaterial_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
+  double linearElasticMaterial_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,
+        const int numOfNodeInElm,const double weight,const int ic,const bool option);
+
   void calcStressTensor_SantVenant_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
   double SantVenant_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,
         ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option);
 
   void calcBoundaryForce();
   void calcBoundaryPressure_spatialForm(const int ic,VECTOR1D<ARRAY2D<double>> &Qb,const double boundaryPressure);
-  void boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const int weight,const int ic);
+  void boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const double weight,const int ic);
 
   void calcStressTensor_NeoHookean_element_spatialForm(const int ic,const double mu,const double Poisson,ARRAY2D<double> &U_tmp,const bool option);
   void NeoHookean_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double mu,const double lambda,const double weight,const int ic,const bool option);

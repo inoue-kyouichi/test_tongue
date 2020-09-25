@@ -10,6 +10,40 @@
 
 using namespace std;
 
+
+// #################################################################
+/**
+ * @brief fem solid analysis routine
+ * @param [inout] PARDISO   PARDISO class
+ */
+void SmoothedFEM::SFEM::femSolidAnalysis_linear()
+{
+  string output;
+
+  calcStressTensor();  //calc K and Q
+  calcBoundaryForce();
+  set_rhs_statics();
+
+  PARDISO.set_CSR_value3D(Ku,element,numOfNode,numOfElm,inb);
+  PARDISO.set_CSR_dirichlet_boundary_condition3D(numOfNode,ibd);
+
+  for(int i=0;i<numOfNode;i++){
+    for(int j=0;j<3;j++) PARDISO.b[i+j*numOfNode]=RHS(i,j);
+  }
+
+  PARDISO.main(3*numOfNode,OMPnumThreads);
+  corrector_statics(PARDISO.x,1e0);
+
+  #pragma omp parallel for
+  for(int i=0;i<numOfNode;i++){
+    for(int j=0;j<3;j++) x(i,j) = x0(i,j) + U(i,j);
+  }
+
+  output = outputDir + "/test.vtu";
+  export_vtu(output);
+
+}
+
 // #################################################################
 /**
  * @brief fem solid analysis routine
@@ -129,7 +163,9 @@ void SmoothedFEM::SFEM::calcStressTensor()
 
   #pragma omp parallel for
   for(int ic=0;ic<numOfElm;ic++){
-        calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
+
+        calcStressTensor_SantVenant_element_spatialForm(ic,U,true);
+        // calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
   }
 
   for(int ic=0;ic<numOfElm;ic++){
@@ -207,11 +243,11 @@ void SmoothedFEM::SFEM::export_vtu(const string &file)
   fprintf(fp,"</PointData>\n");
 
   fprintf(fp,"<CellData>");
-  fprintf(fp,"<DataArray type=\"Int64\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
-  for(int i=0;i<numOfElm;i++){
-    fprintf(fp,"%d\n",element[i].materialType);
-  }
-  fprintf(fp,"</DataArray>\n");
+  // fprintf(fp,"<DataArray type=\"Int64\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  // for(int i=0;i<numOfElm;i++){
+  //   fprintf(fp,"%d\n",element[i].materialType);
+  // }
+  // fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
   fprintf(fp,"</Piece>");
   fprintf(fp,"</UnstructuredGrid>");

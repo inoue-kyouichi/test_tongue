@@ -155,7 +155,7 @@ void SmoothedFEM::SFEM::inputSurfaceInfo(TextParser &tp)
     exit(0);
   }
   string D_file,Dvalue_file;
-  label = base_label + "/innerSurfaceFile";
+  label = base_label + "/boundaryFile";
   if ( !tp.getInspectedValue(label, D_file)){
     cout << label << " is not found" << endl;
     exit(1);
@@ -166,8 +166,16 @@ void SmoothedFEM::SFEM::inputSurfaceInfo(TextParser &tp)
   boundaryElement.resize(numOfBoundaryElm);
 
   for(int ic=0;ic<numOfBoundaryElm;ic++){ 
-    boundaryElement[ic].node.resize(4);
-    boundaryElement[ic].meshType = VTK_QUAD;
+    switch(element[0].meshType){
+      case VTK_TETRA:
+      boundaryElement[ic].node.resize(3);
+      boundaryElement[ic].meshType = VTK_TRIANGLE;
+      break;
+      case VTK_HEXAHEDRON:
+      boundaryElement[ic].node.resize(4);
+      boundaryElement[ic].meshType = VTK_QUAD;
+      break;
+    }
   }
 
   ifstream file(D_file);

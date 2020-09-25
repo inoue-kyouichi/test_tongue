@@ -82,7 +82,7 @@ double SmoothedFEM::SFEM::SantVenant_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY
 ARRAY2D<double> &dNdx,const int numOfNodeInElm,const double weight,const int ic,const bool option)
 {
   double C4[3][3][3][3],c4[3][3][3][3];
-  double YoungModulus = 1e3; //MPa
+  double YoungModulus = 1e6; //MPa
   double PoissonRatio = 0.3e0; //[-]
   double lambda=YoungModulus * PoissonRatio/((1e0+PoissonRatio)*(1e0-2e0*PoissonRatio));
   double mu=5e-1*YoungModulus/(1e0+PoissonRatio);

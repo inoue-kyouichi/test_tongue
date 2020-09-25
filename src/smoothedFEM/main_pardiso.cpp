@@ -46,7 +46,7 @@ int main(int argc,char *argv[])
   cout << "---------preprocess completed----------" << endl << endl;
 
   cout << "---------main loop start----------" << endl;
-  sfem.femSolidAnalysis();
+  sfem.femSolidAnalysis_linear();
 
   return 0;
 }

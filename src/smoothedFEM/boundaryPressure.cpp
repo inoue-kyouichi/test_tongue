@@ -68,8 +68,12 @@ void SmoothedFEM::SFEM::calcBoundaryPressure_spatialForm(const int ic,VECTOR1D<A
     }
   }
 
-
   switch(boundaryElement[ic].meshType){
+    case VTK_TRIANGLE:
+      ShapeFunction2D::C2D3_N(N,gTri.point[0][0],gTri.point[0][1],gTri.point[0][2]);
+      ShapeFunction2D::C2D3_dNdr(dNdr,gTri.point[0][0],gTri.point[0][1],gTri.point[0][2]);
+      boundaryPressure_inGaussIntegral(Qb,N,dNdr,x_current,x_ref,numOfNodeInElm,boundaryPressure,gTri.weight[0]*5e-1,ic);
+      break;
     case VTK_QUAD:
       for(int i1=0;i1<2;i1++){
         for(int i2=0;i2<2;i2++){
@@ -89,7 +93,7 @@ void SmoothedFEM::SFEM::calcBoundaryPressure_spatialForm(const int ic,VECTOR1D<A
 /**
  * @brief tentative
  */
-void SmoothedFEM::SFEM::boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const int weight,const int ic)
+void SmoothedFEM::SFEM::boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double>> &Qb,ARRAY1D<double> &N,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double boundaryPressure,const double weight,const int ic)
 {
   double dxdr1[3],dxdr2[3],dxdr3[3],Jacobian;
 
@@ -104,12 +108,13 @@ void SmoothedFEM::SFEM::boundaryPressure_inGaussIntegral(VECTOR1D<ARRAY2D<double
 
   mathTool::crossProduct(dxdr1,dxdr2,dxdr3,Jacobian);
 
-  double normal[3];
-  for(int j=0;j<3;j++) normal[j] = dxdr3[j] / Jacobian;
+  double direction[3] = {-1e0,0e0,0e0};
+  // double normal[3];
+  // for(int j=0;j<3;j++) normal[j] = dxdr3[j] / Jacobian;
 
   for(int i=0;i<3;i++){
     for(int p=0;p<numOfNodeInElm;p++){
-      Qb[ic](p,i) += -1e0 * boundaryPressure *  N(p) * normal[i] * Jacobian * weight;
+      Qb[ic](p,i) += boundaryPressure *  N(p) * direction[i] * Jacobian * weight;
     }
   }
 
