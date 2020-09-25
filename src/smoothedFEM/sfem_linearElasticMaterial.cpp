@@ -17,31 +17,6 @@ using namespace std;
  */
 void SmoothedFEM::SFEM::calcStressTensor_linearElasticMaterial_element_SFEM()
 {
-  std::vector<ARRAY2D<double>> B(numOfElm);
-  for(int ic=0;ic<numOfElm;ic++) B[ic].allocate(6,12);
-
-  if(element[0].meshType!=VTK_TETRA){
-    cout << "Error: please use Tetra element in SFEM routine. Exit..." << endl;
-    exit(1);
-  }
-
-  int numOfNodeInElm=element[0].node.size();
-  ARRAY2D<double> x_ref(numOfNodeInElm,3);
-  ARRAY2D<double> dNdr(numOfNodeInElm,3);
-  GaussTetra gTet(1);
-  ShapeFunction3D::C3D4_dNdr(dNdr,gTet.point[0][0],gTet.point[0][1],gTet.point[0][2],gTet.point[0][3]);
-
-  for(int ic=0;ic<numOfElm;ic++){
-
-    for(int p=0;p<numOfNodeInElm;p++){
-      for(int i=0;i<3;i++){
-        x_ref(p,i) = x0(element[ic].node[p],i);
-      }
-    }
-
-    linearElasticMaterial_SFEM(B[ic],dNdr,x_ref,numOfNodeInElm);
-  }
-
   double C4[3][3][3][3];
   double YoungModulus = 1e6; //MPa
   double PoissonRatio = 0.3e0; //[-]
@@ -58,6 +33,35 @@ void SmoothedFEM::SFEM::calcStressTensor_linearElasticMaterial_element_SFEM()
   double D[6][6];
   constitutiveMatrix(D,C4);
 
+  std::vector<ARRAY2D<double>> B(numOfElm);
+  for(int ic=0;ic<numOfElm;ic++) B[ic].allocate(6,12);
+
+  if(element[0].meshType!=VTK_TETRA){
+    cout << "Error: please use Tetra element in SFEM routine. Exit..." << endl;
+    exit(1);
+  }
+
+  int numOfNodeInElm=element[0].node.size();
+  ARRAY2D<double> x_ref(numOfNodeInElm,3);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
+  GaussTetra gTet(1);
+  ShapeFunction3D::C3D4_dNdr(dNdr,gTet.point[0][0],gTet.point[0][1],gTet.point[0][2],gTet.point[0][3]);
+
+  ARRAY1D<double> volume(numOfElm);
+
+  //calc B matrix
+  for(int ic=0;ic<numOfElm;ic++){
+
+    for(int p=0;p<numOfNodeInElm;p++){
+      for(int i=0;i<3;i++){
+        x_ref(p,i) = x0(element[ic].node[p],i);
+      }
+    }
+
+    volume(ic) = linearElasticMaterial_SFEM(B[ic],dNdr,x_ref,numOfNodeInElm,gTet.weight[0]/6e0);
+  }
+
+  //calc K matrix
   for(int ic=0;ic<numOfElm;ic++){
     
     double K[12][12];
@@ -74,7 +78,7 @@ void SmoothedFEM::SFEM::calcStressTensor_linearElasticMaterial_element_SFEM()
       for(int q=0;q<4;q++){
         for(int i=0;i<3;i++){
           for(int j=0;j<3;j++){
-            Ku[ic](p,q,i,j) = K[i+3*p][j+3*q];
+            Ku[ic](p,q,i,j) = K[i+3*p][j+3*q] * volume(ic);
           }
         }
       }
@@ -93,16 +97,15 @@ void SmoothedFEM::SFEM::calcStressTensor_linearElasticMaterial_element_SFEM()
  * @param [in] numOfGaussPoint  number of Gauss point set in each element
  * @param [in] option           true or faluse: calculate tangential stiffness matrix or not.
  */
-void SmoothedFEM::SFEM::linearElasticMaterial_SFEM(ARRAY2D<double> &B,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
-const int numOfNodeInElm)
+double SmoothedFEM::SFEM::linearElasticMaterial_SFEM(ARRAY2D<double> &B,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,const int numOfNodeInElm,const double weight)
 {
   ARRAY2D<double> dNdX(numOfNodeInElm,3);
 
   double dXdr[3][3],drdX[3][3];
   FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
   FEM_MathTool::calc_dNdX(dNdX,dNdr,dXdr,numOfNodeInElm);
-  // double detJ = mathTool::calcDeterminant_3x3(dXdr);
-  // double volume = detJ * weight;
+  double detJ = mathTool::calcDeterminant_3x3(dXdr);
+  double volume = detJ * weight;
 
   //Voigt form
 
@@ -115,9 +118,10 @@ const int numOfNodeInElm)
     B(1,1+3*p) = dNdX(p,1); 
     B(2,2+3*p) = dNdX(p,2);
     B(3,0+3*p) = dNdX(p,1); B(3,1+3*p) = dNdX(p,0);
-    B(4,1+3*p) = dNdX(p,1); B(4,2+3*p) = dNdX(p,2);
-    B(5,0+3*p) = dNdX(p,0); B(5,2+3*p) = dNdX(p,2);
+    B(4,1+3*p) = dNdX(p,2); B(4,2+3*p) = dNdX(p,1);
+    B(5,0+3*p) = dNdX(p,2); B(5,2+3*p) = dNdX(p,0);
   }
+  return volume;
 }
 
 // #################################################################
