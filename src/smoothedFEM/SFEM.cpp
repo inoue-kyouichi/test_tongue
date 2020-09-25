@@ -161,14 +161,16 @@ void SmoothedFEM::SFEM::calcStressTensor()
 
   volume = 0e0;
 
-  #pragma omp parallel for
-  for(int ic=0;ic<numOfElm;ic++)
-  {
-        calcStressTensor_linearElasticMaterial_element_SFEM(ic,true);
-        // calcStressTensor_linearElasticMaterial_element(ic,true);
-        // calcStressTensor_SantVenant_element_spatialForm(ic,U,true);
-        // calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
-  }
+  calcStressTensor_linearElasticMaterial_element_SFEM();
+
+  // #pragma omp parallel for
+  // for(int ic=0;ic<numOfElm;ic++)
+  // {
+  //       calcStressTensor_linearElasticMaterial_element_SFEM(ic,true);
+  //       // calcStressTensor_linearElasticMaterial_element(ic,true);
+  //       // calcStressTensor_SantVenant_element_spatialForm(ic,U,true);
+  //       // calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
+  // }
 
   for(int ic=0;ic<numOfElm;ic++){
     for(int p=0;p<element[ic].node.size();p++){

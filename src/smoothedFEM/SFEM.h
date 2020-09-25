@@ -74,9 +74,9 @@ class SFEM : public Fem {
   bool NRscheme();
   void set_rhs_statics();
 
-  void calcStressTensor_linearElasticMaterial_element_SFEM(const int ic,const bool option);
-  double linearElasticMaterial_SFEM(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
-         const int numOfNodeInElm,const double weight,const int ic,const bool option);
+  void calcStressTensor_linearElasticMaterial_element_SFEM();
+  void linearElasticMaterial_SFEM(ARRAY2D<double> &B,ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
+         const int numOfNodeInElm);
 
   void calcStressTensor_linearElasticMaterial_element(const int ic,const bool option);
   double linearElasticMaterial_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
