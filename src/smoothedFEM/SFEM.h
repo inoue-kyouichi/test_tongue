@@ -68,10 +68,15 @@ class SFEM : public Fem {
   void calcStressTensor();
 
   void setFace();
+  void calcFaceVolume();
 
  private:
   bool NRscheme();
   void set_rhs_statics();
+
+  void calcStressTensor_linearElasticMaterial_element_SFEM(const int ic,const bool option);
+  double linearElasticMaterial_SFEM(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
+         const int numOfNodeInElm,const double weight,const int ic,const bool option);
 
   void calcStressTensor_linearElasticMaterial_element(const int ic,const bool option);
   double linearElasticMaterial_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
@@ -94,6 +99,8 @@ class SFEM : public Fem {
   void inputMaterialInfo(TextParser &tp);
   void inputSurfaceInfo(TextParser &tp);
   void inputDirichletInfo(TextParser &tp);
+
+  void constitutiveMatrix(double (&D)[6][6],double (&C4)[3][3][3][3]);
 
   void export_vtu(const std::string &file);
   void export_vtu_face(const std::string &file);

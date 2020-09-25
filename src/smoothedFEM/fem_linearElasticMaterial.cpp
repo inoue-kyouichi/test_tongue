@@ -26,7 +26,6 @@ void SmoothedFEM::SFEM::calcStressTensor_linearElasticMaterial_element(const int
       x_ref(p,i)     = x0(element[ic].node[p],i);
     }
   }
-
   Gauss g(1),g2(2);
   GaussTetra gTet(1),gTet2(2);
   GaussTriangle gTri(1),gTri2(2);
@@ -64,6 +63,7 @@ void SmoothedFEM::SFEM::calcStressTensor_linearElasticMaterial_element(const int
       cout << "undefined mesh type" << endl;
       exit(1);
   }
+
 }
 
 // #################################################################

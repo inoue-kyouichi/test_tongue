@@ -16,7 +16,9 @@ using namespace std;
 void SmoothedFEM::SFEM::calcBoundaryForce()
 {
   VECTOR1D<ARRAY2D<double>> Qb(numOfBoundaryElm);
-  for(int ic=0;ic<numOfBoundaryElm;ic++) Qb[ic].allocate(boundaryElement[ic].node.size(),3);
+  for(int ic=0;ic<numOfBoundaryElm;ic++){
+    Qb[ic].allocate(boundaryElement[ic].node.size(),3);
+  }
 
   #pragma omp parallel for
   for(int ic=0;ic<numOfBoundaryElm;ic++){
@@ -60,7 +62,6 @@ void SmoothedFEM::SFEM::calcBoundaryPressure_spatialForm(const int ic,VECTOR1D<A
 
   Gauss g(1),g2(2);
   GaussTriangle gTri(1),gTri2(2);
-
 
   for(int i=0;i<3;i++){
     for(int p=0;p<numOfNodeInElm;p++){

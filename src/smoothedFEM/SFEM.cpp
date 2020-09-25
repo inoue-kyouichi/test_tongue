@@ -162,8 +162,10 @@ void SmoothedFEM::SFEM::calcStressTensor()
   volume = 0e0;
 
   #pragma omp parallel for
-  for(int ic=0;ic<numOfElm;ic++){
-        calcStressTensor_linearElasticMaterial_element(ic,true);
+  for(int ic=0;ic<numOfElm;ic++)
+  {
+        calcStressTensor_linearElasticMaterial_element_SFEM(ic,true);
+        // calcStressTensor_linearElasticMaterial_element(ic,true);
         // calcStressTensor_SantVenant_element_spatialForm(ic,U,true);
         // calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
   }
@@ -269,15 +271,14 @@ void SmoothedFEM::SFEM::setFace()
   };
 
   auto detectCorrespondingElement=[](VECTOR2D<int> ieb,const int node1,const int node2,const int node3,const int ic)->int{
-    for(int ic=0;ic<ieb[node1].size();ic++){
+    for(int ic1=0;ic1<ieb[node1].size();ic1++){
 
-      int element1 = ieb[node1][ic];
+      int element1 = ieb[node1][ic1];
       if(element1==ic) continue;
 
       for(int ic2=0;ic2<ieb[node2].size();ic2++){
 
-        int element2 = ieb[node2][ic2];
-        if(element1!=element2) continue;
+        if(element1!=ieb[node2][ic2]) continue;
 
         for(int ic3=0;ic3<ieb[node3].size();ic3++){
           if(element1==ieb[node3][ic3]) return element1;
@@ -310,6 +311,7 @@ void SmoothedFEM::SFEM::setFace()
   for(int ic=0;ic<numOfElm;ic++){
     for(int i=0;i<4;i++){
       if(selected(ic,i)==true) continue;
+      selected(ic,i) = true;
 
       int detectedElement = detectCorrespondingElement(ieb,face_tmp(ic,i,0),face_tmp(ic,i,1),face_tmp(ic,i,2),ic);
 
@@ -319,7 +321,6 @@ void SmoothedFEM::SFEM::setFace()
       face_dummy.element[0] = ic;
       face_dummy.element[1] = detectedElement;
       face.push_back(face_dummy);
-      selected(ic,i) = true;
 
       element[ic].face[i] = face.size()-1;
 
@@ -334,6 +335,46 @@ void SmoothedFEM::SFEM::setFace()
     }
   }
 
+}
+
+// #################################################################
+/**
+ * @brief calc face volume (1st-order tetra only!)
+ */
+void SmoothedFEM::SFEM::calcFaceVolume()
+{
+  //initialize
+  faceVolume.allocate(face.size());
+  for(int ic=0;ic<face.size();ic++) faceVolume(ic) = 0e0;
+
+  double detJ,volume,J;
+  double dXdr[3][3],drdX[3][3];
+  int numOfNodeInElm = 4;
+  ARRAY2D<double> x_ref(numOfNodeInElm,3);
+  ARRAY2D<double> dNdr(numOfNodeInElm,3);
+  ARRAY2D<double> dNdX(numOfNodeInElm,3);
+
+  GaussTetra gTet(1);
+
+  for(int ic=0;ic<numOfElm;ic++){
+
+    for(int p=0;p<numOfNodeInElm;p++){
+      for(int i=0;i<3;i++){
+        x_ref(p,i) = x0(element[ic].node[p],i);
+      }
+    }
+
+    ShapeFunction3D::C3D4_dNdr(dNdr,gTet.point[0][0],gTet.point[0][1],gTet.point[0][2],gTet.point[0][3]);
+    FEM_MathTool::calc_dXdr(dXdr,dNdr,x_ref,numOfNodeInElm);
+    FEM_MathTool::calc_dNdX(dNdX,dNdr,dXdr,numOfNodeInElm);
+    detJ = mathTool::calcDeterminant_3x3(dXdr);
+
+    volume = detJ * gTet.weight[0] * 1e0/6e0;
+
+    for(int j=0;j<4;j++){
+      faceVolume(element[ic].face[j]) += 0.25e0 * volume; 
+    }
+  }
 }
 
 // #################################################################
@@ -377,21 +418,19 @@ void SmoothedFEM::SFEM::export_vtu_face(const string &file)
   for(int i=0;i<face.size();i++) fprintf(fp,"%d\n",face[i].meshType);
   fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</Cells>\n");
-
   fprintf(fp,"<PointData>\n");
-  // fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
-  // for(int i=0;i<numOfNode;i++){
-  //   fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
-  // }
-  // fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
 
   fprintf(fp,"<CellData>");
-  // fprintf(fp,"<DataArray type=\"Int64\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
-  // for(int i=0;i<numOfElm;i++){
-  //   fprintf(fp,"%d\n",element[i].materialType);
-  // }
-  // fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  for(int i=0;i<face.size();i++){
+    if(face[i].element[1]==-1){
+      fprintf(fp,"1\n");
+    }else{
+      fprintf(fp,"2\n");
+    }
+  }
+  fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</CellData>\n");
   fprintf(fp,"</Piece>");
   fprintf(fp,"</UnstructuredGrid>");
