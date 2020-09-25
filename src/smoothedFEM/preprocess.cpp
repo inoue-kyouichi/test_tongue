@@ -41,6 +41,13 @@ void SmoothedFEM::SFEM::preprocess()
 
   string output = outputDir + "/" + fileName + "_boundary" + ".vtu";
   fileIO::export_vtu_boundary(x,element,numOfNode,numOfElm,ibd,bd,output);
+
+  if(element[0].meshType==VTK_TETRA){
+    setFace();
+    output = outputDir + "/" + fileName + "_face" + ".vtu";
+    export_vtu_face(output);
+  }
+
 }
 
 // #################################################################

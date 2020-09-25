@@ -26,7 +26,7 @@ target_sources(${main_target}
     main_pardiso.cpp
     SFEM.cpp
     boundaryPressure.cpp
-    fem_linearElasticMaterial_spatialForm.cpp
+    fem_linearElasticMaterial.cpp
     fem_NeoHookean_spatialForm.cpp
     fem_SantVenant_spatialForm.cpp
     preprocess.cpp

@@ -163,8 +163,8 @@ void SmoothedFEM::SFEM::calcStressTensor()
 
   #pragma omp parallel for
   for(int ic=0;ic<numOfElm;ic++){
-
-        calcStressTensor_SantVenant_element_spatialForm(ic,U,true);
+        calcStressTensor_linearElasticMaterial_element(ic,true);
+        // calcStressTensor_SantVenant_element_spatialForm(ic,U,true);
         // calcStressTensor_NeoHookean_element_spatialForm(ic,100e3,0.49e0,U,true);
   }
 
@@ -240,6 +240,150 @@ void SmoothedFEM::SFEM::export_vtu(const string &file)
     fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
   }
   fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</PointData>\n");
+
+  fprintf(fp,"<CellData>");
+  // fprintf(fp,"<DataArray type=\"Int64\" Name=\"Material\" NumberOfComponents=\"1\" format=\"ascii\">\n");
+  // for(int i=0;i<numOfElm;i++){
+  //   fprintf(fp,"%d\n",element[i].materialType);
+  // }
+  // fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</CellData>\n");
+  fprintf(fp,"</Piece>");
+  fprintf(fp,"</UnstructuredGrid>");
+  fprintf(fp,"</VTKFile>");
+  fclose(fp);
+}
+
+// #################################################################
+/**
+ * @brief set element face information
+ */
+void SmoothedFEM::SFEM::setFace()
+{
+  auto facesInElement=[](ARRAY3D<int> &tmp,std::vector<ElementType> &element,const int ic){
+    tmp(ic,0,0) = element[ic].node[0]; tmp(ic,0,1) = element[ic].node[2]; tmp(ic,0,2) = element[ic].node[1];
+    tmp(ic,1,0) = element[ic].node[0]; tmp(ic,1,1) = element[ic].node[1]; tmp(ic,1,2) = element[ic].node[3];
+    tmp(ic,2,0) = element[ic].node[1]; tmp(ic,2,1) = element[ic].node[2]; tmp(ic,2,2) = element[ic].node[3];
+    tmp(ic,3,0) = element[ic].node[0]; tmp(ic,3,1) = element[ic].node[3]; tmp(ic,3,2) = element[ic].node[2];
+  };
+
+  auto detectCorrespondingElement=[](VECTOR2D<int> ieb,const int node1,const int node2,const int node3,const int ic)->int{
+    for(int ic=0;ic<ieb[node1].size();ic++){
+
+      int element1 = ieb[node1][ic];
+      if(element1==ic) continue;
+
+      for(int ic2=0;ic2<ieb[node2].size();ic2++){
+
+        int element2 = ieb[node2][ic2];
+        if(element1!=element2) continue;
+
+        for(int ic3=0;ic3<ieb[node3].size();ic3++){
+          if(element1==ieb[node3][ic3]) return element1;
+        }
+      }
+    }
+    return -1;
+  };
+
+  auto searchCorrespondingFaceNumber=[](ARRAY3D<int> &tmp,const int node1,const int node2,const int node3,const int ic)->int{
+    for(int i=0;i<4;i++){
+      if(node1!=tmp(ic,i,0) && node1!=tmp(ic,i,1) && node1!=tmp(ic,i,2)) continue;
+      if(node2!=tmp(ic,i,0) && node2!=tmp(ic,i,1) && node2!=tmp(ic,i,2)) continue;
+      if(node3!=tmp(ic,i,0) && node3!=tmp(ic,i,1) && node3!=tmp(ic,i,2)) continue;
+      return i;
+    }
+    return -1;
+  };
+
+  ARRAY3D<int> face_tmp(numOfElm,4,3);
+  ARRAY2D<bool> selected(numOfElm,4);
+    
+  //initialize
+  for(int ic=0;ic<numOfElm;ic++){
+    element[ic].face.resize(4);
+    facesInElement(face_tmp,element,ic);
+    for(int j=0;j<4;j++) selected(ic,j) = false;
+  }
+
+  for(int ic=0;ic<numOfElm;ic++){
+    for(int i=0;i<4;i++){
+      if(selected(ic,i)==true) continue;
+
+      int detectedElement = detectCorrespondingElement(ieb,face_tmp(ic,i,0),face_tmp(ic,i,1),face_tmp(ic,i,2),ic);
+
+      FaceType face_dummy;
+      face_dummy.node.resize(3);
+      for(int j=0;j<3;j++) face_dummy.node[j]=face_tmp(ic,i,j);
+      face_dummy.element[0] = ic;
+      face_dummy.element[1] = detectedElement;
+      face.push_back(face_dummy);
+      selected(ic,i) = true;
+
+      element[ic].face[i] = face.size()-1;
+
+      if(detectedElement==-1) continue;
+      int faceNumber = searchCorrespondingFaceNumber(face_tmp,face_tmp(ic,i,0),face_tmp(ic,i,1),face_tmp(ic,i,2),detectedElement);
+      if(faceNumber==-1){
+        cout <<"Error: wrong face detected. Exit..." << endl;
+        exit(1);
+      }
+      selected(detectedElement,faceNumber) = true;
+      element[detectedElement].face[faceNumber] = face.size()-1;
+    }
+  }
+
+}
+
+// #################################################################
+/**
+ * @brief calc boundary conditions
+ * @param [in] stress
+ */
+void SmoothedFEM::SFEM::export_vtu_face(const string &file)
+{
+  FILE *fp;
+  if ((fp = fopen(file.c_str(), "w")) == NULL) {
+    cout << file << " open error" << endl;
+    exit(1); 
+  }
+
+  fprintf(fp,"<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n");
+  fprintf(fp,"<UnstructuredGrid>\n");
+  fprintf(fp,"<Piece NumberOfPoints= \"%d\" NumberOfCells= \"%d\" >\n",numOfNode,(int)face.size());
+  fprintf(fp,"<Points>\n");
+  fprintf(fp,"<DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  for(int i=0;i<numOfNode;i++){
+    fprintf(fp,"%e %e %e\n",x(i,0),x(i,1),x(i,2));
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Points>\n");
+  fprintf(fp,"<Cells>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n");
+  for(int i=0;i<face.size();i++){
+    for(int j=0;j<face[i].node.size();j++) fprintf(fp,"%d ",face[i].node[j]);
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n");
+  int num=0;
+  for(int i=0;i<face.size();i++){
+    num += face[i].node.size();
+    fprintf(fp,"%d\n",num);
+  }
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n");
+  for(int i=0;i<face.size();i++) fprintf(fp,"%d\n",face[i].meshType);
+  fprintf(fp,"</DataArray>\n");
+  fprintf(fp,"</Cells>\n");
+
+  fprintf(fp,"<PointData>\n");
+  // fprintf(fp,"<DataArray type=\"Float64\" Name=\"displacement[m/s]\" NumberOfComponents=\"3\" format=\"ascii\">\n");
+  // for(int i=0;i<numOfNode;i++){
+  //   fprintf(fp,"%e %e %e\n",U(i,0),U(i,1),U(i,2));
+  // }
+  // fprintf(fp,"</DataArray>\n");
   fprintf(fp,"</PointData>\n");
 
   fprintf(fp,"<CellData>");

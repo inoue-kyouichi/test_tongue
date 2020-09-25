@@ -21,6 +21,19 @@
 #include "fem.h"
 #include "pardiso_solver.h"
 
+
+class FaceType{
+ public:
+ FaceType(){
+   meshType = VTK_TRIANGLE;
+   element[0] = -1; element[1] = -1;
+ };
+ ~FaceType(){};
+  VTKCellType meshType;
+  VECTOR1D<int> node;
+  int element[2];
+};
+
 namespace SmoothedFEM {
 
 class SFEM : public Fem {
@@ -45,18 +58,23 @@ class SFEM : public Fem {
   ARRAY2D<double> boundaryForce;
   std::vector<ARRAY4D<double>> pressureStiffnessMatrix;
 
+  std::vector<FaceType> face;
+  ARRAY1D<double> faceVolume;
+
   void preprocess();
   void femSolidAnalysis();
   void femSolidAnalysis_linear();
 
   void calcStressTensor();
 
+  void setFace();
+
  private:
   bool NRscheme();
   void set_rhs_statics();
 
-  void calcStressTensor_linearElasticMaterial_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
-  double linearElasticMaterial_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,
+  void calcStressTensor_linearElasticMaterial_element(const int ic,const bool option);
+  double linearElasticMaterial_inGaussIntegral(ARRAY2D<double> &dNdr,ARRAY2D<double> &x_ref,
         const int numOfNodeInElm,const double weight,const int ic,const bool option);
 
   void calcStressTensor_SantVenant_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
@@ -78,7 +96,7 @@ class SFEM : public Fem {
   void inputDirichletInfo(TextParser &tp);
 
   void export_vtu(const std::string &file);
-
+  void export_vtu_face(const std::string &file);
 };
 
 }

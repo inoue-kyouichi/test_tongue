@@ -49,6 +49,7 @@ class ElementType{
   int materialType;
   int numOfGaussPoint;
   VECTOR1D<int> node;
+  VECTOR1D<int> face;
 };
 
 
