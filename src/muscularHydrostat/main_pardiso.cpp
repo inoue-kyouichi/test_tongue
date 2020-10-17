@@ -16,7 +16,7 @@
  * @detail Fem solid analysis with displacement control.
  */
 
-#include "eye_mechanics.h"
+#include "muscularHydrostat.h"
 
 #if _GLOG
 #include "glog/logging.h"
@@ -31,7 +31,7 @@ int main(int argc,char *argv[])
   google::InstallFailureSignalHandler();
   #endif
 
-  EYE_Mechanics::EyeMech Eye;
+  muscularHydrostat::Muscle muscle;
 
   if(argc!=2){
     cout << "Invalid input" << endl;
@@ -41,17 +41,16 @@ int main(int argc,char *argv[])
   //read tp file
   std::string input_file = argv[1];
   int ierror;
-  if ((ierror = Eye.tp.read(input_file)) != TP_NO_ERROR) {
+  if ((ierror = muscle.tp.read(input_file)) != TP_NO_ERROR) {
     printf("\tError at reading '%s' file\n", input_file.c_str());
     return 1;
   }
 
   cout << "---------preprocess start----------" << endl;
-  Eye.preprocess();
+  muscle.preprocess();
   cout << "---------preprocess completed----------" << endl << endl;
-
   cout << "---------main loop start----------" << endl;
-  Eye.femSolidAnalysis();
+  muscle.femSolidAnalysis();
 
   return 0;
 }
