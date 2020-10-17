@@ -122,6 +122,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
     }
   }
 
+  //todo initialStretchRatio：内部・外部入力の違いにより結果が異なる？
   //-------------initial stretch-------------------
   double initialStretchRatio;
   double F_initial[3][3],Ftmp[3][3];
