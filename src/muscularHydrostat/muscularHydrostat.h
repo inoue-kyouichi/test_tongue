@@ -23,6 +23,12 @@
 
 namespace muscularHydrostat {
 
+class MaterialModel{
+  public:
+  double contractionCoefficient;
+  double initialStretch;
+};
+
 typedef enum{
   M0 = 0,
   M1 = 1,
@@ -36,6 +42,7 @@ class Muscle : public Fem {
 
   // int numOfBoundaryElm;
   // VECTOR1D<ElementType> boundaryElement;
+  VECTOR1D<MaterialModel> Material;
 
  private:
   int dataNumber;
@@ -63,6 +70,7 @@ class Muscle : public Fem {
   void muscle_inGaussIntegral(const int &ic,const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,const double weight,double (&stress)[3][3],const bool mainLoop);
   void calc_F_initial(double (&F_initial)[3][3],const double (&a0)[3],const double lambda);
 
+  void inputMaterialParameters(TextParser &tp);
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);
   void inputFiberInfo(TextParser &tp);

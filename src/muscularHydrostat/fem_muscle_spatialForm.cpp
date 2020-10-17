@@ -127,10 +127,12 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   double F_initial[3][3],Ftmp[3][3];
   switch(element[ic].materialType){
     case M0:
-      initialStretchRatio = 1e0;
+      initialStretchRatio = Material[0].initialStretch;
+      // initialStretchRatio = 1e0;
       break;
     case M1:
-      initialStretchRatio = 1e0;
+      initialStretchRatio = Material[1].initialStretch;
+      // initialStretchRatio = 1e0;
       break;
     default:
       cout << "undefined material. Exit..." << endl;
@@ -237,13 +239,28 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
     return;
   }
 
-  //muscle contraction
-  double contraction[3][3];
+  //--------muscle contraction----------------------
+  double contraction[3][3]={};
+  double contractionCoefficient;
+  switch(element[ic].materialType){
+    case M0:
+      contractionCoefficient = Material[0].contractionCoefficient;
+      break;
+    case M1:
+      contractionCoefficient = Material[1].contractionCoefficient;
+      break;
+    default:
+      cout << "undefined material. Exit..." << endl;
+      exit(1);
+  }
+  contractionCoefficient *= c4;
+
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++){
-      contraction[i][j] = 1e1*c4*a[i]*a[j];
+      contraction[i][j] = contractionCoefficient*a[i]*a[j];
     }
   }
+  //--------end muscle contraction----------------------
 
   //calc_internal force vector
   for(int p=0;p<numOfNodeInElm;p++){

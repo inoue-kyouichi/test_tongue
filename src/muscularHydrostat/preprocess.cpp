@@ -17,6 +17,9 @@ void muscularHydrostat::Muscle::preprocess()
 
   fiberDirection_elm.allocate(numOfElm,3);
   inputFiberInfo(tp);
+  inputMaterialInfo(tp);
+
+  inputMaterialParameters(tp);
 
   inputDirichletInfo(tp);
 
@@ -30,6 +33,44 @@ void muscularHydrostat::Muscle::preprocess()
   //CSR setting
   PARDISO.initialize(3*numOfNode);
   PARDISO.CSR_initialize(inb,numOfNode,3);
+}
+
+// #################################################################
+/**
+ * @brief solver information from TP file
+ */
+void muscularHydrostat::Muscle::inputMaterialParameters(TextParser &tp)
+{
+  string str,base_label,label;
+  int tmp;
+
+  base_label = "/Materials";
+
+  int numOfMaterials;
+  label = base_label + "/numOfMaterials";
+  if ( !tp.getInspectedValue(label, numOfMaterials)){
+    cout << label << " is not set" << endl;
+    exit(0);
+  }
+
+  Material.resize(numOfMaterials);
+
+  for(int ic=0;ic<numOfMaterials;ic++){
+
+    string base_label2 = base_label + "/M"+to_string(ic);
+    label = base_label2 + "/contractionCoefficient";
+    if ( !tp.getInspectedValue(label, Material[ic].contractionCoefficient)){
+      cout << label << " is not set" << endl;
+      exit(0);
+    }
+
+    label = base_label2 + "/initialStretch";
+    if ( !tp.getInspectedValue(label, Material[ic].initialStretch)){
+      cout << label << " is not set" << endl;
+      exit(0);
+    }
+  }
+
 }
 
 // #################################################################
@@ -151,7 +192,18 @@ void muscularHydrostat::Muscle::inputMaterialInfo(TextParser &tp)
   string tmp,dtmp;
   for(int i=0;i<numOfElm;i++){
     getline(file,str);
-    element[i].materialType = stoi(str);
+    int mat = stoi(str);
+    switch(mat){
+      case M0:
+        element[i].materialType = M0;
+        break;
+      case M1:
+        element[i].materialType = M1;
+        break;
+      default:
+        cout << "undefined material. Exit..." << endl;
+        exit(1);
+    }
   }
 
 }

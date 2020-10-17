@@ -109,8 +109,10 @@ bool muscularHydrostat::Muscle::NRscheme()
 
       printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
 
-      output = outputDir + "/test_"+to_string(ic)+".vtu";
-      export_vtu(output);
+      if(ic%10==0){
+        output = outputDir + "/test_"+to_string(ic/10)+".vtu";
+        export_vtu(output);
+      }
       if(norm/norm0<NRtolerance) break;
       // if(test!=1 && ic>50) break;
     }
