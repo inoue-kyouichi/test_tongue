@@ -197,7 +197,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
     term4=0e0;
     term4_2=0e0;
   }else{
-    term4=c4*exp(Ic4bar-1e0);
+    term4=c4*(exp(Ic4bar-1e0)-1e0);
     term4_2=c4*exp(Ic4bar-1e0);
   }
 
