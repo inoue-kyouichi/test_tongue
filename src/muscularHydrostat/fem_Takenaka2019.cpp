@@ -122,31 +122,22 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
 
   //todo initialStretchRatio：内部・外部入力の違いにより結果が異なる？
   //-------------initial stretch-------------------
-  double initialStretchRatio;
-  double F_initial[3][3],Ftmp[3][3];
-  switch(element[ic].materialType){
-    case static_cast<int>(MaterialType::M0):
-      initialStretchRatio = Material[0].initialStretch;
-      // initialStretchRatio = 1e0;
-      break;
-    case static_cast<int>(MaterialType::M1):
-      initialStretchRatio = Material[1].initialStretch;
-      // initialStretchRatio = 1e0;
-      break;
-    default:
-      cout << "undefined material. Exit..." << endl;
-      exit(1);
-  }
+  for(int ik=0;ik<fibers[ic].fiber.size();ik++){
+    double F_initial[3][3]={},Ftmp[3][3]={};
 
-  calc_F_initial(F_initial,a0,initialStretchRatio);
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++){
-      Ftmp[i][j]=0e0;
-      for(int k=0;k<3;k++) Ftmp[i][j]+=F[i][k]*F_initial[k][j];
+    int fiberNumber = static_cast<int>(fibers[ic].fiber[ik].group);
+    double initialStretchRatio = Material[fiberNumber].initialStretch;
+
+    calc_F_initial(F_initial,fibers[ic].fiber[ik].a0,initialStretchRatio);
+    for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++){
+        Ftmp[i][j]=0e0;
+        for(int k=0;k<3;k++) Ftmp[i][j]+=F[i][k]*F_initial[k][j];
+      }
     }
-  }
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) F[i][j]=Ftmp[i][j];
+    for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++) F[i][j]=Ftmp[i][j];
+    }
   }
   //--------------------------------------------
 
@@ -179,18 +170,18 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   }
 
   //sigma an-isotropic term
-  Ic4bar=0e0;
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
-    // for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j];
-  }
+  // Ic4bar=0e0;
+  // for(int i=0;i<3;i++){
+  //   for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j]*pow(J,-2e0/3e0);
+  //   // for(int j=0;j<3;j++) Ic4bar += a0[i]*C[i][j]*a0[j];
+  // }
 
-  lambda=sqrt(Ic4bar);
-  for(int i=0;i<3;i++){
-    a[i]=0e0;
-    for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
-  }
-  for(int i=0;i<3;i++) a[i] = a[i]/lambda;
+  // lambda=sqrt(Ic4bar);
+  // for(int i=0;i<3;i++){
+  //   a[i]=0e0;
+  //   for(int j=0;j<3;j++) a[i] += F[i][j] * a0[j];
+  // }
+  // for(int i=0;i<3;i++) a[i] = a[i]/lambda;
 
 //   if(Ic4bar<1e0){
 //     term4=0e0;
@@ -243,23 +234,22 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
 
   //--------muscle contraction----------------------
   double contraction[3][3]={};
-  double contractionCoefficient;
-  switch(element[ic].materialType){
-    case static_cast<int>(MaterialType::M0):
-      contractionCoefficient = Material[0].contractionCoefficient;
-      break;
-    case static_cast<int>(MaterialType::M1):
-      contractionCoefficient = Material[1].contractionCoefficient;
-      break;
-    default:
-      cout << "undefined material. Exit..." << endl;
-      exit(1);
-  }
-  contractionCoefficient *= 5e-1*(c10+c20);
+  for(int ik=0;ik<fibers[ic].fiber.size();ik++){
 
-  for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++){
-      contraction[i][j] = contractionCoefficient*a[i]*a[j];
+    for(int i=0;i<3;i++){
+      a[i]=0e0;
+      for(int j=0;j<3;j++) a[i] += F[i][j] * fibers[ic].fiber[ik].a0[j];
+    }
+    double lambda = sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
+    for(int i=0;i<3;i++) a[i] = a[i]/lambda;
+    int fiberNumber = static_cast<int>(fibers[ic].fiber[ik].group);
+    double contractionCoefficient = Material[fiberNumber].contractionCoefficient;
+    contractionCoefficient *= 5e-1*(c10+c20)/(fibers[ic].fiber.size());
+
+    for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++){
+        contraction[i][j] += contractionCoefficient*a[i]*a[j]/J;
+      }
     }
   }
   //--------end muscle contraction----------------------

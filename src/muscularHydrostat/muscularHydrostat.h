@@ -60,6 +60,10 @@ class FibersInElement{
 
 class Muscle : public Fem {
  public:
+  Muscle(){
+    Material.resize(10);
+  };
+  ~Muscle(){};
   TextParser tp;
   std::string outputDir,fileName;
 

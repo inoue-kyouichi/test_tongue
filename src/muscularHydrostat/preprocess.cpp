@@ -20,7 +20,7 @@ void muscularHydrostat::Muscle::preprocess()
   inputFiberInfo_cal(tp);
   // inputMaterialInfo(tp);
 
-  // inputMaterialParameters(tp);
+  inputMaterialParameters(tp);
 
   inputDirichletInfo(tp);
 
@@ -48,20 +48,20 @@ void muscularHydrostat::Muscle::inputMaterialParameters(TextParser &tp)
   string str,base_label,label;
   int tmp;
 
-  base_label = "/Materials";
+  base_label = "/Fibers";
 
-  int numOfMaterials;
-  label = base_label + "/numOfMaterials";
-  if ( !tp.getInspectedValue(label, numOfMaterials)){
-    cout << label << " is not set" << endl;
-    exit(0);
-  }
+  int numOfMaterials=10;
+  // label = base_label + "/numOfMaterials";
+  // if ( !tp.getInspectedValue(label, numOfMaterials)){
+  //   cout << label << " is not set" << endl;
+  //   exit(0);
+  // }
 
-  Material.resize(numOfMaterials);
+  Material.resize(numOfMaterials+1);
 
-  for(int ic=0;ic<numOfMaterials;ic++){
+  for(int ic=1;ic<=numOfMaterials;ic++){
 
-    string base_label2 = base_label + "/M"+to_string(ic);
+    string base_label2 = base_label + "/F"+to_string(ic);
     label = base_label2 + "/contractionCoefficient";
     if ( !tp.getInspectedValue(label, Material[ic].contractionCoefficient)){
       cout << label << " is not set" << endl;
@@ -154,7 +154,6 @@ void muscularHydrostat::Muscle::inputFiberInfo_cal(TextParser &tp)
     cout << "file open error" << endl;
     exit(1); 
   }
-  cout << numOfElm << endl;
   fgets(buf,30,fp);
   for(int ic=0;ic<numOfElm;ic++){
     int number;
