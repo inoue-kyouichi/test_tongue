@@ -49,6 +49,9 @@ int main(int argc,char *argv[])
   cout << "---------preprocess start----------" << endl;
   muscle.preprocess();
   cout << "---------preprocess completed----------" << endl << endl;
+
+  exit(1);
+
   cout << "---------main loop start----------" << endl;
   muscle.femSolidAnalysis();
 
