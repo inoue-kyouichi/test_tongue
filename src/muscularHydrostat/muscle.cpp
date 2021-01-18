@@ -110,7 +110,7 @@ bool muscularHydrostat::Muscle::NRscheme()
       printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
 
       if(ic%10==0){
-        output = outputDir + "/test_"+to_string(ic/10)+".vtu";
+        output = outputDir + "/NR_"+to_string(ic/10)+".vtu";
         export_vtu(output);
       }
       if(norm/norm0<NRtolerance) break;
@@ -133,7 +133,8 @@ void muscularHydrostat::Muscle::calcStressTensor()
 
   #pragma omp parallel for
   for(int ic=0;ic<numOfElm;ic++){
-    calcStressTensor_muscle_element_spatialForm(ic,U,true);
+    // calcStressTensor_muscle_element_spatialForm(ic,U,true);
+    calcStressTensor_Takenaka2019_element_spatialForm(ic,U,true);
   }
 
   for(int ic=0;ic<numOfElm;ic++){

@@ -70,6 +70,9 @@ class Muscle : public Fem {
   void muscle_inGaussIntegral(const int &ic,const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,const double weight,double (&stress)[3][3],const bool mainLoop);
   void calc_F_initial(double (&F_initial)[3][3],const double (&a0)[3],const double lambda);
 
+  void calcStressTensor_Takenaka2019_element_spatialForm(const int ic,ARRAY2D<double> &U_tmp,const bool option);
+  void Takenaka2019_inGaussIntegral(const int &ic,const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRAY2D<double> &dNdr,const double weight,double (&stress)[3][3],const bool mainLoop);
+
   void inputMaterialParameters(TextParser &tp);
   void inputSolverInfo(TextParser &tp);
   void inputOutputInfo(TextParser &tp);

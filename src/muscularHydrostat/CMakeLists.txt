@@ -26,6 +26,7 @@ target_sources(${main_target}
     main_pardiso.cpp
     muscle.cpp
     fem_muscle_spatialForm.cpp
+    fem_Takenaka2019.cpp
     preprocess.cpp
 )
 target_compile_options(${main_target} PUBLIC ${compile_options_tmp})
