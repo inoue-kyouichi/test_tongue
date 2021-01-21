@@ -165,7 +165,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   //------------------------------specific routine-----------------------------
   //S_bar
   double I_C1 = C[0][0]+C[1][1]+C[2][2];
-  double I_C1_mod = I_C1 * pow(J,-1e0/3e0);
+  double I_C1_mod = I_C1 * pow(J,-2e0/3e0);
   for(int i=0;i<3;i++){
     for(int j=0;j<3;j++) Sbar[i][j]=2e0*c10*I2[i][j] + 4e0*c20*(I_C1_mod-3e0)*I2[i][j];
   }
