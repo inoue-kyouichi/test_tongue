@@ -97,9 +97,9 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   int fiberNum=0;
   double lambda;
 
-  const double c10=1.037e3;
-  const double c20 = 4.86e2;
-  const double K = 1e5;
+  const double c10=1.037e3*1e-3;
+  const double c20 = 4.86e2*1e-3;
+  const double K = 1e5*1e-3;
   double a0[3],a[3];
 
   //sigma an-isotropic term
