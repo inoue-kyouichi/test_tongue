@@ -1,0 +1,74 @@
+Domain
+{
+  inputDir   = "takenaka"
+  nodeFile      = "node.dat"
+  elementFile   = "element.dat"
+  meshTypeFile   = "elementMeshType.dat"
+  fiberFile = "fiber_model2.cal"
+  // materialTypeFile = "material.dat"
+  dirichletFile = "dirichlet.dat"
+  // innerSurfaceFile="innerSurface.dat"
+}
+
+Fibers{
+  F0001{
+    contractionCoefficient = 1e0
+    initialStretch = 1e0
+  }
+  F0002{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0003{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0004{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0005{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0006{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0007{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0008{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0009{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+  F0010{
+    contractionCoefficient = 0e0
+    initialStretch = 1e0
+  }
+}
+
+
+Output
+{
+  outputFormat = "vtk"
+  outputDir    = "test"
+  fileName     = "test"
+}
+
+
+solver
+{
+  maxIteration = 1
+  NR_iteration = 30000
+  NR_tolerance = 4 //1e-4
+  Restart =0 //0:no, 1:yes
+  OMPnumThreads = 4
+  relaxation=1e-5
+
+}

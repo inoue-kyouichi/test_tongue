@@ -75,7 +75,6 @@ class Muscle : public Fem {
  private:
   int dataNumber;
   int Restart;
-  int iterationNumber;
   int OMPnumThreads;
   int maxIteration,NRiteration;
   double NRtolerance;
