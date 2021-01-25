@@ -29,6 +29,8 @@ void muscularHydrostat::Muscle::femSolidAnalysis()
 
   for(int loop=Restart+1;loop<=maxIteration;loop++){
 
+    iterationNumber = loop;
+
     if(NRscheme()==true){
       printf("NaN detected in loop=%d. Exit...\n",loop);
       exit(1);
@@ -54,10 +56,9 @@ void muscularHydrostat::Muscle::femSolidAnalysis()
     //   output = outputDir + "/test_" + to_string(loop/output_iter) + ".vtu";
     //   fileIO::export_vtu(x,element,numOfNode,numOfElm,U,volumeChangeRatio,lambda_ave,output);
     // }
+    output = outputDir + "/test_" + to_string(loop) + ".vtu";
+    export_vtu(output);
   }
-
-  output = outputDir + "/test.vtu";
-  export_vtu(output);
 
 }
 
@@ -109,10 +110,11 @@ bool muscularHydrostat::Muscle::NRscheme()
 
       printf("NR iter.=%d norm/norm0=%e\n",ic,norm/norm0);
 
-      if(ic%10==0){
-        output = outputDir + "/NR_"+to_string(ic/10)+".vtu";
-        export_vtu(output);
-      }
+      // int iter_output = 1;
+      // if(ic%iter_output==0){
+      //   output = outputDir + "/NR_"+to_string(ic/iter_output)+".vtu";
+      //   export_vtu(output);
+      // }
       if(norm/norm0<NRtolerance) break;
       // if(test!=1 && ic>50) break;
     }

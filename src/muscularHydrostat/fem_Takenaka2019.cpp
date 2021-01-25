@@ -97,9 +97,9 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   int fiberNum=0;
   double lambda;
 
-  const double c10=1.037e3*1e-3;
-  const double c20 = 4.86e2*1e-3;
-  const double K = 1e5*1e-3;
+  const double c10=1.037e3*1e-6;  //MPa
+  const double c20 = 4.86e2*1e-6; //MPa
+  const double K = 1e5*1e-6;  //MPa
   double a0[3],a[3];
 
   //sigma an-isotropic term
@@ -167,7 +167,7 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
   double I_C1 = C[0][0]+C[1][1]+C[2][2];
   double I_C1_mod = I_C1 * pow(J,-2e0/3e0);
   for(int i=0;i<3;i++){
-    for(int j=0;j<3;j++) Sbar[i][j]=2e0*c10*I2[i][j] + 4e0*c20*(I_C1_mod-3e0)*I2[i][j];
+    for(int j=0;j<3;j++) Sbar[i][j]=2e0*(c10+2e0*c20*(I_C1_mod-3e0))*I2[i][j];
   }
 
   //sigma an-isotropic term
@@ -244,12 +244,12 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
     double lambda = sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
     for(int i=0;i<3;i++) a[i] = a[i]/lambda;
     int fiberNumber = static_cast<int>(fibers[ic].fiber[ik].group);
-    double contractionCoefficient = Material[fiberNumber].contractionCoefficient;
-    contractionCoefficient *= 5e-1*(c10+c20)/(fibers[ic].fiber.size());
+    double contractionCoefficient = Material[fiberNumber].contractionCoefficient*iterationNumber/maxIteration;
+    // contractionCoefficient *= 5e-1*(c10+c20)/(fibers[ic].fiber.size());
 
     for(int i=0;i<3;i++){
       for(int j=0;j<3;j++){
-        contraction[i][j] += contractionCoefficient*a[i]*a[j]/J;
+        contraction[i][j] += contractionCoefficient*a[i]*a[j];
       }
     }
   }
