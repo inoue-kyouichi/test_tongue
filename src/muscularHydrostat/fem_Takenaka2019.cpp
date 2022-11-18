@@ -99,12 +99,12 @@ const int &numOfNodeInElm,ARRAY2D<double> &x_current,ARRAY2D<double> &x_ref,ARRA
 
   const double c10=1.037e3*1e-3;
   const double c20 = 4.86e2*1e-3;
-  const double af = 1.0e6*1e-3
+  const double af = 1.0e6*1e-3;
   const double K = 1e5*1e-3;
   double a0[3],a[3];
 
   //sigma an-isotropic term
-  for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
+  //for(int i=0;i<3;i++) a0[i]=fiberDirection_elm(ic,i);
 
   FEM_MathTool::calc_dxdr(dxdr,dNdr,x_current,numOfNodeInElm);
   FEM_MathTool::calc_dNdx(dNdx,dNdr,dxdr,numOfNodeInElm);

@@ -4,50 +4,50 @@ Domain
   nodeFile      = "node.dat"
   elementFile   = "element.dat"
   meshTypeFile   = "elementMeshType.dat"
-  fiberFile = "fiber_model2.cal"
+  fiberFile =  "fiber_model2_2.cal"
   // materialTypeFile = "material.dat"
   dirichletFile = "dirichlet.dat"
   // innerSurfaceFile="innerSurface.dat"
 }
 
 Fibers{
-  F0001{
+  F1{
     contractionCoefficient = 1e0
     initialStretch = 1e0
   }
-  F0002{
+  F2{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0003{
+  F3{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0004{
+  F4{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0005{
+  F5{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0006{
+  F6{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0007{
+  F7{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0008{
+  F8{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0009{
+  F9{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
-  F0010{
+  F10{
     contractionCoefficient = 0e0
     initialStretch = 1e0
   }
@@ -69,6 +69,6 @@ solver
   NR_tolerance = 4 //1e-4
   Restart =0 //0:no, 1:yes
   OMPnumThreads = 4
-  relaxation=1e-5
+  relaxation=1e-2
 
 }

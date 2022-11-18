@@ -24,7 +24,7 @@ add_executable(${main_target} ${main_src})
 target_sources(${main_target}
   PRIVATE
     main_SDF.cpp
-    signedDistanceFunction.cpp
+    SignedDistanceFunction.cpp
     EikonalEq.cpp
 )
 target_compile_options(${main_target} PUBLIC ${compile_options_tmp})

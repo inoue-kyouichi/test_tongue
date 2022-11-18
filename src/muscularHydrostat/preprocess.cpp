@@ -16,8 +16,9 @@ void muscularHydrostat::Muscle::preprocess()
   allocate();
 
   fibers.resize(numOfElm);
-  // fiberDirection_elm.allocate(numOfElm,3);
+  //fiberDirection_elm.allocate(numOfElm,3);
   inputFiberInfo_cal(tp);
+  //inputFiberInfo(tp);
   // inputMaterialInfo(tp);
 
   inputMaterialParameters(tp);
@@ -160,6 +161,12 @@ void muscularHydrostat::Muscle::inputFiberInfo_cal(TextParser &tp)
     fscanf(fp,"%d",&number);
     fibers[ic].fiber.resize(number);
   }
+//debug
+  /*for(int i=0;i<10;i++){
+    cout<<fibers[i].fiber.size()<<endl;
+  }
+  cout<<fibers[51298].fiber.size()<<endl;*/
+
   for(int ic=0;ic<numOfElm;ic++){
     for(int i=0;i<fibers[ic].fiber.size();i++){
       int number;
@@ -167,6 +174,9 @@ void muscularHydrostat::Muscle::inputFiberInfo_cal(TextParser &tp)
       fibers[ic].fiber[i].group = static_cast<FiberGroup>(number);
     }
   }
+//debug
+  //cout<<fibers[0].fiber[0].group<<endl;
+
   for(int ic=0;ic<numOfElm;ic++){
     for(int i=0;i<fibers[ic].fiber.size();i++){
       double tmp;
@@ -174,6 +184,11 @@ void muscularHydrostat::Muscle::inputFiberInfo_cal(TextParser &tp)
       fibers[ic].fiber[i].a0[0] = tmp;
     }
   }
+//debug
+  /*for(int i=0;i<fibers[numOfElm-1].fiber.size();i++){
+    cout<<fibers[numOfElm-1].fiber[i].a0[0]<<endl;
+  }*/
+
   for(int ic=0;ic<numOfElm;ic++){
     for(int i=0;i<fibers[ic].fiber.size();i++){
       double tmp;
@@ -181,6 +196,11 @@ void muscularHydrostat::Muscle::inputFiberInfo_cal(TextParser &tp)
       fibers[ic].fiber[i].a0[1] = tmp;
     }
   }
+  //debug
+  /*for(int i=0;i<fibers[numOfElm-1].fiber.size();i++){
+    cout<<fibers[numOfElm-1].fiber[i].a0[1]<<endl;
+  }*/
+
   for(int ic=0;ic<numOfElm;ic++){
     for(int i=0;i<fibers[ic].fiber.size();i++){
       double tmp;
@@ -188,6 +208,10 @@ void muscularHydrostat::Muscle::inputFiberInfo_cal(TextParser &tp)
       fibers[ic].fiber[i].a0[2] = tmp;
     }
   }
+  //debug
+  /*for(int i=0;i<fibers[numOfElm-1].fiber.size();i++){
+    cout<<fibers[numOfElm-1].fiber[i].a0[2]<<endl;
+  }*/
 
   fclose(fp);
 
